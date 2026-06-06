@@ -433,14 +433,26 @@ def render_markdown(doc: dict) -> str:
 
 # --- entrypoint --------------------------------------------------------------------
 
+def round_stem(doc: dict) -> str:
+    """Browsable filename stem: YYYY_MM_DD_<scorecardId> (date first, sorts chronologically)."""
+    date = doc["round"]["date"][:10].replace("-", "_")
+    return f"{date}_{doc['scorecardId']}"
+
+
 def parse_scorecard(scorecard_id: int) -> dict:
     detail = _load(RAW_DIR / f"scorecard_{scorecard_id}_detail.json")
     shots = _load(RAW_DIR / f"scorecard_{scorecard_id}_shots.json")
     doc = build_round_document(detail, shots, load_club_config())
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    (OUT_DIR / f"{scorecard_id}.json").write_text(json.dumps(doc, indent=2))
-    (OUT_DIR / f"{scorecard_id}.md").write_text(render_markdown(doc))
+    # Remove any stale file for this scorecard under a different name (e.g. id-only).
+    for old in OUT_DIR.glob(f"*{scorecard_id}.json"):
+        old.unlink()
+    for old in OUT_DIR.glob(f"*{scorecard_id}.md"):
+        old.unlink()
+    stem = round_stem(doc)
+    (OUT_DIR / f"{stem}.json").write_text(json.dumps(doc, indent=2))
+    (OUT_DIR / f"{stem}.md").write_text(render_markdown(doc))
     return doc
 
 
@@ -448,7 +460,7 @@ def main() -> None:
     scorecard_id = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_SCORECARD
     doc = parse_scorecard(scorecard_id)
     r = doc["reconciliation"]
-    print(f"Wrote {OUT_DIR}/{scorecard_id}.json and .md")
+    print(f"Wrote {OUT_DIR}/{round_stem(doc)}.json and .md")
     print(f"  {len(doc['holes'])} holes, {r['recordedShots']} shots, "
           f"score {doc['score']['strokes']} ({doc['score']['toPar']:+d}), "
           f"shot delta {r['shotCountDelta']:+d}")
