@@ -3,6 +3,42 @@
   "since": "2026-05-01",
   "thisRoundDate": "2026-06-04",
   "thisRoundClean": true,
+  "baselines": {
+    "scratch": {
+      "label": "Scratch",
+      "byCategory": {
+        "offTee": 0.0,
+        "longApproach": 0.0,
+        "midApproach": 0.0,
+        "inside50": 0.0,
+        "putting": 0.0
+      },
+      "sg0to100": 0.0
+    },
+    "myAverage": {
+      "label": "My average",
+      "byCategory": {
+        "offTee": -6.8,
+        "longApproach": -7.3,
+        "midApproach": -6.7,
+        "inside50": -8.5,
+        "putting": -6.2
+      },
+      "sg0to100": -10.1
+    },
+    "target15": {
+      "label": "Target 15",
+      "byCategory": {
+        "offTee": -2.7,
+        "longApproach": -3.0,
+        "midApproach": -3.0,
+        "inside50": -3.6,
+        "putting": -2.7
+      },
+      "sg0to100": -5.4,
+      "modeled": true
+    }
+  },
   "scoring": {
     "averageOverRating18": 29.1,
     "potentialOverRating18": 19.8,

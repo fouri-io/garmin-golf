@@ -5,6 +5,12 @@
     "_note": "Distance cuts (yards to pin, off the green) for the non-tee, non-putt shot buckets: longApproach >= longApproachMinYds; midApproach between insideMaxYds and longApproachMinYds; inside50 <= insideMaxYds. headlineMaxYds defines the 'SG 0-100' leverage metric (everything that distance and in, excluding putts). Tune to how YOU think about your game.",
     "longApproachMinYds": 150,
     "insideMaxYds": 50,
-    "headlineMaxYds": 100
+    "headlineMaxYds": 100,
+    "_targetNote": "Target-handicap baseline is MODELED (not per-shot empirical tables): a target-H golfer is taken to be ~H strokes/18 over scratch, split across buckets by handicapBucketWeights (research-informed: approach + wedge zone leak most). SG vs target = your SG vs scratch minus the target's. Directional, not exact — the bucket ranking is the signal.",
+    "targetHandicap": 15,
+    "handicapBucketWeights": {
+      "offTee": 0.18, "longApproach": 0.20, "midApproach": 0.20,
+      "inside50": 0.24, "putting": 0.18
+    }
   }
 }

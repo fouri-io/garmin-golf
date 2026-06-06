@@ -27,3 +27,16 @@ def sg_distance_cuts() -> dict:
         "insideMaxYds": sg.get("insideMaxYds", 50),
         "headlineMaxYds": sg.get("headlineMaxYds", 100),
     }
+
+
+_DEFAULT_WEIGHTS = {"offTee": 0.18, "longApproach": 0.20, "midApproach": 0.20,
+                    "inside50": 0.24, "putting": 0.18}
+
+
+def sg_target() -> dict:
+    """Target-handicap baseline config (handicap + per-bucket weight distribution)."""
+    sg = _analysis_config().get("strokesGained", {})
+    return {
+        "targetHandicap": sg.get("targetHandicap", 15),
+        "weights": sg.get("handicapBucketWeights", _DEFAULT_WEIGHTS),
+    }

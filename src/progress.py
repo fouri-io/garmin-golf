@@ -21,7 +21,7 @@ import json
 from pathlib import Path
 
 from .analyze import SG_CATS, SG_LABELS, SG_SHORT, load_rounds
-from .config import analysis_start_date
+from .config import analysis_start_date, sg_target
 
 OUT_JSON = Path("data/processed/progress.json")
 OUT_MD = Path("data/processed/progress.md")
@@ -76,6 +76,27 @@ def _auth_window(rounds: list[dict]) -> dict:
     }
 
 
+def _baselines(all_time: dict | None) -> dict:
+    """Comparison baselines as per-bucket SG offsets vs scratch. SG-vs-baseline = your
+    SG-vs-scratch minus the baseline's. Scratch = 0; My-average = your season norm;
+    Target-H = a modeled H-handicap (≈H strokes/18 over scratch, split by weights)."""
+    tgt = sg_target()
+    h, w = tgt["targetHandicap"], tgt["weights"]
+    wsum = sum(w.values()) or 1
+    target_by = {c: round(-h * w.get(c, 0) / wsum, 2) for c in SG_CATS}
+    # 0-100 zone ≈ inside-50 fully + ~60% of mid-approach.
+    sg0_share = (w.get("inside50", 0) + 0.6 * w.get("midApproach", 0)) / wsum
+    avg_by = all_time["byCategory"] if all_time else dict.fromkeys(SG_CATS, 0.0)
+    avg_sg0 = all_time["sg0to100"] if all_time else 0.0
+    return {
+        "scratch": {"label": "Scratch", "byCategory": dict.fromkeys(SG_CATS, 0.0),
+                    "sg0to100": 0.0},
+        "myAverage": {"label": "My average", "byCategory": avg_by, "sg0to100": avg_sg0},
+        f"target{h}": {"label": f"Target {h}", "byCategory": target_by,
+                       "sg0to100": round(-h * sg0_share, 2), "modeled": True},
+    }
+
+
 def build() -> dict:
     rounds = sorted(load_rounds(analysis_start_date()), key=lambda d: d["round"]["date"])
     horizons = {
@@ -89,6 +110,8 @@ def build() -> dict:
     # Scoring "potential" = better half of rounds (≈ what a handicap measures).
     over_vals = sorted(v for v in (_over_rating18(d) for d in rounds) if v is not None)
     half = max(1, len(over_vals) // 2)
+
+    baselines = _baselines(sg["allTime"])
 
     series = [{
         "date": d["round"]["date"][:10], "course": d["course"]["name"],
@@ -104,6 +127,7 @@ def build() -> dict:
         "since": analysis_start_date(),
         "thisRoundDate": rounds[-1]["round"]["date"][:10] if rounds else None,
         "thisRoundClean": _is_clean(rounds[-1]) if rounds else None,
+        "baselines": baselines,
         "scoring": {
             "averageOverRating18": auth["allTime"]["overRating18"],
             "potentialOverRating18": round(sum(over_vals[:half]) / half, 1) if over_vals else None,
