@@ -81,6 +81,8 @@
   .par{background:#e6f4ec;color:#1f7a45}.bogey{background:#fdeee0;color:#b5701c}
   .dbl{background:#fbe2df;color:#b5322a}.birdie{background:#e2eefb;color:#2a5db5}
   .hrow .gap{flex:1}.hrow .mini{color:var(--muted);font-size:12px}
+  .maplink{border:0;background:#eaf1f8;color:var(--accent);border-radius:8px;padding:4px 8px;
+    font-size:12px;font-weight:600;cursor:pointer;margin-left:8px;white-space:nowrap}
   .shots{margin:8px 0 0;font-size:12.5px;color:#41505e}
   .shots div{padding:2px 0;display:flex;gap:6px}
   .shots .sn{color:var(--muted);min-width:16px}.shots .sg{margin-left:auto;font-variant-numeric:tabular-nums}
@@ -179,7 +181,7 @@ const CATS=[["offTee","Off-Tee"],["longApproach","Long"],["midApproach","Mid"],
 const FULL={offTee:"Off-the-Tee",longApproach:"Long approach 150+",midApproach:"Mid approach 50–150",
   inside50:"Inside 50",putting:"Putting"};
 const WLAB={thisRound:"This round",last5:"Last 5",allTime:"All-time"};
-let win="last5", base="scratch";
+let win="last5", base="scratch", detailRound=0;
 
 document.getElementById('date').textContent="Updated "+(P.thisRoundDate||"")+" · "+P.generatedFromRounds+" rounds";
 
@@ -243,7 +245,7 @@ function renderRoundsList(){
 }
 function box(toPar){return toPar===null?"":toPar<0?"birdie":toPar===0?"par":toPar===1?"bogey":"dbl";}
 function renderRoundDetail(i){
-  const r=DATA.rounds[i];
+  const r=DATA.rounds[i];detailRound=i;
   document.getElementById('roundsList').classList.add('hide');
   const el=document.getElementById('roundDetail');el.classList.remove('hide');
   const chips=[["Score",`${r.score} (${r.toPar>=0?'+':''}${r.toPar})`],["vs rating",r.overRating18===null?'—':'+'+r.overRating18],
@@ -258,10 +260,11 @@ function renderRoundDetail(i){
       return `<div><span class="sn">${s.n}</span>${club} ${yd} <span class="mut">${s.from}→${s.to}${rem}</span>${sg}</div>`;
     }).join("");
     const fw=h.fw?`FW:${h.fw}`:"";const gir=h.gir?"GIR":"";
+    const maplink=h.shots.some(s=>s.start&&s.end)?`<button class="maplink" data-h="${h.n}">🗺️ map</button>`:'';
     return `<div class="hole"><div class="hrow">
         <span class="sbox ${box(h.toPar)}">${h.strokes}</span>
         <b>H${h.n}</b> <span class="mini">par ${h.par}</span><span class="gap"></span>
-        <span class="mini">${fw} ${gir} ${h.putts}p ${h.pen?'· pen '+h.pen:''}</span></div>
+        <span class="mini">${fw} ${gir} ${h.putts}p ${h.pen?'· pen '+h.pen:''}</span>${maplink}</div>
       <div class="shots">${shots||'<span class="mut">no shots recorded</span>'}</div></div>`;
   }).join("");
   el.innerHTML=`<button class="back" id="back">← All rounds</button>
@@ -333,11 +336,18 @@ function drawHole(){
 }
 function showMap(){initMap();setTimeout(()=>{lmap.invalidateSize();drawHole();},30);}
 
-document.getElementById('tabs').onclick=e=>{const t=e.target.closest('[data-t]');if(!t)return;
-  [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===t));
-  ['progress','rounds','clubs','maps'].forEach(n=>document.getElementById('tab-'+n).classList.toggle('hide',n!==t.dataset.t));
-  if(t.dataset.t==="rounds")renderRoundsList();
-  if(t.dataset.t==="maps")showMap();};
+function setTab(name){
+  [...document.getElementById('tabs').children].forEach(b=>b.classList.toggle('on',b.dataset.t===name));
+  ['progress','rounds','clubs','maps'].forEach(n=>document.getElementById('tab-'+n).classList.toggle('hide',n!==name));
+  if(name==="rounds")renderRoundsList();
+  if(name==="maps")showMap();}
+document.getElementById('tabs').onclick=e=>{const t=e.target.closest('[data-t]');if(t)setTab(t.dataset.t);};
+function gotoMap(ri,hn){
+  initMap();mRound=ri;document.getElementById('mapRound').value=ri;
+  const idx=mappable(DATA.rounds[ri]).findIndex(h=>h.n===hn);mHole=idx<0?0:idx;
+  setTab('maps');}
+document.getElementById('roundDetail').addEventListener('click',e=>{
+  const b=e.target.closest('.maplink');if(b)gotoMap(detailRound,+b.dataset.h);});
 
 renderProgress();renderRoundsList();renderClubs();
 </script>
