@@ -1,0 +1,187 @@
+{
+  "baseline": "PGA Tour (scratch), fixed ruler",
+  "window": 3,
+  "cleanRounds": 5,
+  "currentForm": {
+    "per18": {
+      "offTee": -7.5,
+      "approach": -10.6,
+      "shortGame": -8.0,
+      "putting": 1.5
+    },
+    "total": -24.6,
+    "rounds": [
+      "2026-05-29",
+      "2026-06-01",
+      "2026-06-04"
+    ]
+  },
+  "startForm": {
+    "per18": {
+      "offTee": -7.0,
+      "approach": -13.9,
+      "shortGame": -6.2,
+      "putting": -1.0
+    },
+    "total": -28.1,
+    "rounds": [
+      "2026-05-06",
+      "2026-05-15",
+      "2026-05-29"
+    ]
+  },
+  "deltaFromStart": {
+    "offTee": -0.5,
+    "approach": 3.3,
+    "shortGame": -1.8,
+    "putting": 2.5,
+    "total": 3.5
+  },
+  "trend": {
+    "offTee": {
+      "slopePerRound": 0.79,
+      "arrow": "\u2191"
+    },
+    "approach": {
+      "slopePerRound": 2.33,
+      "arrow": "\u2191"
+    },
+    "shortGame": {
+      "slopePerRound": -0.59,
+      "arrow": "\u2193"
+    },
+    "putting": {
+      "slopePerRound": 0.77,
+      "arrow": "\u2191"
+    }
+  },
+  "timeSeries": [
+    {
+      "date": "2026-05-03",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 36,
+      "holes": 9,
+      "per18": {
+        "offTee": -3.8,
+        "approach": -18.5,
+        "shortGame": 0.3,
+        "putting": -5.6
+      },
+      "total": -27.6,
+      "clean": false
+    },
+    {
+      "date": "2026-05-06",
+      "course": "Jimmy Clay Golf Course ~ Jimmy Clay",
+      "score": 106,
+      "holes": 18,
+      "per18": {
+        "offTee": -7.6,
+        "approach": -17.3,
+        "shortGame": -7.3,
+        "putting": -3.1
+      },
+      "total": -35.3,
+      "clean": true
+    },
+    {
+      "date": "2026-05-15",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole/Nine Hole",
+      "score": 92,
+      "holes": 18,
+      "per18": {
+        "offTee": -4.2,
+        "approach": -12.2,
+        "shortGame": -2.8,
+        "putting": -3.7
+      },
+      "total": -22.9,
+      "clean": true
+    },
+    {
+      "date": "2026-05-25",
+      "course": "Hancock Golf Course",
+      "score": 47,
+      "holes": 9,
+      "per18": {
+        "offTee": -30.5,
+        "approach": -44.0,
+        "shortGame": -22.2,
+        "putting": 10.4
+      },
+      "total": -86.3,
+      "clean": false
+    },
+    {
+      "date": "2026-05-27",
+      "course": "Falconhead Golf Club",
+      "score": 101,
+      "holes": 18,
+      "per18": {
+        "offTee": -8.1,
+        "approach": -15.1,
+        "shortGame": -7.3,
+        "putting": -10.8
+      },
+      "total": -41.3,
+      "clean": false
+    },
+    {
+      "date": "2026-05-29",
+      "course": "Riverside Golf Course",
+      "score": 99,
+      "holes": 18,
+      "per18": {
+        "offTee": -9.3,
+        "approach": -12.1,
+        "shortGame": -8.5,
+        "putting": 3.7
+      },
+      "total": -26.2,
+      "clean": true
+    },
+    {
+      "date": "2026-05-30",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 38,
+      "holes": 9,
+      "per18": {
+        "offTee": -8.3,
+        "approach": -18.7,
+        "shortGame": -9.0,
+        "putting": -34.5
+      },
+      "total": -70.5,
+      "clean": false
+    },
+    {
+      "date": "2026-06-01",
+      "course": "The Golf Club at Star Ranch",
+      "score": 99,
+      "holes": 18,
+      "per18": {
+        "offTee": -8.7,
+        "approach": -11.5,
+        "shortGame": -7.7,
+        "putting": 0.8
+      },
+      "total": -27.1,
+      "clean": true
+    },
+    {
+      "date": "2026-06-04",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 39,
+      "holes": 9,
+      "per18": {
+        "offTee": -1.4,
+        "approach": -6.0,
+        "shortGame": -7.8,
+        "putting": -1.5
+      },
+      "total": -16.7,
+      "clean": true
+    }
+  ],
+  "note": "Current form = last 3 clean rounds, per 18 vs a fixed scratch ruler. \u0394 = improvement since your starting window (+ = better). Trend = slope over all clean rounds. Only 5 clean rounds so far \u2014 directional, firms up with more play. Putting & short game are GPS/under-record limited."
+}
