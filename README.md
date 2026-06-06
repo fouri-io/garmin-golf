@@ -42,6 +42,37 @@ python -m src.update <scorecard_id> --push   # pull → parse → analyze → pr
 
 The dashboard is the single output: open `site/index.html` (or the deployed URL).
 
+## Commands reference
+
+Every step is also runnable on its own (all run from the repo root, in the venv):
+
+| Command | What it does |
+|---|---|
+| `python -m src.update <id> --push` | **The one-liner** — pull a new round, rebuild, deploy |
+| `python -m src.update` | Rebuild dashboard from existing rounds |
+| `python -m src.update --all` | Pull every real round, then rebuild |
+| `python -m src.update --reparse` | Re-parse all tracked rounds (after a config change) |
+| `python -m src.update --publish` / `--push` | Also copy to / deploy the publish target |
+| `python -m src.pull <id>` | Pull one round's raw JSON (summary + detail + shots) |
+| `python -m src.pull --all` | Pull every real round's raw (skips SIM + pre-cutoff) |
+| `python -m src.parse <id>` | Parse one round's raw → `data/processed/rounds/<date>_<id>.json` + `.md` |
+| `python -m src.analyze` | Build `club_stats.{json,md}` (per-club distances) |
+| `python -m src.progress` | Build `progress.{json,md}` (the dashboard data) |
+| `python -m src.site` | Generate the static site → `site/index.html` |
+| `python -m src.introspect` | List the Garmin golf API methods (no creds, no network) |
+
+Most-used config lives in `config/`:
+- `config/clubs.json` — club identity (which `clubId` is which club)
+- `config/analysis.json` — analysis cutoff date, SG distance cuts, target handicap,
+  publish target
+- `config/sg_baseline.json` — the scratch expected-strokes table
+
+Outputs:
+- `data/processed/progress.{json,md}` — the dashboard (what you read)
+- `data/processed/club_stats.{json,md}` — club gapping
+- `data/processed/rounds/<date>_<id>.{json,md}` — per-round detail
+- `site/index.html` — the deployable dashboard
+
 ## Phase 0 task list (work one at a time)
 
 1. **Library introspection** — discover the real golf method names (no creds needed):
