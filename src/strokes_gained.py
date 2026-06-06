@@ -18,8 +18,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from .config import scoring_zone_max_yds
+
 BASELINE_PATH = Path("config/sg_baseline.json")
-AROUND_GREEN_YDS = 30.0  # off-green within this counts as short game, not approach
 
 # Garmin lie -> baseline through-green lie
 _LIE_MAP = {
@@ -59,22 +60,24 @@ class Baseline:
         return _interp(self.tg[tg_lie], dist_yds)
 
 
-def categorize(shot: dict, par: int | None) -> str:
+def categorize(shot: dict, par: int | None, scoring_zone_max: float) -> str:
+    """Bucket by task: putting / offTee / shortGame (wedge zone) / approach (full)."""
     if shot["from"] == "Green":
         return "putting"
     if shot["from"] == "TeeBox" and par and par >= 4:
         return "offTee"
     d = shot.get("distanceToPinBeforeYds")
-    if d is not None and d <= AROUND_GREEN_YDS:
-        return "aroundGreen"
-    return "approach"
+    if d is not None and d <= scoring_zone_max:
+        return "shortGame"     # AW/50/54/58 wedge & pitch zone
+    return "approach"          # full irons/woods into greens
 
 
 def compute(holes: list[dict], base: Baseline | None = None) -> dict:
     """Annotate each shot with sgCategory + strokesGained (in place) and return a
     round-level Strokes Gained summary."""
     base = base or Baseline()
-    by_cat = {"offTee": 0.0, "approach": 0.0, "aroundGreen": 0.0, "putting": 0.0}
+    scoring_zone = scoring_zone_max_yds()
+    by_cat = {"offTee": 0.0, "approach": 0.0, "shortGame": 0.0, "putting": 0.0}
     categorized = 0
     penalty_strokes = 0
 
@@ -84,7 +87,7 @@ def compute(holes: list[dict], base: Baseline | None = None) -> dict:
         penalty_strokes += h.get("penalties") or 0
 
         for i, s in enumerate(shots):
-            cat = categorize(s, par)
+            cat = categorize(s, par, scoring_zone)
             s["sgCategory"] = cat
             e_before = base.expected(lie=s["from"], dist_yds=s.get("distanceToPinBeforeYds"))
             # A shot that ends on the green as the hole's last recorded shot = holed out.

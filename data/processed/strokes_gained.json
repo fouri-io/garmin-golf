@@ -7,14 +7,14 @@
   "baseline": "PGA Tour (scratch), approximate",
   "perRound18Avg": {
     "offTee": -8.6,
-    "approach": -19.5,
-    "aroundGreen": -4.0,
+    "approach": -16.0,
+    "shortGame": -7.6,
     "putting": -4.1
   },
   "totalByCategory": {
     "offTee": -59.9,
-    "approach": -136.5,
-    "aroundGreen": -28.2,
+    "approach": -111.7,
+    "shortGame": -53.0,
     "putting": -28.6
   },
   "penaltyStrokesTotal": 14,
@@ -26,8 +26,8 @@
       "score": 36,
       "byCategory": {
         "offTee": -1.92,
-        "approach": -9.38,
-        "aroundGreen": 0.25,
+        "approach": -9.26,
+        "shortGame": 0.14,
         "putting": -2.81
       },
       "penaltyStrokes": 0,
@@ -40,8 +40,8 @@
       "score": 106,
       "byCategory": {
         "offTee": -7.56,
-        "approach": -22.85,
-        "aroundGreen": -1.83,
+        "approach": -17.33,
+        "shortGame": -7.35,
         "putting": -3.06
       },
       "penaltyStrokes": 1,
@@ -54,8 +54,8 @@
       "score": 92,
       "byCategory": {
         "offTee": -4.19,
-        "approach": -15.59,
-        "aroundGreen": 0.59,
+        "approach": -12.15,
+        "shortGame": -2.84,
         "putting": -3.71
       },
       "penaltyStrokes": 6,
@@ -68,8 +68,8 @@
       "score": 47,
       "byCategory": {
         "offTee": -15.26,
-        "approach": -25.12,
-        "aroundGreen": -7.97,
+        "approach": -21.99,
+        "shortGame": -11.1,
         "putting": 5.21
       },
       "penaltyStrokes": 0,
@@ -82,8 +82,8 @@
       "score": 101,
       "byCategory": {
         "offTee": -8.09,
-        "approach": -19.2,
-        "aroundGreen": -3.15,
+        "approach": -15.09,
+        "shortGame": -7.27,
         "putting": -10.79
       },
       "penaltyStrokes": 1,
@@ -96,8 +96,8 @@
       "score": 99,
       "byCategory": {
         "offTee": -9.29,
-        "approach": -15.5,
-        "aroundGreen": -5.08,
+        "approach": -12.11,
+        "shortGame": -8.46,
         "putting": 3.73
       },
       "penaltyStrokes": 1,
@@ -110,8 +110,8 @@
       "score": 38,
       "byCategory": {
         "offTee": -4.17,
-        "approach": -9.06,
-        "aroundGreen": -4.75,
+        "approach": -9.33,
+        "shortGame": -4.48,
         "putting": -17.25
       },
       "penaltyStrokes": 0,
@@ -124,8 +124,8 @@
       "score": 99,
       "byCategory": {
         "offTee": -8.67,
-        "approach": -15.74,
-        "aroundGreen": -3.46,
+        "approach": -11.49,
+        "shortGame": -7.71,
         "putting": 0.8
       },
       "penaltyStrokes": 5,
@@ -138,13 +138,13 @@
       "score": 39,
       "byCategory": {
         "offTee": -0.72,
-        "approach": -4.07,
-        "aroundGreen": -2.83,
+        "approach": -2.99,
+        "shortGame": -3.91,
         "putting": -0.77
       },
       "penaltyStrokes": 0,
       "polluted": false
     }
   ],
-  "note": "Per-18-hole averages over recorded shots vs a scratch baseline. The most negative category is where to focus. Putting is GPS-noisy; 2 rounds have sensor-polluted holes (flagged 'polluted') that distort their OTT/ARG/Putt."
+  "note": "Per-18-hole averages over recorded shots vs a scratch baseline. The most negative category is where to focus. Putting is GPS-noisy; 2 rounds have sensor-polluted holes (flagged 'polluted') that distort their non-approach buckets."
 }

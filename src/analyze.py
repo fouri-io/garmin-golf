@@ -149,9 +149,9 @@ def render_markdown(doc: dict) -> str:
 
 SG_JSON = Path("data/processed/strokes_gained.json")
 SG_MD = Path("data/processed/strokes_gained.md")
-SG_CATS = ["offTee", "approach", "aroundGreen", "putting"]
-SG_LABELS = {"offTee": "Off-the-Tee", "approach": "Approach",
-             "aroundGreen": "Around-Green", "putting": "Putting"}
+SG_CATS = ["offTee", "approach", "shortGame", "putting"]
+SG_LABELS = {"offTee": "Off-the-Tee", "approach": "Approach (full)",
+             "shortGame": "Short game (≤scoring zone)", "putting": "Putting"}
 
 
 def build_sg_summary() -> dict:
@@ -192,7 +192,7 @@ def build_sg_summary() -> dict:
         "note": (
             "Per-18-hole averages over recorded shots vs a scratch baseline. The most "
             "negative category is where to focus. Putting is GPS-noisy; 2 rounds have "
-            "sensor-polluted holes (flagged 'polluted') that distort their OTT/ARG/Putt."
+            "sensor-polluted holes (flagged 'polluted') that distort their non-approach buckets."
         ),
     }
     SG_JSON.write_text(json.dumps(doc, indent=2))
@@ -220,7 +220,7 @@ def render_sg_markdown(doc: dict) -> str:
     lines += [
         f"| **Penalties** | | **+{doc['penaltyStrokesTotal']} strokes (~-{doc['penaltyStrokesTotal']})** |",
         "",
-        "| Date | Course | Score | OTT | APP | ARG | Putt | |",
+        "| Date | Course | Score | OTT | APP | SHORT | Putt | |",
         "|---|---|--:|--:|--:|--:|--:|:--|",
     ]
     for r in doc["perRound"]:
@@ -228,7 +228,7 @@ def render_sg_markdown(doc: dict) -> str:
         flag = " ⚠ polluted" if r["polluted"] else ""
         lines.append(
             f"| {r['date']} | {r['course'][:22]} | {r['score']} | {c['offTee']:+.1f} | "
-            f"{c['approach']:+.1f} | {c['aroundGreen']:+.1f} | {c['putting']:+.1f} |{flag} |"
+            f"{c['approach']:+.1f} | {c['shortGame']:+.1f} | {c['putting']:+.1f} |{flag} |"
         )
     lines += ["", "_Putting is GPS-noisy — least reliable bucket. ⚠ = round has sensor-"
               "polluted holes that distort its non-approach numbers._"]

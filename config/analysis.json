@@ -1,4 +1,8 @@
 {
   "_note": "Rounds before analysisStartDate are excluded from pulls and from club/shot analysis. Reason: before this date the CT10 sensors weren't in the clubs and the bag differed, so the clubTypeId->name map in clubs.json doesn't apply and shot/club data is unreliable. Raw responses for older rounds may still exist locally; they're just not parsed or analyzed.",
-  "analysisStartDate": "2026-05-01"
+  "analysisStartDate": "2026-05-01",
+  "strokesGained": {
+    "_note": "How shots are bucketed. A shot going for the green from <= scoringZoneMaxYds (and off the green) is 'shortGame' — your AW/50/54/58 wedge & pitch zone. Beyond it is 'approach' — full irons/woods into greens. Tune scoringZoneMaxYds to match how YOU think about your game.",
+    "scoringZoneMaxYds": 90
+  }
 }

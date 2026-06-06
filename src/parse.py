@@ -383,7 +383,7 @@ def _sg_line(sg: dict) -> str:
     c = sg["byCategory"]
     return (f"Strokes Gained vs scratch (recorded shots): "
             f"OTT {c['offTee']:+.1f} · APP {c['approach']:+.1f} · "
-            f"ARG {c['aroundGreen']:+.1f} · PUTT {c['putting']:+.1f} "
+            f"SHORT {c['shortGame']:+.1f} · PUTT {c['putting']:+.1f} "
             f"= {sg['totalRecordedVsScratch']:+.1f}; +{sg['penaltyStrokes']} penalties")
 
 
