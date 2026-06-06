@@ -14,9 +14,9 @@ __pycache__/
 # Garmin token store may also land here if GARMINTOKENS is set locally
 .garminconnect/
 
-# Data: the raw responses are the asset, but they're personal — keep them local.
+# Data: the raw responses are the asset, but they're large/personal — keep local.
 # Track the directory structure (.gitkeep) but ignore the contents.
 data/raw/*
 !data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
+
+# Processed round documents ARE versioned (opted in).
