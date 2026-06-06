@@ -21,6 +21,7 @@ from typing import Any
 from dotenv import load_dotenv
 
 from . import garmin_client
+from .config import analysis_start_date
 
 RAW_DIR = Path("data/raw")
 
@@ -83,10 +84,16 @@ def _summary_records(summaries: list[dict] | dict) -> list[dict]:
     return summaries
 
 
-def real_round_ids(summaries: list[dict] | dict) -> list[int]:
-    """Scorecard ids for real rounds (excludes simulator rounds), oldest first."""
+def real_round_ids(summaries: list[dict] | dict, since_date: str | None = None) -> list[int]:
+    """Scorecard ids for real rounds, oldest first.
+
+    Excludes simulator rounds, and (if ``since_date`` is given) rounds that started
+    before it — older rounds predate the current sensor/club setup (see config/analysis.json).
+    """
     records = _summary_records(summaries)
     real = [r for r in records if r.get("roundType") not in EXCLUDE_ROUND_TYPES]
+    if since_date:
+        real = [r for r in real if (r.get("startTime") or "")[:10] >= since_date]
     return [r["id"] for r in sorted(real, key=lambda r: r["startTime"])]
 
 
@@ -96,9 +103,11 @@ def pull_all(api, *, skip_existing: bool = True) -> None:
     from .parse import parse_scorecard  # local import: parse reads only from data/raw
 
     summaries = pull_summary(api)
-    ids = real_round_ids(summaries)
-    skipped_sim = len(_summary_records(summaries)) - len(ids)
-    print(f"\n{len(ids)} real rounds to pull (excluding {skipped_sim} SIMULATION).\n")
+    since = analysis_start_date()
+    ids = real_round_ids(summaries, since_date=since)
+    n_real_all = len(real_round_ids(summaries))
+    print(f"\n{len(ids)} rounds to pull (>= {since}; excluding SIMULATION and "
+          f"{n_real_all - len(ids)} pre-cutoff rounds).\n")
 
     pulled = skipped = failed = 0
     for i, scorecard_id in enumerate(ids, 1):

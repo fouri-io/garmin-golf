@@ -1,0 +1,162 @@
+{
+  "generatedFrom": {
+    "rounds": 9,
+    "analysisStartDate": "2026-05-01",
+    "courses": [
+      "Falconhead Golf Club",
+      "Hancock Golf Course",
+      "Harvey Penick Golf Campus ~ Nine Hole",
+      "Harvey Penick Golf Campus ~ Nine Hole/Nine Hole",
+      "Jimmy Clay Golf Course ~ Jimmy Clay",
+      "Riverside Golf Course",
+      "The Golf Club at Star Ranch"
+    ],
+    "suspectHoleShotsExcluded": 111
+  },
+  "clubs": [
+    {
+      "club": "Driver",
+      "clubTypeId": 1,
+      "shots": 42,
+      "distanceShots": 42,
+      "medianYds": 190,
+      "meanYds": 180,
+      "p25Yds": 174,
+      "p75Yds": 204,
+      "maxYds": 241,
+      "stdevYds": 52.3,
+      "lowConfidence": false
+    },
+    {
+      "club": "5 Wood",
+      "clubTypeId": 3,
+      "shots": 33,
+      "distanceShots": 33,
+      "medianYds": 164,
+      "meanYds": 147,
+      "p25Yds": 122,
+      "p75Yds": 183,
+      "maxYds": 202,
+      "stdevYds": 47.9,
+      "lowConfidence": false
+    },
+    {
+      "club": "7 Iron",
+      "clubTypeId": 16,
+      "shots": 58,
+      "distanceShots": 58,
+      "medianYds": 138,
+      "meanYds": 125,
+      "p25Yds": 111,
+      "p75Yds": 154,
+      "maxYds": 196,
+      "stdevYds": 48.6,
+      "lowConfidence": false
+    },
+    {
+      "club": "4 Hybrid",
+      "clubTypeId": 7,
+      "shots": 5,
+      "distanceShots": 5,
+      "medianYds": 135,
+      "meanYds": 121,
+      "p25Yds": 103,
+      "p75Yds": 170,
+      "maxYds": 194,
+      "stdevYds": 65.8,
+      "lowConfidence": false
+    },
+    {
+      "club": "8 Iron",
+      "clubTypeId": 17,
+      "shots": 26,
+      "distanceShots": 26,
+      "medianYds": 124,
+      "meanYds": 97,
+      "p25Yds": 42,
+      "p75Yds": 134,
+      "maxYds": 165,
+      "stdevYds": 54.9,
+      "lowConfidence": false
+    },
+    {
+      "club": "9 Iron",
+      "clubTypeId": 18,
+      "shots": 25,
+      "distanceShots": 25,
+      "medianYds": 111,
+      "meanYds": 94,
+      "p25Yds": 80,
+      "p75Yds": 132,
+      "maxYds": 162,
+      "stdevYds": 49.3,
+      "lowConfidence": false
+    },
+    {
+      "club": "6 Iron",
+      "clubTypeId": 15,
+      "shots": 5,
+      "distanceShots": 5,
+      "medianYds": 109,
+      "meanYds": 119,
+      "p25Yds": 92,
+      "p75Yds": 173,
+      "maxYds": 188,
+      "stdevYds": 55.9,
+      "lowConfidence": false
+    },
+    {
+      "club": "PW",
+      "clubTypeId": 19,
+      "shots": 52,
+      "distanceShots": 27,
+      "medianYds": 89,
+      "meanYds": 79,
+      "p25Yds": 67,
+      "p75Yds": 102,
+      "maxYds": 124,
+      "stdevYds": 34.2,
+      "lowConfidence": false
+    },
+    {
+      "club": "AW",
+      "clubTypeId": 20,
+      "shots": 13,
+      "distanceShots": 13,
+      "medianYds": 77,
+      "meanYds": 62,
+      "p25Yds": 28,
+      "p75Yds": 83,
+      "maxYds": 103,
+      "stdevYds": 31.4,
+      "lowConfidence": false
+    },
+    {
+      "club": "Wedge",
+      "clubTypeId": 21,
+      "shots": 37,
+      "distanceShots": 6,
+      "medianYds": 12,
+      "meanYds": 19,
+      "p25Yds": 6,
+      "p75Yds": 33,
+      "maxYds": 44,
+      "stdevYds": 16.4,
+      "lowConfidence": false
+    },
+    {
+      "club": "Putter",
+      "clubTypeId": 23,
+      "shots": 222,
+      "distanceShots": 0,
+      "medianYds": null,
+      "meanYds": null,
+      "p25Yds": null,
+      "p75Yds": null,
+      "maxYds": null,
+      "stdevYds": null,
+      "lowConfidence": true
+    }
+  ],
+  "note": "Distances are per-shot travel (yds) for full-ish shots (putts & chips excluded). Unknown-club and suspect-hole shots dropped. Small samples are flagged lowConfidence \u2014 these firm up as more rounds are added."
+}
