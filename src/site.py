@@ -249,6 +249,7 @@ TEMPLATE = r"""<!doctype html>
     <div class="ctl"><span class="lab">Metric over time</span>
       <select class="rsel" id="trendMetric"></select></div>
     <div class="card"><div id="trendhead"></div><div id="trendchart"></div>
+      <div id="trendpick" style="font-size:13px;text-align:center;min-height:18px;color:var(--accent)"></div>
       <div class="foot" id="trendfoot"></div></div>
     <div class="foot" style="padding:0 4px">Each point is a round, oldest → newest.
       Filled = clean round; grey = over-recorded (kept for score, excluded from SG).</div>
@@ -467,7 +468,7 @@ const TREND=[
   {k:'midApproach',label:'SG Mid approach',clean:true,low:false,get:r=>r.per18.midApproach},
   {k:'inside50',label:'SG Inside 50',clean:true,low:false,get:r=>r.per18.inside50},
   {k:'putting',label:'SG Putting',clean:true,low:false,get:r=>r.per18.putting}];
-let trendMetric='total';
+let trendMetric='total',lastPts=[];
 document.getElementById('trendMetric').innerHTML=TREND.map(m=>`<option value="${m.k}">${m.label}</option>`).join("");
 document.getElementById('trendMetric').onchange=e=>{trendMetric=e.target.value;renderTrend();};
 function slope(ys){const n=ys.length;if(n<2)return 0;const mx=(n-1)/2,my=ys.reduce((a,b)=>a+b,0)/n;
@@ -476,28 +477,36 @@ function dir(ys,low){const s=slope(ys);if(Math.abs(s)<0.3)return{t:'→ flat',c:
   return (low?-s:s)>0?{t:'↑ improving',c:'up'}:{t:'↓ slipping',c:'down'};}
 function chart(pts,zero){
   if(pts.length<2)return '<div class="foot">need ≥2 rounds to show a trend</div>';
-  const W=320,H=170,L=30,R=10,T=12,B=26;let ys=pts.map(p=>p.y);
+  const W=340,H=205,L=34,R=14,T=22,B=30;let ys=pts.map(p=>p.y);
   let mn=Math.min(...ys),mx=Math.max(...ys);if(zero){mn=Math.min(mn,0);mx=Math.max(mx,0);}
-  if(mn===mx){mn-=1;mx+=1;}const pd=(mx-mn)*0.15||1;mn-=pd;mx+=pd;
+  if(mn===mx){mn-=1;mx+=1;}const pd=(mx-mn)*0.2||1;mn-=pd;mx+=pd;
   const X=i=>L+(W-L-R)*(i/(pts.length-1)),Y=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
   let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">`;
-  if(zero&&0>=mn&&0<=mx){const z=Y(0);s+=`<line x1="${L}" y1="${z}" x2="${W-R}" y2="${z}" stroke="#c4ccd4" stroke-dasharray="3"/>`;}
-  s+=`<text x="2" y="${Y(mx)+3}" font-size="9" fill="#7a8794">${mx.toFixed(0)}</text>`;
-  s+=`<text x="2" y="${Y(mn)+3}" font-size="9" fill="#7a8794">${mn.toFixed(0)}</text>`;
+  // y gridlines + tick labels (top, mid, bottom)
+  [mx,(mx+mn)/2,mn].forEach(t=>{const y=Y(t);
+    s+=`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="#eef1f4"/>`;
+    s+=`<text x="${L-4}" y="${y+3}" font-size="9" fill="#7a8794" text-anchor="end">${t>0?'+':''}${t.toFixed(0)}</text>`;});
+  if(zero&&0>mn&&0<mx){const z=Y(0);s+=`<line x1="${L}" y1="${z}" x2="${W-R}" y2="${z}" stroke="#aab3bd" stroke-dasharray="3"/>`;}
   s+=`<polyline points="${pts.map((p,i)=>X(i)+','+Y(p.y)).join(' ')}" fill="none" stroke="#15497a" stroke-width="2"/>`;
-  pts.forEach((p,i)=>{s+=`<circle cx="${X(i)}" cy="${Y(p.y)}" r="3.5" fill="${p.clean?'#15497a':'#9aa6b2'}"/>`;
-    if(pts.length<=8||i%2===0||i===pts.length-1)s+=`<text x="${X(i)}" y="${H-8}" font-size="8" fill="#7a8794" text-anchor="middle">${p.label}</text>`;});
+  pts.forEach((p,i)=>{const x=X(i),y=Y(p.y);
+    s+=`<circle cx="${x}" cy="${y}" r="4.5" fill="${p.clean?'#15497a':'#9aa6b2'}" data-i="${i}" style="cursor:pointer"/>`;
+    s+=`<text x="${x}" y="${y-9}" font-size="9" font-weight="700" fill="#1c2530" text-anchor="middle">${p.y>0?'+':''}${p.y.toFixed(1)}</text>`;
+    if(pts.length<=8||i%2===0||i===pts.length-1)s+=`<text x="${x}" y="${H-9}" font-size="8" fill="#7a8794" text-anchor="middle">${p.label}</text>`;});
   return s+'</svg>';
 }
 function renderTrend(){
   const m=TREND.find(x=>x.k===trendMetric);
-  const pts=TS.filter(r=>m.clean?r.clean:(r.overRating18!=null))
-    .map(r=>({label:r.date.slice(5).replace('-','/'),y:m.get(r),clean:r.clean}));
-  const d=pts.length>=2?dir(pts.map(p=>p.y),m.low):{t:'',c:'flat'};
+  lastPts=TS.filter(r=>m.clean?r.clean:(r.overRating18!=null))
+    .map(r=>({label:r.date.slice(5).replace('-','/'),date:r.date,y:m.get(r),clean:r.clean}));
+  const d=lastPts.length>=2?dir(lastPts.map(p=>p.y),m.low):{t:'',c:'flat'};
   document.getElementById('trendhead').innerHTML=`<b>${m.label}</b><span class="tpill ${d.c}">${d.t}</span>`;
-  document.getElementById('trendchart').innerHTML=chart(pts,m.k!=='over');
-  document.getElementById('trendfoot').textContent=`${pts.length} ${m.clean?'clean ':''}rounds`;
+  document.getElementById('trendchart').innerHTML=chart(lastPts,m.k!=='over');
+  document.getElementById('trendfoot').textContent=`${lastPts.length} ${m.clean?'clean ':''}rounds · tap a point for its date + value`;
+  document.getElementById('trendpick').textContent='';
 }
+document.getElementById('trendchart').addEventListener('click',e=>{
+  if(e.target.tagName!=='circle')return;const p=lastPts[+e.target.dataset.i];if(!p)return;
+  document.getElementById('trendpick').innerHTML=`<b>${p.date}</b> — ${p.y>0?'+':''}${p.y.toFixed(1)}${p.clean?'':' <span class="mut">(over-recorded)</span>'}`;});
 
 /* ---- coach (tiny markdown renderer) ---- */
 function md(t){

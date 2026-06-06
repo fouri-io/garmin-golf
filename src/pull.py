@@ -97,9 +97,11 @@ def real_round_ids(summaries: list[dict] | dict, since_date: str | None = None) 
     return [r["id"] for r in sorted(real, key=lambda r: r["startTime"])]
 
 
-def pull_all(api, *, skip_existing: bool = True) -> None:
+def pull_all(api, *, skip_existing: bool = True) -> dict:
     """Pull every real round, parse each into a round document. Idempotent and gentle:
-    already-pulled rounds are skipped so a re-run resumes where it left off."""
+    already-pulled rounds are skipped so a re-run resumes where it left off. With
+    skip_existing=True this is an incremental sync — only new rounds hit the network.
+    Returns {pulled, skipped, failed}."""
     from .parse import parse_scorecard  # local import: parse reads only from data/raw
 
     summaries = pull_summary(api)
@@ -126,6 +128,7 @@ def pull_all(api, *, skip_existing: bool = True) -> None:
             print(f"  FAILED {scorecard_id}: {type(e).__name__}: {e}")
             failed += 1
     print(f"\nDone. pulled={pulled} skipped={skipped} failed={failed}")
+    return {"pulled": pulled, "skipped": skipped, "failed": failed}
 
 
 def main() -> None:

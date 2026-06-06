@@ -29,16 +29,21 @@ Dependency note: recent `garminconnect` versions also require `curl_cffi` and
 ## After each round (the one-liner)
 
 ```bash
-python -m src.update <scorecard_id> --push   # pull → parse → analyze → progress → site → deploy
+python -m src.update --push    # sync new rounds → analyze → coach → site → deploy
 ```
 
-`update` runs the whole pipeline. Variants:
-- `python -m src.update` — just rebuild the dashboard from existing rounds
-- `python -m src.update <id>` — pull + parse a new round, then rebuild
-- `python -m src.update --all` — pull every real round
+`update` defaults to an **incremental sync** — no round id needed. Local raw is the
+cache, so only rounds you haven't already pulled hit the network. Variants:
+- `python -m src.update` — sync new rounds + rebuild (the everyday command)
+- `python -m src.update --no-pull` — rebuild only, no network (offline)
+- `python -m src.update <id>` — pull just one specific round
+- `python -m src.update --all` — force re-pull every real round (ignore the cache)
 - `python -m src.update --reparse` — re-parse all tracked rounds (after a config/parser change)
 - add `--publish` to copy `site/index.html` to `config.publish.targetDir`, or `--push` to also
   git commit+push that repo (auto-deploys to S3 via its Action)
+
+The **AI coach** runs automatically when new rounds are pulled (`--coach` forces a report,
+`--no-coach` suppresses). Needs `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` in `.env`.
 
 The dashboard is the single output: open `site/index.html` (or the deployed URL).
 
@@ -48,9 +53,11 @@ Every step is also runnable on its own (all run from the repo root, in the venv)
 
 | Command | What it does |
 |---|---|
-| `python -m src.update <id> --push` | **The one-liner** — pull a new round, rebuild, deploy |
-| `python -m src.update` | Rebuild dashboard from existing rounds |
-| `python -m src.update --all` | Pull every real round, then rebuild |
+| `python -m src.update --push` | **The one-liner** — sync new rounds, coach, rebuild, deploy |
+| `python -m src.update` | Incremental sync (pull only new rounds) + rebuild |
+| `python -m src.update --no-pull` | Rebuild only, no network (offline) |
+| `python -m src.update <id>` | Pull just one specific round |
+| `python -m src.update --all` | Force re-pull every real round (ignore cache) |
 | `python -m src.update --reparse` | Re-parse all tracked rounds (after a config change) |
 | `python -m src.update --publish` / `--push` | Also copy to / deploy the publish target |
 | `python -m src.pull <id>` | Pull one round's raw JSON (summary + detail + shots) |
