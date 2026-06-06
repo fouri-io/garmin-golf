@@ -193,7 +193,8 @@ def build_round_document(detail_raw: dict, shots_raw: dict, club_names: dict[int
     holes = []
     for h in sc["holes"]:
         n = h["number"]
-        par = pars[n - 1] if n - 1 < len(pars) else None
+        # Wrap with modulo so a 9-hole layout played as 18 (two loops) reuses holes 1-9.
+        par = pars[(n - 1) % len(pars)] if pars else None
         strokes = h.get("strokes")
         putts = h.get("putts")
         to_par = (strokes - par) if (strokes is not None and par is not None) else None
@@ -224,7 +225,7 @@ def build_round_document(detail_raw: dict, shots_raw: dict, club_names: dict[int
         holes.append({
             "number": n,
             "par": par,
-            "strokeIndex": stroke_index[n - 1] if stroke_index else None,
+            "strokeIndex": stroke_index[(n - 1) % len(stroke_index)] if stroke_index else None,
             "playedLengthYds": played_len,           # DERIVED proxy (no true yardage from Garmin)
             "strokes": strokes,
             "putts": putts,
@@ -236,6 +237,7 @@ def build_round_document(detail_raw: dict, shots_raw: dict, club_names: dict[int
             "firstPuttDistanceFt": first_putt_ft,    # DERIVED (GPS-based, noisy at short range)
             "scrambleOpportunity": scramble_opportunity,  # DERIVED (missed GIR)
             "scrambleSave": scramble_save,                # DERIVED (missed GIR, par or better)
+            "shotCountDelta": (len(hole_shots) - strokes) if strokes is not None else None,
             "handicapScore": h.get("handicapScore"),
             "pin": pin,
             "shotsRecorded": len(hole_shots),
@@ -291,12 +293,22 @@ def build_round_document(detail_raw: dict, shots_raw: dict, club_names: dict[int
         "garminLongestShotMeters": det.get("longestShotInMeters"),
         "reconciliation": {
             "recordedShots": recorded_shots,
+            "strokes": total_strokes,
             "penalties": total_penalties,
-            "unrecordedStrokes": total_strokes - recorded_shots - total_penalties,
+            # + = sensor over-recorded (phantom/practice strokes); - = under-recorded.
+            "shotCountDelta": recorded_shots - total_strokes,
+            # Holes where the sensor logged many more shots than the score — suspect for
+            # shot-level (club/distance/first-putt) analysis; the score is still trusted.
+            "suspectHoles": [h["number"] for h in holes
+                             if h["strokes"] and (h["shotsRecorded"] - h["strokes"]) > 2],
+            # Holes with a real score but zero recorded shots (a shot-data gap).
+            "emptyShotHoles": [h["number"] for h in holes
+                               if h["strokes"] and h["shotsRecorded"] == 0],
             "note": (
-                "Score is authoritative. The shot layer covers spatial/club detail and "
-                "may undercount; penalties (no location) plus a few un-sensed short shots "
-                "explain the gap. Do not treat recordedShots as the score."
+                "Score is authoritative. The sensor shot layer is imperfect: it can "
+                "under-record (un-sensed short shots; penalties carry no position) or "
+                "over-record (phantom/practice strokes). Treat shot counts as spatial "
+                "detail, not stroke truth; discount suspectHoles for club/distance stats."
             ),
         },
         "holes": holes,
@@ -336,6 +348,19 @@ def _coach_summary(holes: list[dict], strokes: int, putts: int, penalties: int,
 
 # --- markdown card -----------------------------------------------------------------
 
+def _recon_line(r: dict) -> str:
+    delta = r["shotCountDelta"]
+    direction = ("matches score" if delta == 0
+                 else f"{delta:+d} vs score "
+                      + ("(sensor over-recorded)" if delta > 0 else "(some shots un-sensed)"))
+    line = f"Shots recorded: {r['recordedShots']}/{r['strokes']} — {direction}"
+    if r["suspectHoles"]:
+        line += f" · suspect holes {r['suspectHoles']}"
+    if r["emptyShotHoles"]:
+        line += f" · no-shot-data holes {r['emptyShotHoles']}"
+    return line
+
+
 def render_markdown(doc: dict) -> str:
     s, c, sc = doc["round"], doc["course"], doc["score"]
     cs = doc["coachSummary"]
@@ -351,9 +376,7 @@ def render_markdown(doc: dict) -> str:
         f"({cs['scramble_pct']}%) · "
         f"avg 1st putt {cs['first_putt_distance_avg_ft']}ft · "
         f"long drive {cs['longest_drive_yds']}y",
-        f"Shots recorded: {doc['reconciliation']['recordedShots']}/{sc['strokes']} "
-        f"({doc['reconciliation']['unrecordedStrokes']} un-sensed + "
-        f"{sc['penalties']} penalties account for the gap)",
+        _recon_line(doc["reconciliation"]),
         "",
     ]
     for h in doc["holes"]:
@@ -399,7 +422,7 @@ def main() -> None:
     print(f"Wrote {OUT_DIR}/{scorecard_id}.json and .md")
     print(f"  {len(doc['holes'])} holes, {r['recordedShots']} shots, "
           f"score {doc['score']['strokes']} ({doc['score']['toPar']:+d}), "
-          f"{r['unrecordedStrokes']} un-sensed strokes")
+          f"shot delta {r['shotCountDelta']:+d}")
 
 
 if __name__ == "__main__":

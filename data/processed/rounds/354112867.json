@@ -1,0 +1,1047 @@
+{
+  "schemaVersion": 1,
+  "scorecardId": 354112867,
+  "source": "garminconnect",
+  "round": {
+    "date": "2026-03-26T13:11:24.000Z",
+    "endTime": "2026-03-26T14:51:20.000Z",
+    "scoreType": "STROKE_PLAY",
+    "roundType": "ALL",
+    "holesCompleted": 9,
+    "teeBox": "Black",
+    "teeBoxRating": 30.3,
+    "teeBoxSlope": 95,
+    "playerHandicap": 0,
+    "sensorOnPutter": false,
+    "distanceWalkedMeters": 5528,
+    "stepsTaken": 3338
+  },
+  "course": {
+    "name": "Harvey Penick Golf Campus ~ Nine Hole",
+    "globalId": 15779,
+    "snapshotId": 236461,
+    "city": "Austin",
+    "state": "TX",
+    "country": "United States",
+    "street": "5501 Ed Bluestein Blvd",
+    "zip": "78723",
+    "lat": 2.539101345464587,
+    "lon": -8.185897814109921,
+    "par": 30,
+    "frontNinePar": 30,
+    "backNinePar": 0,
+    "holePars": [
+      4,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      3,
+      3
+    ]
+  },
+  "score": {
+    "strokes": 40,
+    "par": 30,
+    "toPar": 10,
+    "putts": 20,
+    "penalties": 0,
+    "holesCompleted": 9,
+    "handicappedStrokes": 40
+  },
+  "coachSummary": {
+    "score": 40,
+    "putts": 20,
+    "penalties": 0,
+    "fairways_hit": 1,
+    "fairways_recorded": 3,
+    "gir": 3,
+    "greens_recorded": 9,
+    "double_or_worse": 4,
+    "three_putts": 3,
+    "scramble_opportunities": 6,
+    "up_and_down_saves": 0,
+    "up_and_down_saves_derived": 1,
+    "scramble_pct": 0.0,
+    "first_putt_distance_avg_ft": null,
+    "first_putt_distance_basis": "0 holes that reached the green (GPS-based)",
+    "longest_drive_yds": 171.1,
+    "garmin_ratings": {
+      "driveRating": "POOR",
+      "approachRating": "POOR",
+      "chipRating": "POOR",
+      "puttRating": "UNKNOWN"
+    }
+  },
+  "garminStats": {
+    "holesPlayed": 9,
+    "fairwaysRecorded": 3,
+    "fairwaysHit": 1,
+    "fairwaysLeft": 0,
+    "fairwaysRight": 2,
+    "greensInRegulation": 3,
+    "greensRecorded": 9,
+    "putts": 20,
+    "strokes": 40,
+    "handicappedStrokes": 40,
+    "scoreWithHandicap": 10,
+    "scoreWithoutHandicap": 10,
+    "meanPuttsPerHole": 2.2222223,
+    "holesUnderPar": 0,
+    "holesPar": 3,
+    "holesBogey": 2,
+    "holesOverBogey": 4,
+    "holesBirdie": 0,
+    "holesEagle": 0,
+    "holesDoubleEagleOrUnder": 0,
+    "upsAndDowns": 0,
+    "chips": 4
+  },
+  "garminRatings": {
+    "driveRating": "POOR",
+    "approachRating": "POOR",
+    "chipRating": "POOR",
+    "puttRating": "UNKNOWN"
+  },
+  "garminLongestShotMeters": 156.459,
+  "reconciliation": {
+    "recordedShots": 19,
+    "strokes": 40,
+    "penalties": 0,
+    "shotCountDelta": -21,
+    "suspectHoles": [],
+    "emptyShotHoles": [],
+    "note": "Score is authoritative. The sensor shot layer is imperfect: it can under-record (un-sensed short shots; penalties carry no position) or over-record (phantom/practice strokes). Treat shot counts as spatial detail, not stroke truth; discount suspectHoles for club/distance stats."
+  },
+  "holes": [
+    {
+      "number": 1,
+      "par": 4,
+      "strokeIndex": 8,
+      "playedLengthYds": 367.5,
+      "strokes": 5,
+      "putts": 2,
+      "penalties": 0,
+      "scoreToPar": 1,
+      "scoreName": "Bogey",
+      "fairway": "RIGHT",
+      "gir": false,
+      "firstPuttDistanceFt": null,
+      "scrambleOpportunity": true,
+      "scrambleSave": false,
+      "shotCountDelta": -2,
+      "handicapScore": 5,
+      "pin": {
+        "lat": 30.29153823852539,
+        "lon": -97.65759810805321,
+        "lie": null,
+        "lieSource": null
+      },
+      "shotsRecorded": 3,
+      "shots": [
+        {
+          "shotNumber": 1,
+          "club": "6 Iron",
+          "clubTypeId": 15,
+          "clubId": 892530980,
+          "type": "TEE",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 171.1,
+          "meters": 156.459,
+          "from": "TeeBox",
+          "to": "Rough",
+          "start": {
+            "lat": 30.292730228975415,
+            "lon": -97.66081407666206,
+            "lie": "TeeBox",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.291842501610518,
+            "lon": -97.65955209732056,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:25-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 367.5,
+          "distanceRemainingYds": 208.5,
+          "miss": {
+            "range": "short",
+            "side": "right",
+            "lateralYds": 46.9
+          },
+          "resultCategory": "short-right"
+        },
+        {
+          "shotNumber": 2,
+          "club": "7 Iron",
+          "clubTypeId": 16,
+          "clubId": 892530981,
+          "type": "LAYUP",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 176.8,
+          "meters": 161.633,
+          "from": "Rough",
+          "to": "Fairway",
+          "start": {
+            "lat": 30.291842501610518,
+            "lon": -97.65955209732056,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.291496077552438,
+            "lon": -97.65791905112565,
+            "lie": "Fairway",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:26-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 208.5,
+          "distanceRemainingYds": 34.1,
+          "miss": {
+            "range": "short",
+            "side": "right",
+            "lateralYds": 11.0
+          },
+          "resultCategory": "short-right"
+        },
+        {
+          "shotNumber": 3,
+          "club": "Wedge",
+          "clubTypeId": 21,
+          "clubId": 892530986,
+          "type": "CHIP",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 33.8,
+          "meters": 30.8688,
+          "from": "Fairway",
+          "to": "Green",
+          "start": {
+            "lat": 30.291496077552438,
+            "lon": -97.65791905112565,
+            "lie": "Fairway",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.291523402556777,
+            "lon": -97.65759944915771,
+            "lie": "Green",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:27-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 34.1,
+          "distanceRemainingYds": 1.8,
+          "miss": {
+            "range": "short",
+            "side": "straight",
+            "lateralYds": 1.8
+          },
+          "resultCategory": "green"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "par": 3,
+      "strokeIndex": 2,
+      "playedLengthYds": 175.8,
+      "strokes": 4,
+      "putts": 3,
+      "penalties": 0,
+      "scoreToPar": 1,
+      "scoreName": "Bogey",
+      "fairway": null,
+      "gir": true,
+      "firstPuttDistanceFt": null,
+      "scrambleOpportunity": false,
+      "scrambleSave": false,
+      "shotCountDelta": -3,
+      "handicapScore": 4,
+      "pin": {
+        "lat": 30.290957540273666,
+        "lon": -97.65616044402122,
+        "lie": null,
+        "lieSource": null
+      },
+      "shotsRecorded": 1,
+      "shots": [
+        {
+          "shotNumber": 1,
+          "club": "7 Iron",
+          "clubTypeId": 16,
+          "clubId": 892530981,
+          "type": "APPROACH",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 167.2,
+          "meters": 152.854,
+          "from": "TeeBox",
+          "to": "Green",
+          "start": {
+            "lat": 30.290854023769498,
+            "lon": -97.65783037059009,
+            "lie": "TeeBox",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.290914038196206,
+            "lon": -97.65624166466296,
+            "lie": "Green",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:25-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 175.8,
+          "distanceRemainingYds": 10.0,
+          "miss": {
+            "range": "short",
+            "side": "straight",
+            "lateralYds": 4.7
+          },
+          "resultCategory": "green"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "par": 3,
+      "strokeIndex": 9,
+      "playedLengthYds": 170.7,
+      "strokes": 5,
+      "putts": 2,
+      "penalties": 0,
+      "scoreToPar": 2,
+      "scoreName": "Double Bogey",
+      "fairway": null,
+      "gir": false,
+      "firstPuttDistanceFt": null,
+      "scrambleOpportunity": true,
+      "scrambleSave": false,
+      "shotCountDelta": -2,
+      "handicapScore": 5,
+      "pin": {
+        "lat": 30.29285654425621,
+        "lon": -97.65585064888,
+        "lie": null,
+        "lieSource": null
+      },
+      "shotsRecorded": 3,
+      "shots": [
+        {
+          "shotNumber": 1,
+          "club": "6 Iron",
+          "clubTypeId": 15,
+          "clubId": 892530980,
+          "type": "APPROACH",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 177.2,
+          "meters": 162.039,
+          "from": "TeeBox",
+          "to": "Rough",
+          "start": {
+            "lat": 30.291453413665295,
+            "lon": -97.65590471215546,
+            "lie": "TeeBox",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.292892334982753,
+            "lon": -97.65615935437381,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:25-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 170.7,
+          "distanceRemainingYds": 32.7,
+          "miss": {
+            "range": "long",
+            "side": "left",
+            "lateralYds": 32.5
+          },
+          "resultCategory": "long-left"
+        },
+        {
+          "shotNumber": 2,
+          "club": "Wedge",
+          "clubTypeId": 21,
+          "clubId": 892530986,
+          "type": "CHIP",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 45.5,
+          "meters": 41.6151,
+          "from": "Rough",
+          "to": "Rough",
+          "start": {
+            "lat": 30.292890155687928,
+            "lon": -97.65616061165929,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.292699467390776,
+            "lon": -97.65578820370138,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:26-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 32.8,
+          "distanceRemainingYds": 20.2,
+          "miss": {
+            "range": "long",
+            "side": "right",
+            "lateralYds": 18.1
+          },
+          "resultCategory": "long-right"
+        },
+        {
+          "shotNumber": 3,
+          "club": "Wedge",
+          "clubTypeId": 21,
+          "clubId": 892530986,
+          "type": "CHIP",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 11.9,
+          "meters": 10.8466,
+          "from": "Rough",
+          "to": "Green",
+          "start": {
+            "lat": 30.29270743019879,
+            "lon": -97.65578124672174,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.292750764638186,
+            "lon": -97.655882332474,
+            "lie": "Green",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:27-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 19.5,
+          "distanceRemainingYds": 13.3,
+          "miss": {
+            "range": "short",
+            "side": "left",
+            "lateralYds": 7.9
+          },
+          "resultCategory": "green"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "par": 3,
+      "strokeIndex": 5,
+      "playedLengthYds": 138.9,
+      "strokes": 5,
+      "putts": 2,
+      "penalties": 0,
+      "scoreToPar": 2,
+      "scoreName": "Double Bogey",
+      "fairway": null,
+      "gir": false,
+      "firstPuttDistanceFt": null,
+      "scrambleOpportunity": true,
+      "scrambleSave": false,
+      "shotCountDelta": -3,
+      "handicapScore": 5,
+      "pin": {
+        "lat": 30.29279887676239,
+        "lon": -97.65696242451668,
+        "lie": null,
+        "lieSource": null
+      },
+      "shotsRecorded": 2,
+      "shots": [
+        {
+          "shotNumber": 1,
+          "club": "8 Iron",
+          "clubTypeId": 17,
+          "clubId": 892530982,
+          "type": "TEE",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 65.1,
+          "meters": 59.5491,
+          "from": "TeeBox",
+          "to": "Rough",
+          "start": {
+            "lat": 30.293526342138648,
+            "lon": -97.65594301745296,
+            "lie": "TeeBox",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.293287625536323,
+            "lon": -97.65649748034775,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:25-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 138.9,
+          "distanceRemainingYds": 76.9,
+          "miss": {
+            "range": "short",
+            "side": "right",
+            "lateralYds": 14.7
+          },
+          "resultCategory": "short-right"
+        },
+        {
+          "shotNumber": 2,
+          "club": "AW",
+          "clubTypeId": 20,
+          "clubId": 892530985,
+          "type": "UNKNOWN",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 71.3,
+          "meters": 65.1819,
+          "from": "Rough",
+          "to": "Rough",
+          "start": {
+            "lat": 30.29328402131796,
+            "lon": -97.65650091692805,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.29293910600245,
+            "lon": -97.65704892575741,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:26-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 76.3,
+          "distanceRemainingYds": 19.3,
+          "miss": {
+            "range": "short",
+            "side": "right",
+            "lateralYds": 17.8
+          },
+          "resultCategory": "short-right"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "par": 3,
+      "strokeIndex": 4,
+      "playedLengthYds": 158.4,
+      "strokes": 3,
+      "putts": 2,
+      "penalties": 0,
+      "scoreToPar": 0,
+      "scoreName": "Par",
+      "fairway": null,
+      "gir": true,
+      "firstPuttDistanceFt": null,
+      "scrambleOpportunity": false,
+      "scrambleSave": false,
+      "shotCountDelta": -2,
+      "handicapScore": 3,
+      "pin": {
+        "lat": 30.295155197381973,
+        "lon": -97.65638709068298,
+        "lie": null,
+        "lieSource": null
+      },
+      "shotsRecorded": 1,
+      "shots": [
+        {
+          "shotNumber": 1,
+          "club": "8 Iron",
+          "clubTypeId": 17,
+          "clubId": 892530982,
+          "type": "APPROACH",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 158.6,
+          "meters": 144.982,
+          "from": "TeeBox",
+          "to": "Green",
+          "start": {
+            "lat": 30.293884752318263,
+            "lon": -97.65671918168664,
+            "lie": "TeeBox",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.295155197381973,
+            "lon": -97.65638709068298,
+            "lie": "Green",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:25-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 158.4,
+          "distanceRemainingYds": 0.0,
+          "miss": {
+            "range": "short",
+            "side": "straight",
+            "lateralYds": 0.0
+          },
+          "resultCategory": "green"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "par": 4,
+      "strokeIndex": 1,
+      "playedLengthYds": 383.8,
+      "strokes": 6,
+      "putts": 3,
+      "penalties": 0,
+      "scoreToPar": 2,
+      "scoreName": "Double Bogey",
+      "fairway": "HIT",
+      "gir": false,
+      "firstPuttDistanceFt": null,
+      "scrambleOpportunity": true,
+      "scrambleSave": false,
+      "shotCountDelta": -3,
+      "handicapScore": 6,
+      "pin": {
+        "lat": 30.296646505594254,
+        "lon": -97.66037553548813,
+        "lie": null,
+        "lieSource": null
+      },
+      "shotsRecorded": 3,
+      "shots": [
+        {
+          "shotNumber": 1,
+          "club": "6 Iron",
+          "clubTypeId": 15,
+          "clubId": 892530980,
+          "type": "TEE",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 147.5,
+          "meters": 134.892,
+          "from": "TeeBox",
+          "to": "Fairway",
+          "start": {
+            "lat": 30.295427106320858,
+            "lon": -97.65700433403254,
+            "lie": "TeeBox",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.295964051038027,
+            "lon": -97.65826245769858,
+            "lie": "Fairway",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:25-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 383.8,
+          "distanceRemainingYds": 236.9,
+          "miss": {
+            "range": "short",
+            "side": "right",
+            "lateralYds": 9.2
+          },
+          "resultCategory": "short-right"
+        },
+        {
+          "shotNumber": 2,
+          "club": "PW",
+          "clubTypeId": 19,
+          "clubId": 892530984,
+          "type": "LAYUP",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 118.4,
+          "meters": 108.241,
+          "from": "Fairway",
+          "to": "Rough",
+          "start": {
+            "lat": 30.295964051038027,
+            "lon": -97.65826245769858,
+            "lie": "Fairway",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.29636244289577,
+            "lon": -97.65928974375129,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:26-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 236.9,
+          "distanceRemainingYds": 119.1,
+          "miss": {
+            "range": "short",
+            "side": "right",
+            "lateralYds": 7.6
+          },
+          "resultCategory": "short-right"
+        },
+        {
+          "shotNumber": 3,
+          "club": "9 Iron",
+          "clubTypeId": 18,
+          "clubId": 892530983,
+          "type": "APPROACH",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 129.8,
+          "meters": 118.72,
+          "from": "Rough",
+          "to": "Rough",
+          "start": {
+            "lat": 30.29636244289577,
+            "lon": -97.65928974375129,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.29677676036954,
+            "lon": -97.66042792238295,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:27-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 119.1,
+          "distanceRemainingYds": 16.8,
+          "miss": {
+            "range": "long",
+            "side": "right",
+            "lateralYds": 13.6
+          },
+          "resultCategory": "long-right"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "par": 4,
+      "strokeIndex": 3,
+      "playedLengthYds": 304.9,
+      "strokes": 4,
+      "putts": 1,
+      "penalties": 0,
+      "scoreToPar": 0,
+      "scoreName": "Par",
+      "fairway": "RIGHT",
+      "gir": false,
+      "firstPuttDistanceFt": null,
+      "scrambleOpportunity": true,
+      "scrambleSave": true,
+      "shotCountDelta": -1,
+      "handicapScore": 4,
+      "pin": {
+        "lat": 30.294782370328903,
+        "lon": -97.66031920909882,
+        "lie": null,
+        "lieSource": null
+      },
+      "shotsRecorded": 3,
+      "shots": [
+        {
+          "shotNumber": 1,
+          "club": "5 Wood",
+          "clubTypeId": 3,
+          "clubId": 892530974,
+          "type": "TEE",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 120.8,
+          "meters": 110.463,
+          "from": "TeeBox",
+          "to": "Rough",
+          "start": {
+            "lat": 30.297103989869356,
+            "lon": -97.6614151429385,
+            "lie": "TeeBox",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.29620754532516,
+            "lon": -97.66092228703201,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:25-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 304.9,
+          "distanceRemainingYds": 184.5,
+          "miss": {
+            "range": "short",
+            "side": "left",
+            "lateralYds": 6.8
+          },
+          "resultCategory": "short-left"
+        },
+        {
+          "shotNumber": 2,
+          "club": "7 Iron",
+          "clubTypeId": 16,
+          "clubId": 892530981,
+          "type": "UNKNOWN",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 163.2,
+          "meters": 149.262,
+          "from": "Rough",
+          "to": "Rough",
+          "start": {
+            "lat": 30.29620754532516,
+            "lon": -97.66092228703201,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.2949396148324,
+            "lon": -97.66041710972786,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:26-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 184.5,
+          "distanceRemainingYds": 21.7,
+          "miss": {
+            "range": "short",
+            "side": "straight",
+            "lateralYds": 3.1
+          },
+          "resultCategory": "short"
+        },
+        {
+          "shotNumber": 3,
+          "club": "PW",
+          "clubTypeId": 19,
+          "clubId": 892530984,
+          "type": "UNKNOWN",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 21.7,
+          "meters": 19.8723,
+          "from": "Rough",
+          "to": "Green",
+          "start": {
+            "lat": 30.2949396148324,
+            "lon": -97.66041710972786,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.294782370328903,
+            "lon": -97.66031920909882,
+            "lie": "Green",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:27-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 21.7,
+          "distanceRemainingYds": 0.0,
+          "miss": {
+            "range": "short",
+            "side": "straight",
+            "lateralYds": 0.0
+          },
+          "resultCategory": "green"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "par": 3,
+      "strokeIndex": 6,
+      "playedLengthYds": 133.2,
+      "strokes": 5,
+      "putts": 3,
+      "penalties": 0,
+      "scoreToPar": 2,
+      "scoreName": "Double Bogey",
+      "fairway": null,
+      "gir": false,
+      "firstPuttDistanceFt": null,
+      "scrambleOpportunity": true,
+      "scrambleSave": false,
+      "shotCountDelta": -3,
+      "handicapScore": 5,
+      "pin": {
+        "lat": 30.29297187924385,
+        "lon": -97.65853822231293,
+        "lie": null,
+        "lieSource": null
+      },
+      "shotsRecorded": 2,
+      "shots": [
+        {
+          "shotNumber": 1,
+          "club": "PW",
+          "clubTypeId": 19,
+          "clubId": 892530984,
+          "type": "TEE",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 118.1,
+          "meters": 108.002,
+          "from": "TeeBox",
+          "to": "Rough",
+          "start": {
+            "lat": 30.29396563768387,
+            "lon": -97.6580042950809,
+            "lie": "TeeBox",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.293169859796762,
+            "lon": -97.65864710323513,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:25-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 133.2,
+          "distanceRemainingYds": 26.7,
+          "miss": {
+            "range": "short",
+            "side": "right",
+            "lateralYds": 20.5
+          },
+          "resultCategory": "short-right"
+        },
+        {
+          "shotNumber": 2,
+          "club": "Wedge",
+          "clubTypeId": 21,
+          "clubId": 892530986,
+          "type": "CHIP",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 22.4,
+          "meters": 20.4923,
+          "from": "Rough",
+          "to": "Green",
+          "start": {
+            "lat": 30.29319173656404,
+            "lon": -97.65863729640841,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.29301144182682,
+            "lon": -97.65859421342611,
+            "lie": "Green",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:26-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 28.7,
+          "distanceRemainingYds": 7.6,
+          "miss": {
+            "range": "short",
+            "side": "straight",
+            "lateralYds": 3.7
+          },
+          "resultCategory": "green"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "par": 3,
+      "strokeIndex": 7,
+      "playedLengthYds": 166.4,
+      "strokes": 3,
+      "putts": 2,
+      "penalties": null,
+      "scoreToPar": 0,
+      "scoreName": "Par",
+      "fairway": null,
+      "gir": true,
+      "firstPuttDistanceFt": null,
+      "scrambleOpportunity": false,
+      "scrambleSave": false,
+      "shotCountDelta": -2,
+      "handicapScore": 3,
+      "pin": {
+        "lat": 30.29288873076439,
+        "lon": -97.65969961881638,
+        "lie": null,
+        "lieSource": null
+      },
+      "shotsRecorded": 1,
+      "shots": [
+        {
+          "shotNumber": 1,
+          "club": "7 Iron",
+          "clubTypeId": 16,
+          "clubId": 892530981,
+          "type": "APPROACH",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 171.8,
+          "meters": 157.092,
+          "from": "TeeBox",
+          "to": "Rough",
+          "start": {
+            "lat": 30.29226142913103,
+            "lon": -97.65829095616937,
+            "lie": "TeeBox",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.292795775458217,
+            "lon": -97.65980363823473,
+            "lie": "Rough",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-03-26T08:11:25-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 166.4,
+          "distanceRemainingYds": 15.7,
+          "miss": {
+            "range": "long",
+            "side": "left",
+            "lateralYds": 15.1
+          },
+          "resultCategory": "long-left"
+        }
+      ]
+    }
+  ]
+}

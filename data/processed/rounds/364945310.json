@@ -117,9 +117,12 @@
   "garminLongestShotMeters": 220.383,
   "reconciliation": {
     "recordedShots": 91,
+    "strokes": 99,
     "penalties": 5,
-    "unrecordedStrokes": 3,
-    "note": "Score is authoritative. The shot layer covers spatial/club detail and may undercount; penalties (no location) plus a few un-sensed short shots explain the gap. Do not treat recordedShots as the score."
+    "shotCountDelta": -8,
+    "suspectHoles": [],
+    "emptyShotHoles": [],
+    "note": "Score is authoritative. The sensor shot layer is imperfect: it can under-record (un-sensed short shots; penalties carry no position) or over-record (phantom/practice strokes). Treat shot counts as spatial detail, not stroke truth; discount suspectHoles for club/distance stats."
   },
   "holes": [
     {
@@ -137,6 +140,7 @@
       "firstPuttDistanceFt": null,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": -2,
       "handicapScore": 6,
       "pin": {
         "lat": 30.50818160176277,
@@ -343,6 +347,7 @@
       "firstPuttDistanceFt": 25.8,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": 1,
       "handicapScore": 6,
       "pin": {
         "lat": 30.51057580858469,
@@ -657,6 +662,7 @@
       "firstPuttDistanceFt": 20.1,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": 0,
       "handicapScore": 4,
       "pin": {
         "lat": 30.508032739162445,
@@ -863,6 +869,7 @@
       "firstPuttDistanceFt": 49.2,
       "scrambleOpportunity": true,
       "scrambleSave": true,
+      "shotCountDelta": 0,
       "handicapScore": 2,
       "pin": {
         "lat": 30.507591515779495,
@@ -997,6 +1004,7 @@
       "firstPuttDistanceFt": 7.8,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": 0,
       "handicapScore": 5,
       "pin": {
         "lat": 30.502228438854218,
@@ -1275,6 +1283,7 @@
       "firstPuttDistanceFt": 8.1,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": -1,
       "handicapScore": 5,
       "pin": {
         "lat": 30.50011083483696,
@@ -1481,6 +1490,7 @@
       "firstPuttDistanceFt": 12.3,
       "scrambleOpportunity": false,
       "scrambleSave": false,
+      "shotCountDelta": -1,
       "handicapScore": 2,
       "pin": {
         "lat": 30.50171747803688,
@@ -1579,6 +1589,7 @@
       "firstPuttDistanceFt": 7.2,
       "scrambleOpportunity": false,
       "scrambleSave": false,
+      "shotCountDelta": 0,
       "handicapScore": 3,
       "pin": {
         "lat": 30.504722893238068,
@@ -1749,6 +1760,7 @@
       "firstPuttDistanceFt": null,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": 0,
       "handicapScore": 5,
       "pin": {
         "lat": 30.506458282470703,
@@ -1991,6 +2003,7 @@
       "firstPuttDistanceFt": 15.6,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": -1,
       "handicapScore": 5,
       "pin": {
         "lat": 30.50930544734001,
@@ -2197,6 +2210,7 @@
       "firstPuttDistanceFt": 48.9,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": -2,
       "handicapScore": 7,
       "pin": {
         "lat": 30.512348413467407,
@@ -2439,6 +2453,7 @@
       "firstPuttDistanceFt": null,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": -1,
       "handicapScore": 3,
       "pin": {
         "lat": 30.512481182813644,
@@ -2573,6 +2588,7 @@
       "firstPuttDistanceFt": 21.9,
       "scrambleOpportunity": false,
       "scrambleSave": false,
+      "shotCountDelta": 0,
       "handicapScore": 4,
       "pin": {
         "lat": 30.516362339258194,
@@ -2779,6 +2795,7 @@
       "firstPuttDistanceFt": 24.9,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": 2,
       "handicapScore": 4,
       "pin": {
         "lat": 30.518361926078796,
@@ -3057,6 +3074,7 @@
       "firstPuttDistanceFt": 24.3,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": 1,
       "handicapScore": 4,
       "pin": {
         "lat": 30.51662251353264,
@@ -3299,6 +3317,7 @@
       "firstPuttDistanceFt": 22.2,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": -2,
       "handicapScore": 5,
       "pin": {
         "lat": 30.512976050376892,
@@ -3469,6 +3488,7 @@
       "firstPuttDistanceFt": 23.1,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": -1,
       "handicapScore": 4,
       "pin": {
         "lat": 30.511164218187332,
@@ -3639,6 +3659,7 @@
       "firstPuttDistanceFt": 32.4,
       "scrambleOpportunity": true,
       "scrambleSave": false,
+      "shotCountDelta": -1,
       "handicapScore": 6,
       "pin": {
         "lat": 30.508102476596832,
