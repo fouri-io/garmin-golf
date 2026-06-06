@@ -26,6 +26,22 @@ cp .env.example .env   # then fill in GARMIN_EMAIL / GARMIN_PASSWORD (or use get
 Dependency note: recent `garminconnect` versions also require `curl_cffi` and
 `ua-generator` (pulled in automatically by the install above).
 
+## After each round (the one-liner)
+
+```bash
+python -m src.update <scorecard_id> --push   # pull → parse → analyze → progress → site → deploy
+```
+
+`update` runs the whole pipeline. Variants:
+- `python -m src.update` — just rebuild the dashboard from existing rounds
+- `python -m src.update <id>` — pull + parse a new round, then rebuild
+- `python -m src.update --all` — pull every real round
+- `python -m src.update --reparse` — re-parse all tracked rounds (after a config/parser change)
+- add `--publish` to copy `site/index.html` to `config.publish.targetDir`, or `--push` to also
+  git commit+push that repo (auto-deploys to S3 via its Action)
+
+The dashboard is the single output: open `site/index.html` (or the deployed URL).
+
 ## Phase 0 task list (work one at a time)
 
 1. **Library introspection** — discover the real golf method names (no creds needed):

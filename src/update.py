@@ -1,0 +1,101 @@
+"""One-command pipeline: (optional pull) -> parse -> analyze -> progress -> site,
+with optional publish/deploy. The post-round one-liner.
+
+    python -m src.update                 # rebuild aggregates + site from existing rounds
+    python -m src.update 365394854       # pull + parse that new round, then rebuild
+    python -m src.update --all           # pull every real round, then rebuild
+    python -m src.update --reparse       # re-parse all tracked rounds (apply config changes)
+    python -m src.update 365394854 --push  # ...and copy to the publish dir + git push (deploys)
+
+Flags compose: --publish copies the built site to config publish.targetDir;
+--push does that AND commits+pushes that repo (which auto-deploys via its Action).
+"""
+
+from __future__ import annotations
+
+import argparse
+import glob
+import json
+import shutil
+import subprocess
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+from . import analyze, parse, progress, pull, site
+from .config import publish_target
+
+SITE_FILE = Path("site/index.html")
+
+
+def _tracked_ids() -> list[int]:
+    """Scorecard ids we currently keep processed docs for (the analysis set)."""
+    ids = []
+    for f in sorted(glob.glob("data/processed/rounds/*.json")):
+        ids.append(json.loads(Path(f).read_text())["scorecardId"])
+    return ids
+
+
+def _publish(push: bool) -> None:
+    target = publish_target()
+    if not target:
+        print("  publish skipped — no publish.targetDir in config/analysis.json")
+        return
+    target.mkdir(parents=True, exist_ok=True)
+    dst = target / "index.html"
+    shutil.copy(SITE_FILE, dst)
+    print(f"  published -> {dst}")
+    if not push:
+        return
+    root = subprocess.run(["git", "-C", str(target), "rev-parse", "--show-toplevel"],
+                          capture_output=True, text=True, check=True).stdout.strip()
+    rel = str(dst.resolve().relative_to(root))
+    subprocess.run(["git", "-C", root, "add", rel], check=True)
+    if subprocess.run(["git", "-C", root, "diff", "--cached", "--quiet"]).returncode == 0:
+        print("  nothing changed — skipping push")
+        return
+    subprocess.run(["git", "-C", root, "commit", "-m", "update golf dashboard"], check=True)
+    subprocess.run(["git", "-C", root, "push"], check=True)
+    print(f"  pushed {root} — deploying")
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(prog="python -m src.update")
+    ap.add_argument("scorecard", nargs="?", type=int, help="pull + parse this new round id")
+    ap.add_argument("--all", action="store_true", help="pull every real round")
+    ap.add_argument("--reparse", action="store_true",
+                    help="re-parse all tracked rounds (apply parser/config changes)")
+    ap.add_argument("--publish", action="store_true", help="copy built site to publish.targetDir")
+    ap.add_argument("--push", action="store_true",
+                    help="publish AND git commit+push that repo (auto-deploys)")
+    a = ap.parse_args()
+
+    if a.scorecard or a.all:
+        load_dotenv()
+        print("Logging in...")
+        api = pull.garmin_client.login()
+        if a.all:
+            pull.pull_all(api)              # pulls + parses each
+        else:
+            pull.pull_scorecard(api, a.scorecard)
+            parse.parse_scorecard(a.scorecard)
+
+    if a.reparse:
+        ids = _tracked_ids()
+        for sid in ids:
+            parse.parse_scorecard(sid)
+        print(f"re-parsed {len(ids)} tracked rounds")
+
+    print("Building aggregates...")
+    analyze.build_club_stats()
+    progress.build()
+    out = site.build()
+    print(f"  site -> {out}")
+
+    if a.publish or a.push:
+        _publish(push=a.push)
+    print("Done.")
+
+
+if __name__ == "__main__":
+    main()

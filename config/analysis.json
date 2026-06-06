@@ -1,6 +1,10 @@
 {
   "_note": "Rounds before analysisStartDate are excluded from pulls and from club/shot analysis. Reason: before this date the CT10 sensors weren't in the clubs and the bag differed, so the clubTypeId->name map in clubs.json doesn't apply and shot/club data is unreliable. Raw responses for older rounds may still exist locally; they're just not parsed or analyzed.",
   "analysisStartDate": "2026-05-01",
+  "publish": {
+    "_note": "`python -m src.update --publish` copies site/index.html here; `--push` also git commits+pushes that repo (auto-deploys to S3). Set to null to disable.",
+    "targetDir": "~/dev/colbyward.io/golf"
+  },
   "strokesGained": {
     "_note": "Distance cuts (yards to pin, off the green) for the non-tee, non-putt shot buckets: longApproach >= longApproachMinYds; midApproach between insideMaxYds and longApproachMinYds; inside50 <= insideMaxYds. headlineMaxYds defines the 'SG 0-100' leverage metric (everything that distance and in, excluding putts). Tune to how YOU think about your game.",
     "longApproachMinYds": 150,

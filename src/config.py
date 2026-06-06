@@ -18,6 +18,13 @@ def analysis_start_date() -> str:
     return _analysis_config().get("analysisStartDate", _EPOCH)
 
 
+def publish_target() -> Path | None:
+    """Directory `update --publish` copies the built site into (e.g. the colbyward.io
+    /golf folder), or None if not configured."""
+    p = (_analysis_config().get("publish") or {}).get("targetDir")
+    return Path(p).expanduser() if p else None
+
+
 def sg_distance_cuts() -> dict:
     """Distance cuts (yards) for the SG approach buckets and the 0-100 headline metric.
     Player-tunable in config/analysis.json."""
