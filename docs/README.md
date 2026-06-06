@@ -22,6 +22,10 @@ analysis answer "why did a score happen," not just "what was the score."**
 7. [decisions.md](decisions.md) — key design decisions and their rationale
 8. [roadmap.md](roadmap.md) — planned features + research notes (incl. DIY hardware)
 
+**Future / separate product:** [pivot-sim-idea.md](pivot-sim-idea.md) — a launch-monitor
+diagnostic-coach concept for home-sim owners (commercial pivot brief; not part of this
+repo's roadmap — start a fresh project from it when the time comes).
+
 ## One-paragraph mental model
 `pull` fetches raw JSON from Garmin (saved verbatim — the asset). `parse` turns one
 round's raw into a self-contained **round document** (score + shots + Strokes Gained,
