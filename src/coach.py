@@ -23,7 +23,8 @@ PROFILE = Path("config/golfer_profile.md")
 PROGRESS = Path("data/processed/progress.json")
 ROUNDS_DIR = Path("data/processed/rounds")
 OUT_DIR = Path("data/processed/coach")
-DEFAULT_MODEL = "claude-sonnet-4-5"
+DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-5"
+DEFAULT_OPENAI_MODEL = "gpt-4o"
 
 SG_LABELS = {"offTee": "Off-the-Tee", "longApproach": "Long approach (150+)",
              "midApproach": "Mid approach (50-150)", "inside50": "Inside 50",
@@ -105,36 +106,68 @@ def build_context() -> dict:
             "stem": rnd[0] if rnd else None, "round_md": rnd[1] if rnd else ""}
 
 
+def _pick_provider() -> tuple[str, str] | None:
+    """(provider, key) from .env. Anthropic if an sk-ant key is present; else OpenAI
+    (incl. an OpenAI-style key mistakenly placed in ANTHROPIC_API_KEY). override=True so
+    the .env value beats an empty shell var (Claude Code exports one)."""
+    load_dotenv(override=True)
+    ak = (os.environ.get("ANTHROPIC_API_KEY") or "").strip()
+    ok = (os.environ.get("OPENAI_API_KEY") or "").strip()
+    if ak.startswith("sk-ant"):
+        return ("anthropic", ak)
+    if ak.startswith("sk-") and not ok:        # an OpenAI key pasted into the Anthropic slot
+        ok = ak
+    return ("openai", ok) if ok else None
+
+
+def _anthropic(key: str, model: str | None) -> "callable":  # noqa: F821
+    import anthropic
+    client = anthropic.Anthropic(api_key=key)
+    mdl = model or os.environ.get("CLAUDE_MODEL", DEFAULT_ANTHROPIC_MODEL)
+
+    def call(system, prompt):
+        msg = client.messages.create(model=mdl, max_tokens=1100, system=system,
+                                     messages=[{"role": "user", "content": prompt}])
+        return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text").strip()
+    return call
+
+
+def _openai(key: str, model: str | None) -> "callable":  # noqa: F821
+    import openai
+    client = openai.OpenAI(api_key=key)
+    mdl = model or os.environ.get("OPENAI_MODEL", DEFAULT_OPENAI_MODEL)
+
+    def call(system, prompt):
+        r = client.chat.completions.create(model=mdl, max_tokens=1100, messages=[
+            {"role": "system", "content": system}, {"role": "user", "content": prompt}])
+        return (r.choices[0].message.content or "").strip()
+    return call
+
+
 def coach_round(model: str | None = None) -> Path | None:
-    load_dotenv()
-    key = os.environ.get("ANTHROPIC_API_KEY")
-    if not key:
-        print("  coach skipped — set ANTHROPIC_API_KEY in .env to enable")
+    prov = _pick_provider()
+    if not prov:
+        print("  coach skipped — set ANTHROPIC_API_KEY=sk-ant-… or OPENAI_API_KEY=sk-… in .env")
         return None
-    try:
-        import anthropic
-    except ImportError:
-        print("  coach skipped — `pip install anthropic`")
-        return None
+    provider, key = prov
     ctx = build_context()
     if not ctx["stem"]:
         print("  coach skipped — no round to review")
         return None
-    model = model or os.environ.get("CLAUDE_MODEL", DEFAULT_MODEL)
-    client = anthropic.Anthropic(api_key=key)
     try:
-        msg = client.messages.create(
-            model=model, max_tokens=1100, system=SYSTEM,
-            messages=[{"role": "user", "content": PROMPT.format(**ctx)}])
-    except Exception as e:  # noqa: BLE001 — coaching must never break the pipeline
-        print(f"  coach skipped — API error: {type(e).__name__}: {str(e)[:120]}")
+        call = (_anthropic if provider == "anthropic" else _openai)(key, model)
+        report = call(SYSTEM, PROMPT.format(**ctx))
+    except ImportError:
+        print(f"  coach skipped — `pip install {provider}`")
         return None
-    report = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text").strip()
+    except Exception as e:  # noqa: BLE001 — coaching must never break the pipeline
+        print(f"  coach skipped — {provider} error: {type(e).__name__}: {str(e)[:140]}")
+        return None
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out = OUT_DIR / f"{ctx['stem']}.md"
     out.write_text(report)
     (OUT_DIR / "latest.md").write_text(report)
-    print(f"  coach report -> {out}")
+    print(f"  coach report ({provider}) -> {out}")
     return out
 
 

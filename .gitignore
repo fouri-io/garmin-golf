@@ -23,3 +23,7 @@ data/raw/*
 
 # Transient pull logs
 data/*.log
+
+# Transient coach artifacts (regenerated each run)
+data/processed/coach/context.md
+data/processed/coach/latest.md

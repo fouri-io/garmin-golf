@@ -12,6 +12,7 @@ dependencies = [
     "python-dotenv",
     "matplotlib",
     "anthropic",      # AI coach (round reports); optional at runtime — degrades if no key
+    "openai",         # AI coach alternative provider (auto-selected by which key is set)
 ]
 
 [project.optional-dependencies]
