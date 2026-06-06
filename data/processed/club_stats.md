@@ -12,8 +12,8 @@ _Full-swing shots only (putts & chips excluded); unknown-club and suspect-hole s
 | 9 Iron | 25 | 111 | 80–132 | 162 |
 | 6 Iron | 5 | 109 | 92–173 | 188 |
 | PW | 27 | 89 | 67–102 | 124 |
-| AW | 13 | 77 | 28–83 | 103 |
-| Wedge | 6 | 12 | 6–33 | 44 |
+| 50° GW | 13 | 77 | 28–83 | 103 |
+| 54° SW | 6 | 12 | 6–33 | 44 |
 | Putter | 222 | — | — | — |
 
 ⚠︎ = fewer than 4 full-swing shots; low-confidence.

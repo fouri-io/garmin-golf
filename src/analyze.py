@@ -58,29 +58,33 @@ def build_club_stats() -> dict:
     since = analysis_start_date()
     rounds = load_rounds(since)
 
-    per_club: dict[str, dict] = defaultdict(lambda: {"all": 0, "dist": [], "clubTypeId": None})
+    # Aggregate by physical clubId (so the wedges stay separate), labeled by resolved name.
+    per_club: dict[int, dict] = defaultdict(
+        lambda: {"all": 0, "dist": [], "clubTypeId": None, "name": None})
     suspect_excluded = 0
     for d in rounds:
         suspect = set(d["reconciliation"]["suspectHoles"])
         for h in d["holes"]:
             for s in h["shots"]:
-                if s["club"] == "unknown" or s["clubId"] == 0:
+                if s["club"].startswith("unknown") or s["clubId"] == 0 or s.get("clubRetired"):
                     continue
                 if h["number"] in suspect:
                     suspect_excluded += 1
                     continue
-                info = per_club[s["club"]]
+                info = per_club[s["clubId"]]
                 info["clubTypeId"] = s["clubTypeId"]
+                info["name"] = s["club"]
                 info["all"] += 1
                 if (s["type"] not in DISTANCE_EXCLUDE_TYPES and s["yards"] is not None
                         and s["clubTypeId"] != PUTTER_CLUBTYPE_ID):
                     info["dist"].append(s["yards"])
 
     clubs = []
-    for name, info in per_club.items():
+    for club_id, info in per_club.items():
         vals = sorted(info["dist"])
         clubs.append({
-            "club": name,
+            "club": info["name"],
+            "clubId": club_id,
             "clubTypeId": info["clubTypeId"],
             "shots": info["all"],
             "distanceShots": len(vals),

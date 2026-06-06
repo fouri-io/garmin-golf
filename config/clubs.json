@@ -1,17 +1,23 @@
 {
-  "_note": "Maps Garmin clubTypeId -> human club name. PROVISIONAL — seeded from this player's observed distance ladder on scorecard 364945310, NOT from an authoritative Garmin enum. Verify against your actual bag and edit the names. clubTypeId 0 (and any shot with clubId 0 / null) means the club is UNKNOWN: a shot the watch auto-detected with no CT10 sensor tag and no manual selection.",
-  "_distanceLadderUsedToSeed": {
-    "1": "193 yd median (longest)",
-    "15": "173 yd",
-    "7": "170 yd",
-    "18": "140 yd",
-    "17": "134 yd",
-    "16": "119 yd",
-    "19": "104 yd",
-    "20": "92 yd",
-    "21": "25 yd",
-    "23": "7 yd (putter)"
+  "_note": "Club identity. Resolution order per shot: byClubId[clubId] first (a physical club), else byType[clubTypeId] (Garmin's COARSE category — collapses e.g. two wedges into one), else 'unknown'. clubId 0 = no sensor / not selected. retiredClubIds are old clubs no longer in the bag; analysis excludes them.",
+  "_verifyWedges": "Garmin can't expose loft, so the wedge labels below are PROVISIONAL (ordered by distance). The bag is PW + Vokey 50/54/58, but only TWO active specialty wedges appear in the data (921562502 ~80y, 921562987 ~23y) — the third may be un-sensored or unused. Please set the correct loft for these two clubIds.",
+  "byClubId": {
+    "924171171": "Driver",
+    "892530974": "5 Wood",
+    "892530976": "4 Hybrid",
+    "892530980": "6 Iron",
+    "892530981": "7 Iron",
+    "892530982": "8 Iron",
+    "892530983": "9 Iron",
+    "892530984": "PW",
+    "921562502": "50° GW",
+    "921562987": "54° SW",
+    "892530985": "GW (retired)",
+    "892530986": "Wedge (retired)",
+    "892530988": "Putter",
+    "892530979": "unknown (type14)"
   },
+  "retiredClubIds": ["892530985", "892530986"],
   "map": {
     "0": "unknown",
     "1": "Driver",

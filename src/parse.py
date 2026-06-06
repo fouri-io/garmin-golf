@@ -49,10 +49,22 @@ def _load(path: Path) -> Any:
         return json.load(f)
 
 
-def load_club_names() -> dict[int, str]:
-    """clubTypeId -> club name, from config/clubs.json (string keys -> int)."""
+def load_club_config() -> dict:
+    """Club identity config: physical-club names (byClubId), coarse type fallback
+    (byType), and the set of retired clubIds."""
     cfg = _load(CLUBS_CONFIG)
-    return {int(k): v for k, v in cfg["map"].items()}
+    return {
+        "byClubId": cfg.get("byClubId", {}),                      # str(clubId) -> name
+        "byType": {int(k): v for k, v in cfg.get("map", {}).items()},  # clubTypeId -> name
+        "retired": {int(c) for c in cfg.get("retiredClubIds", [])},
+    }
+
+
+def _resolve_club(club_id: int, club_type: int | None, cfg: dict) -> str:
+    """Prefer the physical club (clubId); fall back to Garmin's coarse type."""
+    return (cfg["byClubId"].get(str(club_id))
+            or cfg["byType"].get(club_type)
+            or "unknown")
 
 
 # --- small helpers -----------------------------------------------------------------
@@ -86,9 +98,9 @@ def _score_name(to_par: int) -> str:
 
 # --- shot layer --------------------------------------------------------------------
 
-def _build_shots_by_hole(shots_raw: dict, club_names: dict[int, str]) -> dict[int, list[dict]]:
+def _build_shots_by_hole(shots_raw: dict, club_cfg: dict) -> dict[int, list[dict]]:
     """Index normalized shots by hole number. clubId -> clubTypeId comes from the
-    per-payload clubDetails; clubTypeId -> name from config."""
+    per-payload clubDetails; the name is resolved by physical clubId then coarse type."""
     club_type_by_id: dict[int, int] = {}
     for hole in shots_raw["perHole"]:
         for cd in hole["response"].get("clubDetails", []):
@@ -101,9 +113,10 @@ def _build_shots_by_hole(shots_raw: dict, club_names: dict[int, str]) -> dict[in
                 club_type = club_type_by_id.get(s["clubId"])
                 by_hole.setdefault(s["holeNumber"], []).append({
                     "shotNumber": s["shotOrder"],
-                    "club": club_names.get(club_type, "unknown"),
+                    "club": _resolve_club(s["clubId"], club_type, club_cfg),
                     "clubTypeId": club_type,
                     "clubId": s["clubId"],          # 0 = no sensor / unselected
+                    "clubRetired": s["clubId"] in club_cfg["retired"],
                     "type": s.get("shotType"),
                     "autoShotType": s.get("autoShotType"),
                     "source": s.get("shotSource"),  # SENSOR (CT10) vs DEVICE_AUTO (watch)
@@ -177,12 +190,12 @@ def _tee_stroke_index(course: dict, tee_name: str | None) -> list[int] | None:
 
 # --- round document ----------------------------------------------------------------
 
-def build_round_document(detail_raw: dict, shots_raw: dict, club_names: dict[int, str]) -> dict:
+def build_round_document(detail_raw: dict, shots_raw: dict, club_cfg: dict) -> dict:
     det = detail_raw["scorecardDetails"][0]
     sc = det["scorecard"]
     course = detail_raw["courseSnapshots"][0]
     pars = [int(c) for c in course["holePars"]]
-    shots_by_hole = _build_shots_by_hole(shots_raw, club_names)
+    shots_by_hole = _build_shots_by_hole(shots_raw, club_cfg)
 
     total_strokes = sum(h.get("strokes", 0) for h in sc["holes"])
     total_putts = sum(h.get("putts", 0) for h in sc["holes"])
@@ -407,7 +420,7 @@ def render_markdown(doc: dict) -> str:
 def parse_scorecard(scorecard_id: int) -> dict:
     detail = _load(RAW_DIR / f"scorecard_{scorecard_id}_detail.json")
     shots = _load(RAW_DIR / f"scorecard_{scorecard_id}_shots.json")
-    doc = build_round_document(detail, shots, load_club_names())
+    doc = build_round_document(detail, shots, load_club_config())
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / f"{scorecard_id}.json").write_text(json.dumps(doc, indent=2))
