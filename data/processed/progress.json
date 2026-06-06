@@ -1,80 +1,74 @@
 {
-  "baseline": "PGA Tour (scratch), fixed ruler",
-  "window": 3,
-  "cleanRounds": 5,
-  "currentForm": {
-    "per18": {
-      "offTee": -7.5,
-      "longApproach": -5.6,
-      "midApproach": -6.8,
-      "inside50": -8.7,
-      "putting": -4.6
-    },
-    "total": -33.2,
-    "sg0to100Per18": -10.6,
-    "penaltiesPer18": 2.4,
-    "doublesPer18": 8.0,
-    "rounds": [
-      "2026-05-29",
-      "2026-06-01",
-      "2026-06-04"
-    ]
-  },
-  "startForm": {
-    "per18": {
-      "offTee": -7.0,
-      "longApproach": -8.9,
-      "midApproach": -6.4,
-      "inside50": -8.4,
-      "putting": -6.5
-    },
-    "total": -37.2,
-    "rounds": [
-      "2026-05-06",
-      "2026-05-15",
-      "2026-05-29"
-    ]
-  },
-  "deltaFromStart": {
-    "offTee": -0.5,
-    "longApproach": 3.3,
-    "midApproach": -0.4,
-    "inside50": -0.3,
-    "putting": 1.9,
-    "total": 4.0
-  },
-  "puttingAuthoritative": {
-    "puttsPer18": 38.4,
-    "threePuttsPer18": 3.6,
-    "scratchPuttsPer18": 30
-  },
+  "generatedFromRounds": 9,
+  "since": "2026-05-01",
+  "thisRoundDate": "2026-06-04",
+  "thisRoundClean": true,
   "scoring": {
     "averageOverRating18": 29.1,
     "potentialOverRating18": 19.8,
     "bestOverRating18": 14.0,
     "garminHandicap": 23.6,
-    "note": "Authoritative: score - course rating (no GPS). Potential = avg of the better half of rounds, which is what a handicap measures."
+    "break90OverRating": 22
   },
-  "trend": {
-    "offTee": {
-      "slopePerRound": 0.79,
-      "arrow": "\u2191"
+  "sg": {
+    "thisRound": {
+      "byCategory": {
+        "offTee": -1.4,
+        "longApproach": -1.2,
+        "midApproach": -4.8,
+        "inside50": -7.8,
+        "putting": -7.5
+      },
+      "total": -22.7,
+      "sg0to100": -7.8,
+      "cleanRounds": 1
     },
-    "longApproach": {
-      "slopePerRound": 2.1,
-      "arrow": "\u2191"
+    "last5": {
+      "byCategory": {
+        "offTee": -7.5,
+        "longApproach": -5.6,
+        "midApproach": -6.8,
+        "inside50": -8.7,
+        "putting": -4.6
+      },
+      "total": -33.2,
+      "sg0to100": -10.6,
+      "cleanRounds": 3
     },
-    "midApproach": {
-      "slopePerRound": 0.32,
-      "arrow": "\u2192"
+    "allTime": {
+      "byCategory": {
+        "offTee": -6.8,
+        "longApproach": -7.3,
+        "midApproach": -6.7,
+        "inside50": -8.5,
+        "putting": -6.2
+      },
+      "total": -35.5,
+      "sg0to100": -10.1,
+      "cleanRounds": 5
+    }
+  },
+  "authoritative": {
+    "thisRound": {
+      "overRating18": 18.4,
+      "putts18": 42.0,
+      "threePutts18": 6.0,
+      "penalties18": 0.0,
+      "doubles18": 2.0
     },
-    "inside50": {
-      "slopePerRound": 0.13,
-      "arrow": "\u2192"
+    "last5": {
+      "overRating18": 28.5,
+      "putts18": 39.5,
+      "threePutts18": 5.0,
+      "penalties18": 1.8,
+      "doubles18": 8.0
     },
-    "putting": {
-      "slopePerRound": 0.51,
-      "arrow": "\u2191"
+    "allTime": {
+      "overRating18": 29.1,
+      "putts18": 38.9,
+      "threePutts18": 5.0,
+      "penalties18": 2.0,
+      "doubles18": 8.1
     }
   },
   "timeSeries": [
@@ -91,7 +85,6 @@
         "inside50": -0.8,
         "putting": 2.4
       },
-      "total": -19.6,
       "clean": false
     },
     {
@@ -107,7 +100,6 @@
         "inside50": -9.3,
         "putting": -8.2
       },
-      "total": -43.5,
       "clean": true
     },
     {
@@ -123,7 +115,6 @@
         "inside50": -7.3,
         "putting": -8.1
       },
-      "total": -33.1,
       "clean": true
     },
     {
@@ -139,7 +130,6 @@
         "inside50": -21.6,
         "putting": -1.6
       },
-      "total": -98.3,
       "clean": false
     },
     {
@@ -155,7 +145,6 @@
         "inside50": -8.8,
         "putting": -8.7
       },
-      "total": -42.2,
       "clean": false
     },
     {
@@ -171,7 +160,6 @@
         "inside50": -8.7,
         "putting": -3.3
       },
-      "total": -35.1,
       "clean": true
     },
     {
@@ -187,7 +175,6 @@
         "inside50": -11.0,
         "putting": -4.5
       },
-      "total": -46.3,
       "clean": false
     },
     {
@@ -203,7 +190,6 @@
         "inside50": -9.0,
         "putting": -4.4
       },
-      "total": -36.2,
       "clean": true
     },
     {
@@ -219,9 +205,7 @@
         "inside50": -7.8,
         "putting": -7.5
       },
-      "total": -22.7,
       "clean": true
     }
-  ],
-  "note": "Current form = last 3 clean rounds, per 18 vs a fixed scratch ruler. \u0394 = improvement since your starting window (+ = better). Trend = slope over all clean rounds. Only 5 clean rounds so far \u2014 directional, firms up with more play. Putting & short game are GPS/under-record limited."
+  ]
 }

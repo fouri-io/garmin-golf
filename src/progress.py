@@ -1,15 +1,16 @@
-"""Progress tracker — Strokes Gained over time vs a FIXED scratch ruler.
+"""The single progress dashboard — one file to view after every round.
 
-The point (per the player): the trend is the product, not the season average. A
-fixed baseline never moves, so -38 -> -24 -> ... is comparable across months and
-swing changes. Outputs:
-  - current form = last WINDOW clean rounds (holes-weighted, per 18)
-  - delta vs the player's starting window (how far you've come)
-  - per-category trend arrows (least-squares slope over all clean rounds)
-  - a per-round history (all rounds; over-recorded ones flagged + excluded from form)
+Three horizons, read side by side:
+  - This round  : your latest round (the immediate review)
+  - Last 5      : current form (rolling, smooths one-round noise)
+  - All-time    : baseline since the analysis cutoff
 
-'Clean' = not over-recorded (shotCountDelta <= POLLUTION_DELTA). Under-recording is
-normal (un-sensed short shots) and kept; over-recording is phantom sensor noise.
+How to read across: This-vs-Last5 tells you whether a round was above or below your
+form (signal vs noise); Last5-vs-All tells you whether you're trending up.
+
+Authoritative metrics (score-vs-rating, putts, penalties, doubles) use every round in
+the window. Strokes Gained uses only CLEAN rounds (over-recorded rounds excluded —
+their shot data is phantom). Putting SG is count-based; other SG buckets are GPS-based.
 
 Usage:  python -m src.progress
 """
@@ -24,203 +25,187 @@ from .config import analysis_start_date
 
 OUT_JSON = Path("data/processed/progress.json")
 OUT_MD = Path("data/processed/progress.md")
-WINDOW = 3
-POLLUTION_DELTA = 3          # shotCountDelta above this = over-recorded -> exclude from form
-TREND_FLAT = 0.4             # |slope per round| below this reads as flat
+RECENT_N = 5                 # "current form" window (rounds)
+POLLUTION_DELTA = 3          # shotCountDelta above this = over-recorded -> excluded from SG
+SCRATCH_PUTTS_18 = 30
+GARMIN_HANDICAP = 23.6
+BREAK_90_OVER_RATING = 22    # ~ shooting 89 on the player's ~67-rated tees
 
 
-def _per18(d: dict) -> dict:
-    holes = d["score"]["holesCompleted"] or 18
-    c = d["strokesGained"]["byCategory"]
-    return {k: round(c[k] * 18 / holes, 1) for k in SG_CATS}
-
-
-def _over_rating18(d: dict) -> float | None:
-    """Score over course rating, normalized to 18 holes (authoritative — no GPS)."""
-    r = d["round"].get("teeBoxRating")
-    if r is None:
-        return None
-    holes = d["score"]["holesCompleted"] or 18
-    return round((d["score"]["strokes"] - r) * 18 / holes, 1)
+def _holes(d: dict) -> int:
+    return d["score"]["holesCompleted"] or 18
 
 
 def _is_clean(d: dict) -> bool:
     return d["reconciliation"]["shotCountDelta"] <= POLLUTION_DELTA
 
 
-def _agg_per18(rounds: list[dict]) -> dict:
-    """Holes-weighted per-18 SG over a set of rounds."""
-    totals = dict.fromkeys(SG_CATS, 0.0)
-    holes = 0
-    for d in rounds:
-        holes += d["score"]["holesCompleted"] or 18
-        c = d["strokesGained"]["byCategory"]
-        for k in SG_CATS:
-            totals[k] += c[k]
-    return {k: round(totals[k] / holes * 18, 1) for k in SG_CATS} if holes else {}
+def _over_rating18(d: dict) -> float | None:
+    r = d["round"].get("teeBoxRating")
+    return round((d["score"]["strokes"] - r) * 18 / _holes(d), 1) if r is not None else None
 
 
-def _slope(ys: list[float]) -> float:
-    """Least-squares slope of ys over its index (positive = SG improving over time)."""
-    n = len(ys)
-    if n < 2:
-        return 0.0
-    mx = (n - 1) / 2
-    my = sum(ys) / n
-    num = sum((i - mx) * (y - my) for i, y in enumerate(ys))
-    den = sum((i - mx) ** 2 for i in range(n))
-    return num / den if den else 0.0
+def _sg_window(rounds: list[dict]) -> dict | None:
+    """Per-18 SG by bucket over the CLEAN rounds in a window (None if none clean)."""
+    clean = [d for d in rounds if _is_clean(d)]
+    holes = sum(_holes(d) for d in clean)
+    if not holes:
+        return None
+    by = {cat: round(sum(d["strokesGained"]["byCategory"][cat] for d in clean) / holes * 18, 1)
+          for cat in SG_CATS}
+    sg0 = round(sum(d["strokesGained"].get("sg0to100", 0) for d in clean) / holes * 18, 1)
+    return {"byCategory": by, "total": round(sum(by.values()), 1), "sg0to100": sg0,
+            "cleanRounds": len(clean)}
+
+
+def _auth_window(rounds: list[dict]) -> dict:
+    """Authoritative per-18 metrics (no GPS) over ALL rounds in a window."""
+    holes = sum(_holes(d) for d in rounds)
+    rated = [d for d in rounds if d["round"].get("teeBoxRating")]
+    rated_holes = sum(_holes(d) for d in rated)
+    sgp = [d["strokesGained"]["putting"] for d in rounds]
+    return {
+        "overRating18": round(sum(d["score"]["strokes"] - d["round"]["teeBoxRating"]
+                                  for d in rated) / rated_holes * 18, 1) if rated_holes else None,
+        "putts18": round(sum(p["totalPutts"] for p in sgp) / holes * 18, 1),
+        "threePutts18": round(sum(p["threePutts"] for p in sgp) / holes * 18, 1),
+        "penalties18": round(sum(d["strokesGained"]["penaltyStrokes"] for d in rounds)
+                             / holes * 18, 1),
+        "doubles18": round(sum(d["strokesGained"].get("doublesOrWorse", 0) for d in rounds)
+                           / holes * 18, 1),
+    }
 
 
 def build() -> dict:
     rounds = sorted(load_rounds(analysis_start_date()), key=lambda d: d["round"]["date"])
-    clean = [d for d in rounds if _is_clean(d)]
-
-    current = clean[-WINDOW:]
-    start = clean[:WINDOW]
-    cur = _agg_per18(current)
-    st = _agg_per18(start)
-    delta = {k: round(cur[k] - st[k], 1) for k in SG_CATS}
-
-    # Authoritative putting (from the scorecard — no GPS), per 18 over the current window.
-    cur_holes = sum(d["score"]["holesCompleted"] or 18 for d in current) or 1
-    putting_auth = {
-        "puttsPer18": round(sum(d["strokesGained"]["putting"]["totalPutts"]
-                                for d in current) / cur_holes * 18, 1),
-        "threePuttsPer18": round(sum(d["strokesGained"]["putting"]["threePutts"]
-                                     for d in current) / cur_holes * 18, 1),
-        "scratchPuttsPer18": 30,
+    horizons = {
+        "thisRound": [rounds[-1]] if rounds else [],
+        "last5": rounds[-RECENT_N:],
+        "allTime": rounds,
     }
+    sg = {k: _sg_window(v) for k, v in horizons.items()}
+    auth = {k: _auth_window(v) for k, v in horizons.items()}
 
-    trend = {}
-    for k in SG_CATS:
-        s = _slope([_per18(d)[k] for d in clean])
-        arrow = "↑" if s > TREND_FLAT else ("↓" if s < -TREND_FLAT else "→")
-        trend[k] = {"slopePerRound": round(s, 2), "arrow": arrow}
+    # Scoring "potential" = better half of rounds (≈ what a handicap measures).
+    over_vals = sorted(v for v in (_over_rating18(d) for d in rounds) if v is not None)
+    half = max(1, len(over_vals) // 2)
 
     series = [{
         "date": d["round"]["date"][:10], "course": d["course"]["name"],
-        "score": d["score"]["strokes"], "holes": d["score"]["holesCompleted"],
+        "score": d["score"]["strokes"], "holes": _holes(d),
         "overRating18": _over_rating18(d),
-        "per18": _per18(d), "total": round(sum(_per18(d).values()), 1),
+        "per18": {cat: round(d["strokesGained"]["byCategory"][cat] * 18 / _holes(d), 1)
+                  for cat in SG_CATS},
         "clean": _is_clean(d),
     } for d in rounds]
 
-    # Score-over-rating: AUTHORITATIVE (score - course rating, no GPS). Uses ALL rounds
-    # since a round's score is valid regardless of sensor pollution.
-    rated = [d for d in rounds if d["round"].get("teeBoxRating")]
-    raw_sum = sum(d["score"]["strokes"] - d["round"]["teeBoxRating"] for d in rated)
-    holes_sum = sum(d["score"]["holesCompleted"] or 18 for d in rated)
-    over_vals = sorted(_over_rating18(d) for d in rated)
-    half = max(1, len(over_vals) // 2)
-    scoring = {
-        "averageOverRating18": round(raw_sum / holes_sum * 18, 1) if holes_sum else None,
-        "potentialOverRating18": round(sum(over_vals[:half]) / half, 1),  # better half ~ handicap
-        "bestOverRating18": over_vals[0] if over_vals else None,
-        "garminHandicap": 23.6,
-        "note": "Authoritative: score - course rating (no GPS). Potential = avg of the "
-                "better half of rounds, which is what a handicap measures.",
-    }
-
     doc = {
-        "baseline": "PGA Tour (scratch), fixed ruler",
-        "window": WINDOW,
-        "cleanRounds": len(clean),
-        "currentForm": {
-            "per18": cur, "total": round(sum(cur.values()), 1),
-            "sg0to100Per18": round(sum(d["strokesGained"].get("sg0to100", 0)
-                                       for d in current) / cur_holes * 18, 1),
-            "penaltiesPer18": round(sum(d["strokesGained"]["penaltyStrokes"]
-                                        for d in current) / cur_holes * 18, 1),
-            "doublesPer18": round(sum(d["strokesGained"].get("doublesOrWorse", 0)
-                                      for d in current) / cur_holes * 18, 1),
-            "rounds": [d["round"]["date"][:10] for d in current]},
-        "startForm": {"per18": st, "total": round(sum(st.values()), 1),
-                      "rounds": [d["round"]["date"][:10] for d in start]},
-        "deltaFromStart": {**delta, "total": round(sum(delta.values()), 1)},
-        "puttingAuthoritative": putting_auth,
-        "scoring": scoring,
-        "trend": trend,
+        "generatedFromRounds": len(rounds),
+        "since": analysis_start_date(),
+        "thisRoundDate": rounds[-1]["round"]["date"][:10] if rounds else None,
+        "thisRoundClean": _is_clean(rounds[-1]) if rounds else None,
+        "scoring": {
+            "averageOverRating18": auth["allTime"]["overRating18"],
+            "potentialOverRating18": round(sum(over_vals[:half]) / half, 1) if over_vals else None,
+            "bestOverRating18": over_vals[0] if over_vals else None,
+            "garminHandicap": GARMIN_HANDICAP,
+            "break90OverRating": BREAK_90_OVER_RATING,
+        },
+        "sg": sg,
+        "authoritative": auth,
         "timeSeries": series,
-        "note": (
-            f"Current form = last {WINDOW} clean rounds, per 18 vs a fixed scratch ruler. "
-            "Δ = improvement since your starting window (+ = better). Trend = slope over all "
-            f"clean rounds. Only {len(clean)} clean rounds so far — directional, firms up with "
-            "more play. Putting & short game are GPS/under-record limited."
-        ),
     }
     OUT_JSON.write_text(json.dumps(doc, indent=2))
     OUT_MD.write_text(render_markdown(doc))
     return doc
 
 
+def _row(label: str, this, last5, alltime, fmt="{:+.1f}") -> str:
+    def cell(v):
+        return fmt.format(v) if isinstance(v, (int, float)) else "—"
+    return f"| {label} | {cell(this)} | {cell(last5)} | {cell(alltime)} |"
+
+
 def render_markdown(doc: dict) -> str:
-    cf, df, tr = doc["currentForm"], doc["deltaFromStart"], doc["trend"]
-    pa = doc["puttingAuthoritative"]
-    sco = doc["scoring"]
+    sc, sg, au = doc["scoring"], doc["sg"], doc["authoritative"]
+    this_sg = sg["thisRound"]
+    flag = "" if doc["thisRoundClean"] else " ⚠ (over-recorded — its SG is unreliable)"
     lines = [
-        "# Progress",
+        "# Golf Progress Dashboard",
+        f"_From {doc['generatedFromRounds']} rounds since {doc['since']}. "
+        f"Latest round: {doc['thisRoundDate']}{flag}. Re-run `python -m src.progress` "
+        "after each round._",
         "",
-        "## Scoring level (authoritative — score vs course rating, no GPS)",
-        f"**Average: +{sco['averageOverRating18']}/18 over rating** "
-        f"(scratch = the rating). Potential (better half ≈ handicap): "
-        f"**+{sco['potentialOverRating18']}** · best round +{sco['bestOverRating18']} · "
-        f"Garmin handicap {sco['garminHandicap']}.",
-        f"_The gap between average (+{sco['averageOverRating18']}) and potential "
-        f"(+{sco['potentialOverRating18']}) is your volatility — closing it = fewer "
-        f"blow-up rounds. Break 90 on these tees ≈ +22._",
+        "## 1 · Scoring level (authoritative — score vs course rating, no GPS)",
+        f"**Average +{sc['averageOverRating18']}/18** · Potential (better half ≈ handicap) "
+        f"**+{sc['potentialOverRating18']}** · best +{sc['bestOverRating18']} · "
+        f"Garmin handicap {sc['garminHandicap']} · **Break-90 ≈ +{sc['break90OverRating']}**.",
+        f"_Average − potential = ~{round(sc['averageOverRating18'] - sc['potentialOverRating18'])}"
+        " strokes of volatility (your blow-up tax — fewer doubles closes it)._",
         "",
-        "## Strokes Gained vs scratch (fixed ruler)",
-        f"**Current form** (last {doc['window']} clean rounds: "
-        f"{', '.join(cf['rounds'])}) — total **{cf['total']:+.1f}/18**.",
-        f"**SG 0–100 (leverage): {cf['sg0to100Per18']:+.1f}/18** · "
-        f"penalties {cf['penaltiesPer18']}/18 · doubles+ {cf['doublesPer18']}/18 "
-        f"(review these first).",
-        f"Since your start ({', '.join(doc['startForm']['rounds'])}): "
-        f"**{df['total']:+.1f} strokes/round** "
-        f"({'better' if df['total'] > 0 else 'worse'}).",
-        f"Putting (authoritative): **{pa['puttsPer18']} putts/18** "
-        f"({pa['threePuttsPer18']} three-putts) vs scratch ~{pa['scratchPuttsPer18']} — "
-        f"a clear leak; the GPS-based putting SG is not trusted, this count is.",
+        "## 2 · Review first (authoritative — count these before anything else)",
+        "| Metric /18 | This round | Last 5 | All-time |",
+        "|---|--:|--:|--:|",
+        _row("Score vs rating", au["thisRound"]["overRating18"], au["last5"]["overRating18"],
+             au["allTime"]["overRating18"], "+{:.1f}"),
+        _row("Penalties", au["thisRound"]["penalties18"], au["last5"]["penalties18"],
+             au["allTime"]["penalties18"], "{:.1f}"),
+        _row("Doubles+", au["thisRound"]["doubles18"], au["last5"]["doubles18"],
+             au["allTime"]["doubles18"], "{:.1f}"),
+        _row("Putts (3-putts)", au["thisRound"]["putts18"], au["last5"]["putts18"],
+             au["allTime"]["putts18"], "{:.0f}"),
         "",
-        "| Category | Now /18 | Δ from start | Trend |",
-        "|---|--:|--:|:-:|",
+        "## 3 · Strokes Gained vs scratch (per 18)",
+        f"**SG 0–100, your leverage number:** This round "
+        f"{_fmt(this_sg, 'sg0to100')} · Last 5 {_fmt(sg['last5'], 'sg0to100')} · "
+        f"All-time {_fmt(sg['allTime'], 'sg0to100')}  _(100yd-and-in, no putts — where scores move)_",
+        "",
+        "| Bucket | This round | Last 5 | All-time |",
+        "|---|--:|--:|--:|",
     ]
-    for k in SG_CATS:
-        d = df[k]
-        lines.append(f"| {SG_LABELS[k]} | {cf['per18'][k]:+.1f} | {d:+.1f} | {tr[k]['arrow']} |")
-    lines.append(f"| **Total** | **{cf['total']:+.1f}** | **{df['total']:+.1f}** | |")
+    for cat in SG_CATS:
+        lines.append(_row(
+            SG_LABELS[cat],
+            this_sg["byCategory"][cat] if this_sg else None,
+            sg["last5"]["byCategory"][cat] if sg["last5"] else None,
+            sg["allTime"]["byCategory"][cat] if sg["allTime"] else None,
+        ))
+    lines.append(_row("**Total**", this_sg["total"] if this_sg else None,
+                      sg["last5"]["total"] if sg["last5"] else None,
+                      sg["allTime"]["total"] if sg["allTime"] else None))
     lines += [
         "",
-        f"_Δ + = improvement. Trend ↑ = SG rising (improving) over all {doc['cleanRounds']} "
-        "clean rounds, → flat, ↓ declining._",
+        "_Read across: **This vs Last 5** = was this round above/below your form (signal vs "
+        "noise). **Last 5 vs All-time** = are you trending up. Putting is count-based "
+        "(authoritative putts); other buckets are GPS-based; the absolute total runs a few "
+        "strokes hot — trust the ranking._",
         "",
-        "## Per-round history",
-        "_vsRtg = score over course rating per 18 (authoritative). SG columns per 18._",
-        f"| Date | Course | Score | H | vsRtg | {' | '.join(SG_SHORT[c] for c in SG_CATS)} "
-        "| SGtot | |",
-        f"|---|---|--:|--:|--:|{'|'.join(['--:'] * len(SG_CATS))}|--:|:--|",
+        "## 4 · Per-round history",
+        "_vsRtg = score over rating per 18 (authoritative). SG per 18; ⚠ = over-recorded, "
+        "excluded from SG windows._",
+        f"| Date | Course | Score | H | vsRtg | {' | '.join(SG_SHORT[c] for c in SG_CATS)} | |",
+        f"|---|---|--:|--:|--:|{'|'.join(['--:'] * len(SG_CATS))}|:--|",
     ]
     for r in doc["timeSeries"]:
         p = r["per18"]
-        flag = "" if r["clean"] else " ⚠ excl"
         ovr = f"+{r['overRating18']}" if r["overRating18"] is not None else "—"
         cells = " | ".join(f"{p[cat]:+.1f}" for cat in SG_CATS)
-        lines.append(
-            f"| {r['date']} | {r['course'][:18]} | {r['score']} | {r['holes']} | {ovr} | "
-            f"{cells} | {r['total']:+.1f} |{flag} |"
-        )
-    lines += ["", "_All values per-18. ⚠ excl = over-recorded round, excluded from current "
-              "form/trend. As you log rounds, re-run `python -m src.progress`._"]
+        flg = "" if r["clean"] else " ⚠"
+        lines.append(f"| {r['date']} | {r['course'][:18]} | {r['score']} | {r['holes']} | "
+                     f"{ovr} | {cells} |{flg} |")
     return "\n".join(lines)
+
+
+def _fmt(window: dict | None, key: str) -> str:
+    return f"{window[key]:+.1f}" if window else "—"
 
 
 def main() -> None:
     doc = build()
     print(f"Wrote {OUT_JSON} and {OUT_MD}")
-    cf = doc["currentForm"]
-    print(f"  current form {cf['total']:+.1f}/18 (last {doc['window']} clean), "
-          f"Δ from start {doc['deltaFromStart']['total']:+.1f}")
+    sg = doc["sg"]
+    print(f"  This round SG total {_fmt(sg['thisRound'], 'total')}, "
+          f"Last 5 {_fmt(sg['last5'], 'total')}, All-time {_fmt(sg['allTime'], 'total')}")
 
 
 if __name__ == "__main__":
