@@ -19,7 +19,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .analyze import SG_CATS, SG_LABELS, load_rounds
+from .analyze import SG_CATS, SG_LABELS, SG_SHORT, load_rounds
 from .config import analysis_start_date
 
 OUT_JSON = Path("data/processed/progress.json")
@@ -126,8 +126,15 @@ def build() -> dict:
         "baseline": "PGA Tour (scratch), fixed ruler",
         "window": WINDOW,
         "cleanRounds": len(clean),
-        "currentForm": {"per18": cur, "total": round(sum(cur.values()), 1),
-                        "rounds": [d["round"]["date"][:10] for d in current]},
+        "currentForm": {
+            "per18": cur, "total": round(sum(cur.values()), 1),
+            "sg0to100Per18": round(sum(d["strokesGained"].get("sg0to100", 0)
+                                       for d in current) / cur_holes * 18, 1),
+            "penaltiesPer18": round(sum(d["strokesGained"]["penaltyStrokes"]
+                                        for d in current) / cur_holes * 18, 1),
+            "doublesPer18": round(sum(d["strokesGained"].get("doublesOrWorse", 0)
+                                      for d in current) / cur_holes * 18, 1),
+            "rounds": [d["round"]["date"][:10] for d in current]},
         "startForm": {"per18": st, "total": round(sum(st.values()), 1),
                       "rounds": [d["round"]["date"][:10] for d in start]},
         "deltaFromStart": {**delta, "total": round(sum(delta.values()), 1)},
@@ -166,6 +173,9 @@ def render_markdown(doc: dict) -> str:
         "## Strokes Gained vs scratch (fixed ruler)",
         f"**Current form** (last {doc['window']} clean rounds: "
         f"{', '.join(cf['rounds'])}) — total **{cf['total']:+.1f}/18**.",
+        f"**SG 0–100 (leverage): {cf['sg0to100Per18']:+.1f}/18** · "
+        f"penalties {cf['penaltiesPer18']}/18 · doubles+ {cf['doublesPer18']}/18 "
+        f"(review these first).",
         f"Since your start ({', '.join(doc['startForm']['rounds'])}): "
         f"**{df['total']:+.1f} strokes/round** "
         f"({'better' if df['total'] > 0 else 'worse'}).",
@@ -187,17 +197,18 @@ def render_markdown(doc: dict) -> str:
         "",
         "## Per-round history",
         "_vsRtg = score over course rating per 18 (authoritative). SG columns per 18._",
-        "| Date | Course | Score | H | vsRtg | OTT | APP | SHORT | Putt | SGtot | |",
-        "|---|---|--:|--:|--:|--:|--:|--:|--:|--:|:--|",
+        f"| Date | Course | Score | H | vsRtg | {' | '.join(SG_SHORT[c] for c in SG_CATS)} "
+        "| SGtot | |",
+        f"|---|---|--:|--:|--:|{'|'.join(['--:'] * len(SG_CATS))}|--:|:--|",
     ]
     for r in doc["timeSeries"]:
         p = r["per18"]
         flag = "" if r["clean"] else " ⚠ excl"
         ovr = f"+{r['overRating18']}" if r["overRating18"] is not None else "—"
+        cells = " | ".join(f"{p[cat]:+.1f}" for cat in SG_CATS)
         lines.append(
             f"| {r['date']} | {r['course'][:18]} | {r['score']} | {r['holes']} | {ovr} | "
-            f"{p['offTee']:+.1f} | {p['approach']:+.1f} | {p['shortGame']:+.1f} | "
-            f"{p['putting']:+.1f} | {r['total']:+.1f} |{flag} |"
+            f"{cells} | {r['total']:+.1f} |{flag} |"
         )
     lines += ["", "_All values per-18. ⚠ excl = over-recorded round, excluded from current "
               "form/trend. As you log rounds, re-run `python -m src.progress`._"]

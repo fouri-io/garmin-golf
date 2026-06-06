@@ -5,11 +5,15 @@
   "currentForm": {
     "per18": {
       "offTee": -7.5,
-      "approach": -10.6,
-      "shortGame": -10.4,
+      "longApproach": -5.6,
+      "midApproach": -6.8,
+      "inside50": -8.7,
       "putting": -4.6
     },
-    "total": -33.1,
+    "total": -33.2,
+    "sg0to100Per18": -10.6,
+    "penaltiesPer18": 2.4,
+    "doublesPer18": 8.0,
     "rounds": [
       "2026-05-29",
       "2026-06-01",
@@ -19,8 +23,9 @@
   "startForm": {
     "per18": {
       "offTee": -7.0,
-      "approach": -13.9,
-      "shortGame": -9.8,
+      "longApproach": -8.9,
+      "midApproach": -6.4,
+      "inside50": -8.4,
       "putting": -6.5
     },
     "total": -37.2,
@@ -32,10 +37,11 @@
   },
   "deltaFromStart": {
     "offTee": -0.5,
-    "approach": 3.3,
-    "shortGame": -0.6,
+    "longApproach": 3.3,
+    "midApproach": -0.4,
+    "inside50": -0.3,
     "putting": 1.9,
-    "total": 4.1
+    "total": 4.0
   },
   "puttingAuthoritative": {
     "puttsPer18": 38.4,
@@ -54,12 +60,16 @@
       "slopePerRound": 0.79,
       "arrow": "\u2191"
     },
-    "approach": {
-      "slopePerRound": 2.33,
+    "longApproach": {
+      "slopePerRound": 2.1,
       "arrow": "\u2191"
     },
-    "shortGame": {
-      "slopePerRound": 0.2,
+    "midApproach": {
+      "slopePerRound": 0.32,
+      "arrow": "\u2192"
+    },
+    "inside50": {
+      "slopePerRound": 0.13,
       "arrow": "\u2192"
     },
     "putting": {
@@ -76,8 +86,9 @@
       "overRating18": 14.0,
       "per18": {
         "offTee": -3.8,
-        "approach": -18.5,
-        "shortGame": 0.3,
+        "longApproach": -0.8,
+        "midApproach": -16.6,
+        "inside50": -0.8,
         "putting": 2.4
       },
       "total": -19.6,
@@ -91,11 +102,12 @@
       "overRating18": 36.9,
       "per18": {
         "offTee": -7.6,
-        "approach": -17.3,
-        "shortGame": -10.3,
+        "longApproach": -10.2,
+        "midApproach": -8.2,
+        "inside50": -9.3,
         "putting": -8.2
       },
-      "total": -43.4,
+      "total": -43.5,
       "clean": true
     },
     {
@@ -106,11 +118,12 @@
       "overRating18": 31.4,
       "per18": {
         "offTee": -4.2,
-        "approach": -12.2,
-        "shortGame": -8.7,
+        "longApproach": -8.6,
+        "midApproach": -4.9,
+        "inside50": -7.3,
         "putting": -8.1
       },
-      "total": -33.2,
+      "total": -33.1,
       "clean": true
     },
     {
@@ -121,8 +134,9 @@
       "overRating18": 28.8,
       "per18": {
         "offTee": -30.5,
-        "approach": -44.0,
-        "shortGame": -22.2,
+        "longApproach": -17.7,
+        "midApproach": -26.9,
+        "inside50": -21.6,
         "putting": -1.6
       },
       "total": -98.3,
@@ -136,8 +150,9 @@
       "overRating18": 32.3,
       "per18": {
         "offTee": -8.1,
-        "approach": -15.1,
-        "shortGame": -10.3,
+        "longApproach": -8.2,
+        "midApproach": -8.4,
+        "inside50": -8.8,
         "putting": -8.7
       },
       "total": -42.2,
@@ -151,11 +166,12 @@
       "overRating18": 31.8,
       "per18": {
         "offTee": -9.3,
-        "approach": -12.1,
-        "shortGame": -10.5,
+        "longApproach": -7.8,
+        "midApproach": -6.0,
+        "inside50": -8.7,
         "putting": -3.3
       },
-      "total": -35.2,
+      "total": -35.1,
       "clean": true
     },
     {
@@ -166,11 +182,12 @@
       "overRating18": 18.0,
       "per18": {
         "offTee": -8.3,
-        "approach": -18.7,
-        "shortGame": -15.0,
+        "longApproach": -0.6,
+        "midApproach": -21.9,
+        "inside50": -11.0,
         "putting": -4.5
       },
-      "total": -46.5,
+      "total": -46.3,
       "clean": false
     },
     {
@@ -181,11 +198,12 @@
       "overRating18": 31.6,
       "per18": {
         "offTee": -8.7,
-        "approach": -11.5,
-        "shortGame": -11.7,
+        "longApproach": -5.6,
+        "midApproach": -8.5,
+        "inside50": -9.0,
         "putting": -4.4
       },
-      "total": -36.3,
+      "total": -36.2,
       "clean": true
     },
     {
@@ -196,8 +214,9 @@
       "overRating18": 18.4,
       "per18": {
         "offTee": -1.4,
-        "approach": -6.0,
-        "shortGame": -7.8,
+        "longApproach": -1.2,
+        "midApproach": -4.8,
+        "inside50": -7.8,
         "putting": -7.5
       },
       "total": -22.7,

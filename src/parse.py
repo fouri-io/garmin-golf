@@ -381,10 +381,12 @@ def _recon_line(r: dict) -> str:
 
 def _sg_line(sg: dict) -> str:
     c = sg["byCategory"]
-    return (f"Strokes Gained vs scratch (recorded shots): "
-            f"OTT {c['offTee']:+.1f} · APP {c['approach']:+.1f} · "
-            f"SHORT {c['shortGame']:+.1f} · PUTT {c['putting']:+.1f} "
-            f"= {sg['totalRecordedVsScratch']:+.1f}; +{sg['penaltyStrokes']} penalties")
+    short = {"offTee": "OTT", "longApproach": "Long", "midApproach": "Mid",
+             "inside50": "In50", "putting": "Putt"}
+    parts = " · ".join(f"{short[k]} {c[k]:+.1f}" for k in short)
+    return (f"Strokes Gained vs scratch: {parts} = {sg['totalRecordedVsScratch']:+.1f}\n"
+            f"SG 0–100 (leverage): {sg['sg0to100']:+.1f} · {sg['penaltyStrokes']} penalties · "
+            f"{sg['doublesOrWorse']} doubles+")
 
 
 def render_markdown(doc: dict) -> str:

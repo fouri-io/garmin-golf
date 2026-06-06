@@ -149,9 +149,12 @@ def render_markdown(doc: dict) -> str:
 
 SG_JSON = Path("data/processed/strokes_gained.json")
 SG_MD = Path("data/processed/strokes_gained.md")
-SG_CATS = ["offTee", "approach", "shortGame", "putting"]
-SG_LABELS = {"offTee": "Off-the-Tee", "approach": "Approach (full)",
-             "shortGame": "Short game (≤scoring zone)", "putting": "Putting"}
+SG_CATS = ["offTee", "longApproach", "midApproach", "inside50", "putting"]
+SG_LABELS = {"offTee": "Off-the-Tee", "longApproach": "Long approach (150+)",
+             "midApproach": "Mid approach (50–150)", "inside50": "Inside 50",
+             "putting": "Putting"}
+SG_SHORT = {"offTee": "OTT", "longApproach": "Long", "midApproach": "Mid",
+            "inside50": "In50", "putting": "Putt"}
 
 
 def build_sg_summary() -> dict:
@@ -161,7 +164,8 @@ def build_sg_summary() -> dict:
     rounds = load_rounds(since)
     totals = dict.fromkeys(SG_CATS, 0.0)
     total_holes = 0
-    penalties = 0
+    penalties = doubles = 0
+    sg0to100_total = 0.0
     per_round = []
     for d in rounds:
         sg = d["strokesGained"]
@@ -169,6 +173,8 @@ def build_sg_summary() -> dict:
         holes = d["score"]["holesCompleted"] or 18
         total_holes += holes
         penalties += sg["penaltyStrokes"]
+        doubles += sg.get("doublesOrWorse", 0)
+        sg0to100_total += sg.get("sg0to100", 0.0)
         for cat in SG_CATS:
             totals[cat] += c[cat]
         per_round.append({
@@ -177,7 +183,9 @@ def build_sg_summary() -> dict:
             "holes": holes,
             "score": d["score"]["strokes"],
             "byCategory": c,
+            "sg0to100": sg.get("sg0to100", 0.0),
             "penaltyStrokes": sg["penaltyStrokes"],
+            "doublesOrWorse": sg.get("doublesOrWorse", 0),
             "polluted": bool(d["reconciliation"]["suspectHoles"]),
         })
     per18 = {cat: round(totals[cat] / total_holes * 18, 1) for cat in SG_CATS}
@@ -185,9 +193,11 @@ def build_sg_summary() -> dict:
         "generatedFrom": {"rounds": len(rounds), "totalHoles": total_holes,
                           "analysisStartDate": since},
         "baseline": "PGA Tour (scratch), approximate",
+        "headlineSg0to100Per18": round(sg0to100_total / total_holes * 18, 1),
         "perRound18Avg": per18,                       # the headline: avg leak per 18 by category
         "totalByCategory": {k: round(v, 1) for k, v in totals.items()},
         "penaltyStrokesTotal": penalties,
+        "doublesOrWorseTotal": doubles,
         "perRound": per_round,
         "note": (
             "Per-18-hole averages over recorded shots vs a scratch baseline. The most "
@@ -209,6 +219,11 @@ def render_sg_markdown(doc: dict) -> str:
         f"{g['analysisStartDate']}",
         "_vs scratch baseline, recorded shots, normalized per 18 holes._",
         "",
+        f"**SG 0–100 (the leverage number): {doc['headlineSg0to100Per18']:+.1f}/18** — "
+        "100yd-and-in, excluding putts. This is where scores move.",
+        f"Penalties: {doc['penaltyStrokesTotal']} total · Doubles+: "
+        f"{doc['doublesOrWorseTotal']} total (count these first).",
+        "",
         f"**Biggest leak: {SG_LABELS[ranked[0]]} ({p[ranked[0]]:+.1f}/18).** "
         f"Priority order: " + " → ".join(SG_LABELS[c] for c in ranked),
         "",
@@ -217,21 +232,21 @@ def render_sg_markdown(doc: dict) -> str:
     ]
     for cat in ranked:
         lines.append(f"| {SG_LABELS[cat]} | {p[cat]:+.1f} | {doc['totalByCategory'][cat]:+.1f} |")
+    header = " | ".join(SG_SHORT[c] for c in SG_CATS)
+    sep = "|".join(["--:"] * len(SG_CATS))
     lines += [
-        f"| **Penalties** | | **+{doc['penaltyStrokesTotal']} strokes (~-{doc['penaltyStrokesTotal']})** |",
+        f"| **Penalties** | | **+{doc['penaltyStrokesTotal']} (~-{doc['penaltyStrokesTotal']})** |",
         "",
-        "| Date | Course | Score | OTT | APP | SHORT | Putt | |",
-        "|---|---|--:|--:|--:|--:|--:|:--|",
+        f"| Date | Course | Score | {header} | |",
+        f"|---|---|--:|{sep}|:--|",
     ]
     for r in doc["perRound"]:
         c = r["byCategory"]
         flag = " ⚠ polluted" if r["polluted"] else ""
-        lines.append(
-            f"| {r['date']} | {r['course'][:22]} | {r['score']} | {c['offTee']:+.1f} | "
-            f"{c['approach']:+.1f} | {c['shortGame']:+.1f} | {c['putting']:+.1f} |{flag} |"
-        )
-    lines += ["", "_Putting is GPS-noisy — least reliable bucket. ⚠ = round has sensor-"
-              "polluted holes that distort its non-approach numbers._"]
+        cells = " | ".join(f"{c[cat]:+.1f}" for cat in SG_CATS)
+        lines.append(f"| {r['date']} | {r['course'][:20]} | {r['score']} | {cells} |{flag} |")
+    lines += ["", "_Putting is count-based (authoritative putts); other buckets GPS-based. "
+              "⚠ = round has sensor-polluted holes that distort its non-putting buckets._"]
     return "\n".join(lines)
 
 

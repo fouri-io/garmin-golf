@@ -5,19 +5,23 @@
     "analysisStartDate": "2026-05-01"
   },
   "baseline": "PGA Tour (scratch), approximate",
+  "headlineSg0to100Per18": -12.0,
   "perRound18Avg": {
     "offTee": -8.6,
-    "approach": -16.0,
-    "shortGame": -10.6,
+    "longApproach": -7.2,
+    "midApproach": -10.2,
+    "inside50": -9.1,
     "putting": -5.5
   },
   "totalByCategory": {
     "offTee": -59.9,
-    "approach": -111.7,
-    "shortGame": -73.9,
+    "longApproach": -50.6,
+    "midApproach": -71.2,
+    "inside50": -63.7,
     "putting": -38.4
   },
   "penaltyStrokesTotal": 14,
+  "doublesOrWorseTotal": 57,
   "perRound": [
     {
       "date": "2026-05-03",
@@ -26,11 +30,14 @@
       "score": 36,
       "byCategory": {
         "offTee": -1.92,
-        "approach": -9.26,
-        "shortGame": 0.14,
+        "longApproach": -0.4,
+        "midApproach": -8.3,
+        "inside50": -0.42,
         "putting": 1.19
       },
+      "sg0to100": -2.73,
       "penaltyStrokes": 0,
+      "doublesOrWorse": 1,
       "polluted": true
     },
     {
@@ -40,11 +47,14 @@
       "score": 106,
       "byCategory": {
         "offTee": -7.56,
-        "approach": -17.33,
-        "shortGame": -10.35,
+        "longApproach": -10.18,
+        "midApproach": -8.24,
+        "inside50": -9.26,
         "putting": -8.21
       },
+      "sg0to100": -10.35,
       "penaltyStrokes": 1,
+      "doublesOrWorse": 10,
       "polluted": true
     },
     {
@@ -54,11 +64,14 @@
       "score": 92,
       "byCategory": {
         "offTee": -4.19,
-        "approach": -12.15,
-        "shortGame": -8.72,
+        "longApproach": -8.63,
+        "midApproach": -4.94,
+        "inside50": -7.3,
         "putting": -8.14
       },
+      "sg0to100": -8.72,
       "penaltyStrokes": 6,
+      "doublesOrWorse": 11,
       "polluted": false
     },
     {
@@ -68,11 +81,14 @@
       "score": 47,
       "byCategory": {
         "offTee": -15.26,
-        "approach": -21.99,
-        "shortGame": -11.1,
+        "longApproach": -8.83,
+        "midApproach": -13.46,
+        "inside50": -10.8,
         "putting": -0.79
       },
+      "sg0to100": -14.45,
       "penaltyStrokes": 0,
+      "doublesOrWorse": 3,
       "polluted": true
     },
     {
@@ -82,11 +98,14 @@
       "score": 101,
       "byCategory": {
         "offTee": -8.09,
-        "approach": -15.09,
-        "shortGame": -10.27,
+        "longApproach": -8.21,
+        "midApproach": -8.37,
+        "inside50": -8.78,
         "putting": -8.73
       },
+      "sg0to100": -12.99,
       "penaltyStrokes": 1,
+      "doublesOrWorse": 10,
       "polluted": true
     },
     {
@@ -96,11 +115,14 @@
       "score": 99,
       "byCategory": {
         "offTee": -9.29,
-        "approach": -12.11,
-        "shortGame": -10.46,
+        "longApproach": -7.83,
+        "midApproach": -6.05,
+        "inside50": -8.7,
         "putting": -3.27
       },
+      "sg0to100": -10.46,
       "penaltyStrokes": 1,
+      "doublesOrWorse": 9,
       "polluted": false
     },
     {
@@ -110,11 +132,14 @@
       "score": 38,
       "byCategory": {
         "offTee": -4.17,
-        "approach": -9.33,
-        "shortGame": -7.48,
+        "longApproach": -0.31,
+        "midApproach": -10.97,
+        "inside50": -5.52,
         "putting": -2.23
       },
+      "sg0to100": -8.55,
       "penaltyStrokes": 0,
+      "doublesOrWorse": 2,
       "polluted": true
     },
     {
@@ -124,11 +149,14 @@
       "score": 99,
       "byCategory": {
         "offTee": -8.67,
-        "approach": -11.49,
-        "shortGame": -11.71,
+        "longApproach": -5.64,
+        "midApproach": -8.53,
+        "inside50": -9.03,
         "putting": -4.43
       },
+      "sg0to100": -12.13,
       "penaltyStrokes": 5,
+      "doublesOrWorse": 10,
       "polluted": false
     },
     {
@@ -138,11 +166,14 @@
       "score": 39,
       "byCategory": {
         "offTee": -0.72,
-        "approach": -2.99,
-        "shortGame": -3.91,
+        "longApproach": -0.6,
+        "midApproach": -2.39,
+        "inside50": -3.91,
         "putting": -3.77
       },
+      "sg0to100": -3.91,
       "penaltyStrokes": 0,
+      "doublesOrWorse": 1,
       "polluted": false
     }
   ],

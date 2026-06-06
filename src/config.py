@@ -18,7 +18,12 @@ def analysis_start_date() -> str:
     return _analysis_config().get("analysisStartDate", _EPOCH)
 
 
-def scoring_zone_max_yds() -> float:
-    """Shots going for the green within this distance are 'shortGame' (wedge/pitch zone);
-    beyond it they're full 'approach'. Player-tunable in config/analysis.json."""
-    return _analysis_config().get("strokesGained", {}).get("scoringZoneMaxYds", 90)
+def sg_distance_cuts() -> dict:
+    """Distance cuts (yards) for the SG approach buckets and the 0-100 headline metric.
+    Player-tunable in config/analysis.json."""
+    sg = _analysis_config().get("strokesGained", {})
+    return {
+        "longApproachMinYds": sg.get("longApproachMinYds", 150),
+        "insideMaxYds": sg.get("insideMaxYds", 50),
+        "headlineMaxYds": sg.get("headlineMaxYds", 100),
+    }

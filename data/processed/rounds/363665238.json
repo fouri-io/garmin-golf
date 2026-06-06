@@ -80,12 +80,15 @@
     "totalRecordedVsScratch": -49.14,
     "byCategory": {
       "offTee": -15.26,
-      "approach": -21.99,
-      "shortGame": -11.1,
+      "longApproach": -8.83,
+      "midApproach": -13.46,
+      "inside50": -10.8,
       "putting": -0.79
     },
+    "sg0to100": -14.45,
     "categorizedShots": 63,
     "penaltyStrokes": 0,
+    "doublesOrWorse": 3,
     "putting": {
       "totalPutts": 18,
       "threePutts": 2,
@@ -93,7 +96,7 @@
       "holesMeasured": 8,
       "puttsCovered": 15
     },
-    "note": "Tee-to-green SG is per-shot over recorded shots (penalties & un-sensed shots excluded). PUTTING is now count-based: expected_putts(first-putt distance) - actual putts, so 3-putts are penalized; totalPutts/threePutts are authoritative. Negative is normal vs scratch \u2014 read the category split."
+    "note": "Tee-to-green SG is per-shot over recorded shots (penalties & un-sensed shots excluded). Buckets are distance-based (offTee = par4/5 tee; long 150+, mid 50-150, inside-50). sg0to100 is the leverage metric (100yd-and-in, no putts). Putting is count-based (3-putts penalized; totalPutts/threePutts authoritative)."
   },
   "garminStats": {
     "holesPlayed": 9,
@@ -267,7 +270,7 @@
             "lateralYds": 1.5
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": -0.98
         },
         {
@@ -306,7 +309,7 @@
             "lateralYds": 2.2
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": -0.918
         },
         {
@@ -345,7 +348,7 @@
             "lateralYds": 5.1
           },
           "resultCategory": "short-left",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -0.991
         },
         {
@@ -384,7 +387,7 @@
             "lateralYds": 10.4
           },
           "resultCategory": "short-right",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -0.38
         },
         {
@@ -423,7 +426,7 @@
             "lateralYds": 0.5
           },
           "resultCategory": "short",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.975
         },
         {
@@ -462,7 +465,7 @@
             "lateralYds": 2.8
           },
           "resultCategory": "green",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.401
         },
         {
@@ -645,7 +648,7 @@
             "lateralYds": 14.7
           },
           "resultCategory": "off-map",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": -1.32
         },
         {
@@ -684,7 +687,7 @@
             "lateralYds": 3.9
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": -0.68
         },
         {
@@ -723,7 +726,7 @@
             "lateralYds": 20.8
           },
           "resultCategory": "off-map",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": -1.32
         },
         {
@@ -762,7 +765,7 @@
             "lateralYds": 79.8
           },
           "resultCategory": "short-left",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": -0.796
         },
         {
@@ -918,7 +921,7 @@
             "lateralYds": 12.7
           },
           "resultCategory": "short-left",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": -0.892
         },
         {
@@ -957,7 +960,7 @@
             "lateralYds": 57.0
           },
           "resultCategory": "off-map",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -1.533
         },
         {
@@ -996,7 +999,7 @@
             "lateralYds": 47.4
           },
           "resultCategory": "short-right",
-          "sgCategory": "shortGame",
+          "sgCategory": "midApproach",
           "strokesGained": -0.304
         },
         {
@@ -1035,7 +1038,7 @@
             "lateralYds": 3.0
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -1.023
         },
         {
@@ -1074,7 +1077,7 @@
             "lateralYds": 2.7
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -1.003
         },
         {
@@ -1113,7 +1116,7 @@
             "lateralYds": 50.6
           },
           "resultCategory": "short-left",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -1.282
         },
         {
@@ -1152,7 +1155,7 @@
             "lateralYds": 0.0
           },
           "resultCategory": "green",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": 1.305
         },
         {
@@ -1308,7 +1311,7 @@
             "lateralYds": 3.9
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -0.983
         },
         {
@@ -1347,7 +1350,7 @@
             "lateralYds": 18.6
           },
           "resultCategory": "short-right",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -0.736
         },
         {
@@ -1386,7 +1389,7 @@
             "lateralYds": 2.4
           },
           "resultCategory": "green",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.344
         },
         {
@@ -1608,7 +1611,7 @@
             "lateralYds": 0.9
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -0.774
         },
         {
@@ -1647,7 +1650,7 @@
             "lateralYds": 6.9
           },
           "resultCategory": "short-right",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -0.548
         },
         {
@@ -1686,7 +1689,7 @@
             "lateralYds": 3.0
           },
           "resultCategory": "short",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -1.166
         },
         {
@@ -1725,7 +1728,7 @@
             "lateralYds": 1.5
           },
           "resultCategory": "green",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.439
         },
         {
@@ -1830,7 +1833,7 @@
             "lateralYds": 1.0
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": -0.996
         },
         {
@@ -1869,7 +1872,7 @@
             "lateralYds": 14.9
           },
           "resultCategory": "short-right",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -0.743
         },
         {
@@ -1908,7 +1911,7 @@
             "lateralYds": 1.7
           },
           "resultCategory": "green",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.215
         },
         {
@@ -2091,7 +2094,7 @@
             "lateralYds": 0.6
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": -1.001
         },
         {
@@ -2130,7 +2133,7 @@
             "lateralYds": 60.7
           },
           "resultCategory": "short-right",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": -0.983
         },
         {
@@ -2169,7 +2172,7 @@
             "lateralYds": 8.9
           },
           "resultCategory": "short-right",
-          "sgCategory": "approach",
+          "sgCategory": "longApproach",
           "strokesGained": -0.252
         },
         {
@@ -2208,7 +2211,7 @@
             "lateralYds": 1.6
           },
           "resultCategory": "short",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.896
         },
         {
@@ -2247,7 +2250,7 @@
             "lateralYds": 16.8
           },
           "resultCategory": "short-left",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -1.043
         },
         {
@@ -2286,7 +2289,7 @@
             "lateralYds": 2.0
           },
           "resultCategory": "short",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -1.007
         },
         {
@@ -2325,7 +2328,7 @@
             "lateralYds": 2.2
           },
           "resultCategory": "green",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.46
         },
         {
@@ -2547,7 +2550,7 @@
             "lateralYds": 1.2
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -1.007
         },
         {
@@ -2586,7 +2589,7 @@
             "lateralYds": 1.1
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -0.57
         },
         {
@@ -2625,7 +2628,7 @@
             "lateralYds": 2.5
           },
           "resultCategory": "green",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.234
         },
         {
@@ -2730,7 +2733,7 @@
             "lateralYds": 0.5
           },
           "resultCategory": "short",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -1.0
         },
         {
@@ -2769,7 +2772,7 @@
             "lateralYds": 15.1
           },
           "resultCategory": "short-right",
-          "sgCategory": "approach",
+          "sgCategory": "midApproach",
           "strokesGained": -0.584
         },
         {
@@ -2808,7 +2811,7 @@
             "lateralYds": 1.6
           },
           "resultCategory": "short",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.945
         },
         {
@@ -2847,7 +2850,7 @@
             "lateralYds": 4.6
           },
           "resultCategory": "green",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.435
         },
         {
@@ -3108,7 +3111,7 @@
             "lateralYds": 0.3
           },
           "resultCategory": "short",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.978
         },
         {
@@ -3147,7 +3150,7 @@
             "lateralYds": 4.2
           },
           "resultCategory": "short",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.733
         },
         {
@@ -3186,7 +3189,7 @@
             "lateralYds": 7.5
           },
           "resultCategory": "green",
-          "sgCategory": "shortGame",
+          "sgCategory": "inside50",
           "strokesGained": -0.523
         },
         {
