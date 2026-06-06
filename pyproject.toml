@@ -1,0 +1,30 @@
+[project]
+name = "garmin-golf"
+version = "0.0.1"
+description = "Liberate, store, and analyze personal Garmin golf data (CT10 + watch + Garmin Golf app)."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "garminconnect",
+    "curl_cffi",      # required by recent garminconnect versions
+    "ua-generator",   # required by recent garminconnect versions
+    "pandas",
+    "python-dotenv",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
