@@ -6,10 +6,10 @@
     "per18": {
       "offTee": -7.5,
       "approach": -10.6,
-      "shortGame": -8.0,
-      "putting": 1.5
+      "shortGame": -10.4,
+      "putting": -4.6
     },
-    "total": -24.6,
+    "total": -33.1,
     "rounds": [
       "2026-05-29",
       "2026-06-01",
@@ -20,10 +20,10 @@
     "per18": {
       "offTee": -7.0,
       "approach": -13.9,
-      "shortGame": -6.2,
-      "putting": -1.0
+      "shortGame": -9.8,
+      "putting": -6.5
     },
-    "total": -28.1,
+    "total": -37.2,
     "rounds": [
       "2026-05-06",
       "2026-05-15",
@@ -33,9 +33,14 @@
   "deltaFromStart": {
     "offTee": -0.5,
     "approach": 3.3,
-    "shortGame": -1.8,
-    "putting": 2.5,
-    "total": 3.5
+    "shortGame": -0.6,
+    "putting": 1.9,
+    "total": 4.1
+  },
+  "puttingAuthoritative": {
+    "puttsPer18": 38.4,
+    "threePuttsPer18": 3.6,
+    "scratchPuttsPer18": 30
   },
   "trend": {
     "offTee": {
@@ -47,11 +52,11 @@
       "arrow": "\u2191"
     },
     "shortGame": {
-      "slopePerRound": -0.59,
-      "arrow": "\u2193"
+      "slopePerRound": 0.2,
+      "arrow": "\u2192"
     },
     "putting": {
-      "slopePerRound": 0.77,
+      "slopePerRound": 0.51,
       "arrow": "\u2191"
     }
   },
@@ -65,9 +70,9 @@
         "offTee": -3.8,
         "approach": -18.5,
         "shortGame": 0.3,
-        "putting": -5.6
+        "putting": 2.4
       },
-      "total": -27.6,
+      "total": -19.6,
       "clean": false
     },
     {
@@ -78,10 +83,10 @@
       "per18": {
         "offTee": -7.6,
         "approach": -17.3,
-        "shortGame": -7.3,
-        "putting": -3.1
+        "shortGame": -10.3,
+        "putting": -8.2
       },
-      "total": -35.3,
+      "total": -43.4,
       "clean": true
     },
     {
@@ -92,10 +97,10 @@
       "per18": {
         "offTee": -4.2,
         "approach": -12.2,
-        "shortGame": -2.8,
-        "putting": -3.7
+        "shortGame": -8.7,
+        "putting": -8.1
       },
-      "total": -22.9,
+      "total": -33.2,
       "clean": true
     },
     {
@@ -107,9 +112,9 @@
         "offTee": -30.5,
         "approach": -44.0,
         "shortGame": -22.2,
-        "putting": 10.4
+        "putting": -1.6
       },
-      "total": -86.3,
+      "total": -98.3,
       "clean": false
     },
     {
@@ -120,10 +125,10 @@
       "per18": {
         "offTee": -8.1,
         "approach": -15.1,
-        "shortGame": -7.3,
-        "putting": -10.8
+        "shortGame": -10.3,
+        "putting": -8.7
       },
-      "total": -41.3,
+      "total": -42.2,
       "clean": false
     },
     {
@@ -134,10 +139,10 @@
       "per18": {
         "offTee": -9.3,
         "approach": -12.1,
-        "shortGame": -8.5,
-        "putting": 3.7
+        "shortGame": -10.5,
+        "putting": -3.3
       },
-      "total": -26.2,
+      "total": -35.2,
       "clean": true
     },
     {
@@ -148,10 +153,10 @@
       "per18": {
         "offTee": -8.3,
         "approach": -18.7,
-        "shortGame": -9.0,
-        "putting": -34.5
+        "shortGame": -15.0,
+        "putting": -4.5
       },
-      "total": -70.5,
+      "total": -46.5,
       "clean": false
     },
     {
@@ -162,10 +167,10 @@
       "per18": {
         "offTee": -8.7,
         "approach": -11.5,
-        "shortGame": -7.7,
-        "putting": 0.8
+        "shortGame": -11.7,
+        "putting": -4.4
       },
-      "total": -27.1,
+      "total": -36.3,
       "clean": true
     },
     {
@@ -177,9 +182,9 @@
         "offTee": -1.4,
         "approach": -6.0,
         "shortGame": -7.8,
-        "putting": -1.5
+        "putting": -7.5
       },
-      "total": -16.7,
+      "total": -22.7,
       "clean": true
     }
   ],

@@ -86,16 +86,23 @@
   },
   "strokesGained": {
     "baseline": "PGA Tour (scratch), approximate",
-    "totalRecordedVsScratch": -35.3,
+    "totalRecordedVsScratch": -43.45,
     "byCategory": {
       "offTee": -7.56,
       "approach": -17.33,
-      "shortGame": -7.35,
-      "putting": -3.06
+      "shortGame": -10.35,
+      "putting": -8.21
     },
-    "categorizedShots": 101,
+    "categorizedShots": 72,
     "penaltyStrokes": 1,
-    "note": "Per-shot SG over RECORDED shots only \u2014 penalties (no shot position, ~-1 each) and un-sensed shots are NOT included. Negative is normal vs a scratch baseline; read the category split. Putting is GPS-noisy (least reliable bucket)."
+    "putting": {
+      "totalPutts": 41,
+      "threePutts": 5,
+      "sgFromCounts": -8.21,
+      "holesMeasured": 17,
+      "puttsCovered": 39
+    },
+    "note": "Tee-to-green SG is per-shot over recorded shots (penalties & un-sensed shots excluded). PUTTING is now count-based: expected_putts(first-putt distance) - actual putts, so 3-putts are penalized; totalPutts/threePutts are authoritative. Negative is normal vs scratch \u2014 read the category split."
   },
   "garminStats": {
     "holesPlayed": 18,
@@ -397,7 +404,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.975
+          "strokesGained": null
         }
       ]
     },
@@ -541,7 +548,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.68
+          "strokesGained": null
         }
       ]
     },
@@ -763,7 +770,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -1.894
+          "strokesGained": null
         },
         {
           "shotNumber": 6,
@@ -802,7 +809,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.934
+          "strokesGained": null
         }
       ]
     },
@@ -1024,7 +1031,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -0.887
+          "strokesGained": null
         },
         {
           "shotNumber": 6,
@@ -1063,7 +1070,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.905
+          "strokesGained": null
         }
       ]
     },
@@ -1285,7 +1292,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.59
+          "strokesGained": null
         }
       ]
     },
@@ -1468,7 +1475,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -0.76
+          "strokesGained": null
         },
         {
           "shotNumber": 5,
@@ -1507,7 +1514,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.649
+          "strokesGained": null
         }
       ]
     },
@@ -1768,7 +1775,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -1.006
+          "strokesGained": null
         },
         {
           "shotNumber": 7,
@@ -1807,7 +1814,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -1.28
+          "strokesGained": null
         },
         {
           "shotNumber": 8,
@@ -1885,7 +1892,7 @@
           },
           "resultCategory": "green",
           "sgCategory": "shortGame",
-          "strokesGained": 1.429
+          "strokesGained": 0.429
         }
       ]
     },
@@ -2146,7 +2153,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -0.828
+          "strokesGained": null
         },
         {
           "shotNumber": 7,
@@ -2185,7 +2192,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.75
+          "strokesGained": null
         }
       ]
     },
@@ -2368,7 +2375,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -0.993
+          "strokesGained": null
         },
         {
           "shotNumber": 5,
@@ -2407,7 +2414,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.934
+          "strokesGained": null
         }
       ]
     },
@@ -2629,7 +2636,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -0.865
+          "strokesGained": null
         },
         {
           "shotNumber": 6,
@@ -2668,7 +2675,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.791
+          "strokesGained": null
         }
       ]
     },
@@ -2929,7 +2936,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -1.011
+          "strokesGained": null
         },
         {
           "shotNumber": 7,
@@ -2968,7 +2975,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.839
+          "strokesGained": null
         }
       ]
     },
@@ -3190,7 +3197,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.274
+          "strokesGained": null
         }
       ]
     },
@@ -3373,7 +3380,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -1.201
+          "strokesGained": null
         },
         {
           "shotNumber": 5,
@@ -3412,7 +3419,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.951
+          "strokesGained": null
         }
       ]
     },
@@ -3556,7 +3563,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -0.874
+          "strokesGained": null
         },
         {
           "shotNumber": 4,
@@ -3595,7 +3602,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -0.757
+          "strokesGained": null
         },
         {
           "shotNumber": 5,
@@ -3634,7 +3641,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.575
+          "strokesGained": null
         }
       ]
     },
@@ -3895,7 +3902,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -1.546
+          "strokesGained": null
         },
         {
           "shotNumber": 7,
@@ -3934,7 +3941,7 @@
           },
           "resultCategory": "green",
           "sgCategory": "shortGame",
-          "strokesGained": 1.422
+          "strokesGained": 0.422
         }
       ]
     },
@@ -4156,7 +4163,7 @@
           },
           "resultCategory": "green",
           "sgCategory": "shortGame",
-          "strokesGained": 1.672
+          "strokesGained": 0.672
         }
       ]
     },
@@ -4339,7 +4346,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": -0.816
+          "strokesGained": null
         },
         {
           "shotNumber": 5,
@@ -4378,7 +4385,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.856
+          "strokesGained": null
         }
       ]
     },
@@ -4561,7 +4568,7 @@
           },
           "resultCategory": "putt",
           "sgCategory": "putting",
-          "strokesGained": 0.956
+          "strokesGained": null
         }
       ]
     }

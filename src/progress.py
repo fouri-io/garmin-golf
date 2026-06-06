@@ -73,6 +73,16 @@ def build() -> dict:
     st = _agg_per18(start)
     delta = {k: round(cur[k] - st[k], 1) for k in SG_CATS}
 
+    # Authoritative putting (from the scorecard — no GPS), per 18 over the current window.
+    cur_holes = sum(d["score"]["holesCompleted"] or 18 for d in current) or 1
+    putting_auth = {
+        "puttsPer18": round(sum(d["strokesGained"]["putting"]["totalPutts"]
+                                for d in current) / cur_holes * 18, 1),
+        "threePuttsPer18": round(sum(d["strokesGained"]["putting"]["threePutts"]
+                                     for d in current) / cur_holes * 18, 1),
+        "scratchPuttsPer18": 30,
+    }
+
     trend = {}
     for k in SG_CATS:
         s = _slope([_per18(d)[k] for d in clean])
@@ -95,6 +105,7 @@ def build() -> dict:
         "startForm": {"per18": st, "total": round(sum(st.values()), 1),
                       "rounds": [d["round"]["date"][:10] for d in start]},
         "deltaFromStart": {**delta, "total": round(sum(delta.values()), 1)},
+        "puttingAuthoritative": putting_auth,
         "trend": trend,
         "timeSeries": series,
         "note": (
@@ -111,6 +122,7 @@ def build() -> dict:
 
 def render_markdown(doc: dict) -> str:
     cf, df, tr = doc["currentForm"], doc["deltaFromStart"], doc["trend"]
+    pa = doc["puttingAuthoritative"]
     lines = [
         "# Progress — Strokes Gained vs scratch (fixed ruler)",
         f"**Current form** (last {doc['window']} clean rounds: "
@@ -118,6 +130,9 @@ def render_markdown(doc: dict) -> str:
         f"Since your start ({', '.join(doc['startForm']['rounds'])}): "
         f"**{df['total']:+.1f} strokes/round** "
         f"({'better' if df['total'] > 0 else 'worse'}).",
+        f"Putting (authoritative): **{pa['puttsPer18']} putts/18** "
+        f"({pa['threePuttsPer18']} three-putts) vs scratch ~{pa['scratchPuttsPer18']} — "
+        f"a clear leak; the GPS-based putting SG is not trusted, this count is.",
         "",
         "| Category | Now /18 | Δ from start | Trend |",
         "|---|--:|--:|:-:|",

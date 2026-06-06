@@ -59,6 +59,10 @@ class Baseline:
         tg_lie = _LIE_MAP.get(lie, "fairway")
         return _interp(self.tg[tg_lie], dist_yds)
 
+    def expected_putts(self, dist_ft: float) -> float:
+        """Expected putts to hole out from a distance on the green (feet)."""
+        return _interp(self.putt, dist_ft)
+
 
 def categorize(shot: dict, par: int | None, scoring_zone_max: float) -> str:
     """Bucket by task: putting / offTee / shortGame (wedge zone) / approach (full)."""
@@ -80,22 +84,27 @@ def compute(holes: list[dict], base: Baseline | None = None) -> dict:
     by_cat = {"offTee": 0.0, "approach": 0.0, "shortGame": 0.0, "putting": 0.0}
     categorized = 0
     penalty_strokes = 0
+    # Putting is computed from AUTHORITATIVE putt counts, not GPS shot positions.
+    total_putts = three_putts = putts_covered = holes_putt_measured = 0
 
     for h in holes:
         shots = h["shots"]
         par = h["par"]
         penalty_strokes += h.get("penalties") or 0
+        putts = h.get("putts") or 0
+        total_putts += putts
+        three_putts += 1 if putts >= 3 else 0
 
-        for i, s in enumerate(shots):
+        # Tee-to-green: per-shot SG. Putts are handled below from counts, not here.
+        for s in shots:
             cat = categorize(s, par, scoring_zone)
             s["sgCategory"] = cat
+            if cat == "putting":
+                s["strokesGained"] = None  # measured at hole level from putt counts
+                continue
             e_before = base.expected(lie=s["from"], dist_yds=s.get("distanceToPinBeforeYds"))
-            # A shot that ends on the green as the hole's last recorded shot = holed out.
-            is_last = i == len(shots) - 1
-            if is_last and s["to"] == "Green":
-                e_after = 0.0
-            else:
-                e_after = base.expected(lie=s["to"], dist_yds=s.get("distanceRemainingYds"))
+            # End on the green -> expected PUTTS from there (no bogus holing credit).
+            e_after = base.expected(lie=s["to"], dist_yds=s.get("distanceRemainingYds"))
             if e_before is None or e_after is None:
                 s["strokesGained"] = None
                 continue
@@ -104,16 +113,33 @@ def compute(holes: list[dict], base: Baseline | None = None) -> dict:
             by_cat[cat] += sg
             categorized += 1
 
+        # Putting SG = expected putts (from first-putt distance) - actual putts. Uses the
+        # authoritative count, so 3-putts are penalized correctly. Only where we have a
+        # first-putt distance (hole reached the green with a recorded putt).
+        fpd = h.get("firstPuttDistanceFt")
+        if putts and fpd is not None:
+            by_cat["putting"] += base.expected_putts(fpd) - putts
+            putts_covered += putts
+            holes_putt_measured += 1
+
     by_cat = {k: round(v, 2) for k, v in by_cat.items()}
     return {
         "baseline": "PGA Tour (scratch), approximate",
-        "totalRecordedVsScratch": round(sum(by_cat.values()), 2),  # over recorded shots only
+        "totalRecordedVsScratch": round(sum(by_cat.values()), 2),
         "byCategory": by_cat,
         "categorizedShots": categorized,
         "penaltyStrokes": penalty_strokes,    # ~ -1 each, not in the category totals
+        "putting": {                          # authoritative, from the scorecard
+            "totalPutts": total_putts,
+            "threePutts": three_putts,
+            "sgFromCounts": by_cat["putting"],
+            "holesMeasured": holes_putt_measured,
+            "puttsCovered": putts_covered,    # putts the SG could place (have a 1st-putt dist)
+        },
         "note": (
-            "Per-shot SG over RECORDED shots only — penalties (no shot position, ~-1 each) "
-            "and un-sensed shots are NOT included. Negative is normal vs a scratch baseline; "
-            "read the category split. Putting is GPS-noisy (least reliable bucket)."
+            "Tee-to-green SG is per-shot over recorded shots (penalties & un-sensed shots "
+            "excluded). PUTTING is now count-based: expected_putts(first-putt distance) - "
+            "actual putts, so 3-putts are penalized; totalPutts/threePutts are authoritative. "
+            "Negative is normal vs scratch — read the category split."
         ),
     }
