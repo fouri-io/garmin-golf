@@ -21,6 +21,11 @@ ROUNDS_DIR = PROCESSED / "rounds"
 OUT_DIR = Path("site")
 
 
+def _ll(loc: dict | None) -> list | None:
+    """A location dict -> [lat, lon] for mapping, or None if no coordinates."""
+    return [loc["lat"], loc["lon"]] if loc and loc.get("lat") is not None else None
+
+
 def _compact_round(path: Path) -> dict:
     d = json.loads(path.read_text())
     sc, rnd, course = d["score"], d["round"], d["course"]
@@ -30,12 +35,13 @@ def _compact_round(path: Path) -> dict:
     holes_detail = [{
         "n": h["number"], "par": h["par"], "strokes": h["strokes"], "putts": h["putts"],
         "pen": h["penalties"], "toPar": h["scoreToPar"], "name": h["scoreName"],
-        "fw": h["fairway"], "gir": h["gir"],
+        "fw": h["fairway"], "gir": h["gir"], "pin": _ll(h.get("pin")),
         "shots": [{
             "n": s["shotNumber"], "club": s["club"], "type": s["type"], "yards": s["yards"],
             "from": s["from"], "to": s["to"], "sg": s["strokesGained"],
             "before": s["distanceToPinBeforeYds"], "rem": s["distanceRemainingYds"],
             "cat": s["sgCategory"], "src": s["source"],
+            "start": _ll(s.get("start")), "end": _ll(s.get("end")),
         } for s in h["shots"]],
     } for h in d["holes"]]
     return {
@@ -74,6 +80,8 @@ TEMPLATE = r"""<!doctype html>
 <meta name="theme-color" content="#15497a">
 <meta name="robots" content="noindex, nofollow">
 <title>Golf Progress</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{--bg:#eef1f4;--card:#fff;--ink:#1c2530;--muted:#7a8794;--line:#e9edf1;
     --good:#1f9d57;--bad:#d6443c;--accent:#15497a;--warn:#e8a33d;}
@@ -155,6 +163,19 @@ TEMPLATE = r"""<!doctype html>
   th:first-child,td:first-child{text-align:left}thead th{font-size:11px;color:var(--muted);font-weight:600}
   .legend{font-size:12px;color:#2c4763;background:#eef4fb;border:1px solid #d8e6f5;
     border-radius:10px;padding:8px 12px;margin-bottom:10px}
+  /* maps */
+  .rsel{width:100%;background:var(--card);color:var(--ink);border:1px solid var(--line);
+    border-radius:12px;padding:11px 12px;font-size:15px;font-weight:600;margin-bottom:8px}
+  .holenav{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .holenav button{flex:0 0 auto;width:46px;height:42px;border:0;border-radius:12px;background:var(--accent);
+    color:#fff;font-size:18px;cursor:pointer}.holenav button:disabled{opacity:.35}
+  .holenav .hl{flex:1;text-align:center;font-weight:700;font-size:15px}
+  #map{height:60vh;min-height:340px;border-radius:14px;overflow:hidden;background:#1c2530}
+  .dot{border:2px solid #fff;border-radius:50%;width:16px;height:16px;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+  .tag{background:rgba(17,21,27,.78);color:#fff;border:0;border-radius:6px;padding:1px 5px;
+    font:600 11px -apple-system,Arial;white-space:nowrap}.leaflet-tooltip.tag:before{display:none}
+  .mlegend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:8px}
+  .mlegend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
   .tabbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
     display:flex;justify-content:space-around;padding:8px 0 calc(10px + env(safe-area-inset-bottom));z-index:10}
   .tabbar .t{font-size:11px;color:var(--muted);text-align:center;cursor:pointer;border:0;background:none}
@@ -205,8 +226,16 @@ TEMPLATE = r"""<!doctype html>
     <div class="card"><table><thead><tr><th>Club</th><th>n</th><th>Median</th><th>p25–p75</th><th>Max</th></tr></thead>
       <tbody id="clubsbody"></tbody></table></div></div>
 
-  <div id="tab-maps" class="hide"><div class="card"><h2>Shot maps</h2>
-    <div class="foot">Coming soon — satellite overlays of your georeferenced shots.</div></div></div>
+  <div id="tab-maps" class="hide">
+    <select class="rsel" id="mapRound"></select>
+    <div class="holenav"><button id="hprev">◀</button>
+      <div class="hl" id="hlabel">—</div><button id="hnext">▶</button></div>
+    <div id="map"></div>
+    <div class="mlegend"><span><i style="background:#1f9d57"></i>gained</span>
+      <span><i style="background:#e8a33d"></i>~even</span>
+      <span><i style="background:#d6443c"></i>lost</span>
+      <span><i style="background:#9aa6b2"></i>putt</span>
+      <span>· tap a shot for detail · GPS-approximate</span></div></div>
 </div>
 
 <div class="tabbar" id="tabs">
@@ -336,10 +365,53 @@ document.getElementById('win').onclick=e=>{if(e.target.dataset.w)setWin(e.target
 document.getElementById('lev3').onclick=e=>{const c=e.target.closest('[data-w]');if(c)setWin(c.dataset.w);};
 document.getElementById('base').onclick=e=>{if(!e.target.dataset.b)return;base=e.target.dataset.b;
   [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===e.target));renderProgress();};
+/* ---- shot maps (Leaflet + Esri satellite) ---- */
+let lmap=null,mlayer=null,mRound=0,mHole=0;
+const mappable=r=>r.holesDetail.filter(h=>h.shots.some(s=>s.start&&s.end));
+function abbr(c){if(c==='unknown')return'?';if(/Driver/.test(c))return'Dr';if(/Putter/.test(c))return'Pt';
+  let m;if(m=c.match(/(\d+)\s*Wood/))return m[1]+'W';if(m=c.match(/(\d+)\s*Hybrid/))return m[1]+'H';
+  if(m=c.match(/(\d+)\s*Iron/))return m[1]+'i';if(/PW/.test(c))return'PW';
+  if(m=c.match(/(\d+)\s*°/))return m[1]+'°';return c.slice(0,3);}
+const sgColor=sg=>sg==null?'#9aa6b2':sg>=0.1?'#1f9d57':sg<=-0.1?'#d6443c':'#e8a33d';
+const dot=c=>L.divIcon({className:'',html:`<div class="dot" style="background:${c}"></div>`,iconSize:[16,16]});
+function initMap(){
+  if(lmap)return;
+  document.getElementById('mapRound').innerHTML=DATA.rounds.map((r,i)=>
+    `<option value="${i}">${r.date} · ${r.course}${r.polluted?' ⚠':''}</option>`).join("");
+  lmap=L.map('map',{zoomControl:true});
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {maxZoom:21,maxNativeZoom:19,attribution:'Imagery © Esri'}).addTo(lmap);
+  mlayer=L.layerGroup().addTo(lmap);
+  document.getElementById('mapRound').onchange=e=>{mRound=+e.target.value;mHole=0;drawHole();};
+  document.getElementById('hprev').onclick=()=>{if(mHole>0){mHole--;drawHole();}};
+  document.getElementById('hnext').onclick=()=>{if(mHole<mappable(DATA.rounds[mRound]).length-1){mHole++;drawHole();}};
+}
+function drawHole(){
+  const holes=mappable(DATA.rounds[mRound]);mlayer.clearLayers();
+  if(!holes.length){document.getElementById('hlabel').textContent="no GPS shots in this round";return;}
+  mHole=Math.max(0,Math.min(mHole,holes.length-1));const h=holes[mHole],pts=[];
+  document.getElementById('hlabel').textContent=`Hole ${h.n} · par ${h.par} · scored ${h.strokes}`;
+  document.getElementById('hprev').disabled=mHole===0;
+  document.getElementById('hnext').disabled=mHole===holes.length-1;
+  h.shots.forEach(s=>{if(!s.start||!s.end)return;
+    L.polyline([s.start,s.end],{color:'#fff',weight:2,opacity:.65}).addTo(mlayer);pts.push(s.start,s.end);
+    const yd=s.yards!=null?Math.round(s.yards):'';
+    const m=L.marker(s.end,{icon:dot(sgColor(s.sg))});
+    m.bindPopup(`<b>#${s.n} ${s.club}</b> ${yd}y<br>${s.from} → ${s.to}`+(s.sg!=null?` · SG ${s.sg>0?'+':''}${s.sg.toFixed(1)}`:''));
+    if(s.type!=='PUTT')m.bindTooltip(`${abbr(s.club)} ${yd}`,{permanent:true,direction:'right',className:'tag',offset:[8,0]});
+    m.addTo(mlayer);});
+  const first=h.shots.find(s=>s.start);
+  if(first)L.marker(first.start,{icon:dot('#1f9d57')}).bindTooltip('Tee',{permanent:true,direction:'left',className:'tag',offset:[-8,0]}).addTo(mlayer);
+  if(h.pin){L.marker(h.pin).bindPopup('📍 Pin').addTo(mlayer);pts.push(h.pin);}
+  if(pts.length)lmap.fitBounds(pts,{padding:[45,45]});
+}
+function showMap(){initMap();setTimeout(()=>{lmap.invalidateSize();drawHole();},30);}
+
 document.getElementById('tabs').onclick=e=>{const t=e.target.closest('[data-t]');if(!t)return;
   [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===t));
   ['progress','rounds','clubs','maps'].forEach(n=>document.getElementById('tab-'+n).classList.toggle('hide',n!==t.dataset.t));
-  if(t.dataset.t==="rounds")renderRoundsList();};
+  if(t.dataset.t==="rounds")renderRoundsList();
+  if(t.dataset.t==="maps")showMap();};
 
 renderProgress();renderRoundsList();renderClubs();
 </script>
