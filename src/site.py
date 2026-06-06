@@ -93,7 +93,7 @@ TEMPLATE = r"""<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#15497a">
 <meta name="robots" content="noindex, nofollow">
-<title>Golf Progress</title>
+<title>The Turn</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -137,9 +137,9 @@ TEMPLATE = r"""<!doctype html>
   .lev3>div.on{background:#eaf1f8;border-color:var(--accent)}
   .lev3 .wl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
   .lev3 .wv{font-size:25px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
-  .leakcall{display:flex;align-items:center;gap:10px;background:#fbeceb;border-radius:12px;
-    padding:12px;margin-bottom:12px}
-  .leakcall .ico{font-size:22px}.leakcall b{color:var(--bad)}
+  .leakcall{background:#fbeceb;border-left:4px solid var(--bad);border-radius:10px;
+    padding:12px 14px;margin-bottom:12px}
+  .leakcall b{color:var(--bad)}
   .bars{display:flex;justify-content:space-between;height:160px;position:relative;margin:6px 0 28px}
   .zero{position:absolute;left:0;right:0;top:50%;border-top:1px dashed #c4ccd4}
   .col{flex:1;position:relative}
@@ -208,14 +208,22 @@ TEMPLATE = r"""<!doctype html>
   .tabbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
     display:flex;justify-content:space-around;padding:8px 0 calc(10px + env(safe-area-inset-bottom));z-index:10}
   .tabbar .t{font-size:11px;color:var(--muted);text-align:center;cursor:pointer;border:0;background:none}
-  .tabbar .t.on{color:var(--accent)}.tabbar .t .i{font-size:18px;display:block}
+  .tabbar .t.on{color:var(--accent)}.tabbar .t svg{width:22px;height:22px;display:block;margin:0 auto 2px}
+  .ic{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .top h1{display:flex;align-items:center;gap:6px}.top h1 svg{width:19px;height:19px}
+  .tagline{font-size:12px;color:var(--muted);font-style:italic;margin:2px 0 0}
+  .refresh svg{width:18px;height:18px}
+  .maplink svg{width:13px;height:13px;vertical-align:-2px;margin-right:3px}
   .hide{display:none}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="top"><div><h1>⛳ Golf Progress</h1><div class="date" id="date"></div></div>
-    <button class="refresh" title="Rebuild from latest data">⟳</button></div>
+  <div class="top">
+    <div><h1><svg class="ic" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>The Turn</h1>
+      <div class="tagline">round by round</div>
+      <div class="date" id="date"></div></div>
+    <button class="refresh" title="Rebuild from latest data"><svg class="ic" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button></div>
 
   <div id="tab-progress">
     <div class="ctl"><span class="lab">Window — which rounds you're viewing</span>
@@ -236,8 +244,8 @@ TEMPLATE = r"""<!doctype html>
       <div class="tile"><div class="lab">Penalties /18</div><div class="v" id="pen">—</div></div>
       <div class="tile"><div class="lab">Doubles+ /18</div><div class="v" id="dbl">—</div></div>
       <div class="tile"><div class="lab">3-putts /18</div><div class="v" id="tp">—</div></div></div>
-    <div class="leakcall"><div class="ico">🎯</div>
-      <div>#1 leak: <b id="leak">—</b><br><span class="foot">your highest-return practice target</span></div></div>
+    <div class="leakcall">#1 leak: <b id="leak">—</b><br>
+      <span class="foot">your highest-return practice target</span></div>
     <div class="card"><h2>Strokes Gained</h2>
       <div class="ctl" style="margin:0 0 6px"><span class="lab">Compare vs</span>
         <div class="seg" id="base"></div></div>
@@ -286,12 +294,12 @@ TEMPLATE = r"""<!doctype html>
 </div>
 
 <div class="tabbar" id="tabs">
-  <button class="t on" data-t="progress"><span class="i">📊</span>Overview</button>
-  <button class="t" data-t="trend"><span class="i">📈</span>Trend</button>
-  <button class="t" data-t="rounds"><span class="i">⛳</span>Rounds</button>
-  <button class="t" data-t="clubs"><span class="i">🏌️</span>Clubs</button>
-  <button class="t" data-t="maps"><span class="i">🗺️</span>Maps</button>
-  <button class="t" data-t="coach"><span class="i">🧠</span>Coach</button>
+  <button class="t on" data-t="progress"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Overview</button>
+  <button class="t" data-t="trend"><svg class="ic" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Trend</button>
+  <button class="t" data-t="rounds"><svg class="ic" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>Rounds</button>
+  <button class="t" data-t="clubs"><svg class="ic" viewBox="0 0 24 24"><path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>Clubs</button>
+  <button class="t" data-t="maps"><svg class="ic" viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>Maps</button>
+  <button class="t" data-t="coach"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>Coach</button>
 </div>
 
 <script>
@@ -381,7 +389,7 @@ function renderRoundDetail(i){
       return `<div><span class="sn">${s.n}</span>${club} ${yd} <span class="mut">${s.from}→${s.to}${rem}</span>${sg}</div>`;
     }).join("");
     const fw=h.fw?`FW:${h.fw}`:"";const gir=h.gir?"GIR":"";
-    const maplink=h.shots.some(s=>s.start&&s.end)?`<button class="maplink" data-h="${h.n}">🗺️ map</button>`:'';
+    const maplink=h.shots.some(s=>s.start&&s.end)?`<button class="maplink" data-h="${h.n}"><svg class="ic" viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>map</button>`:'';
     return `<div class="hole"><div class="hrow">
         <span class="sbox ${box(h.toPar)}">${h.strokes}</span>
         <b>H${h.n}</b> <span class="mini">par ${h.par}</span><span class="gap"></span>
@@ -452,7 +460,7 @@ function drawHole(){
     m.addTo(mlayer);});
   const first=h.shots.find(s=>s.start);
   if(first)L.marker(first.start,{icon:dot('#1f9d57')}).bindTooltip('Tee',{permanent:true,direction:'left',className:'tag',offset:[-8,0]}).addTo(mlayer);
-  if(h.pin){L.marker(h.pin).bindPopup('📍 Pin').addTo(mlayer);pts.push(h.pin);}
+  if(h.pin){L.marker(h.pin).bindPopup('Pin').addTo(mlayer);pts.push(h.pin);}
   if(pts.length)lmap.fitBounds(pts,{padding:[45,45]});
 }
 function showMap(){initMap();setTimeout(()=>{lmap.invalidateSize();drawHole();},30);}
