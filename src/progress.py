@@ -35,6 +35,15 @@ def _per18(d: dict) -> dict:
     return {k: round(c[k] * 18 / holes, 1) for k in SG_CATS}
 
 
+def _over_rating18(d: dict) -> float | None:
+    """Score over course rating, normalized to 18 holes (authoritative — no GPS)."""
+    r = d["round"].get("teeBoxRating")
+    if r is None:
+        return None
+    holes = d["score"]["holesCompleted"] or 18
+    return round((d["score"]["strokes"] - r) * 18 / holes, 1)
+
+
 def _is_clean(d: dict) -> bool:
     return d["reconciliation"]["shotCountDelta"] <= POLLUTION_DELTA
 
@@ -92,9 +101,26 @@ def build() -> dict:
     series = [{
         "date": d["round"]["date"][:10], "course": d["course"]["name"],
         "score": d["score"]["strokes"], "holes": d["score"]["holesCompleted"],
+        "overRating18": _over_rating18(d),
         "per18": _per18(d), "total": round(sum(_per18(d).values()), 1),
         "clean": _is_clean(d),
     } for d in rounds]
+
+    # Score-over-rating: AUTHORITATIVE (score - course rating, no GPS). Uses ALL rounds
+    # since a round's score is valid regardless of sensor pollution.
+    rated = [d for d in rounds if d["round"].get("teeBoxRating")]
+    raw_sum = sum(d["score"]["strokes"] - d["round"]["teeBoxRating"] for d in rated)
+    holes_sum = sum(d["score"]["holesCompleted"] or 18 for d in rated)
+    over_vals = sorted(_over_rating18(d) for d in rated)
+    half = max(1, len(over_vals) // 2)
+    scoring = {
+        "averageOverRating18": round(raw_sum / holes_sum * 18, 1) if holes_sum else None,
+        "potentialOverRating18": round(sum(over_vals[:half]) / half, 1),  # better half ~ handicap
+        "bestOverRating18": over_vals[0] if over_vals else None,
+        "garminHandicap": 23.6,
+        "note": "Authoritative: score - course rating (no GPS). Potential = avg of the "
+                "better half of rounds, which is what a handicap measures.",
+    }
 
     doc = {
         "baseline": "PGA Tour (scratch), fixed ruler",
@@ -106,6 +132,7 @@ def build() -> dict:
                       "rounds": [d["round"]["date"][:10] for d in start]},
         "deltaFromStart": {**delta, "total": round(sum(delta.values()), 1)},
         "puttingAuthoritative": putting_auth,
+        "scoring": scoring,
         "trend": trend,
         "timeSeries": series,
         "note": (
@@ -123,8 +150,20 @@ def build() -> dict:
 def render_markdown(doc: dict) -> str:
     cf, df, tr = doc["currentForm"], doc["deltaFromStart"], doc["trend"]
     pa = doc["puttingAuthoritative"]
+    sco = doc["scoring"]
     lines = [
-        "# Progress — Strokes Gained vs scratch (fixed ruler)",
+        "# Progress",
+        "",
+        "## Scoring level (authoritative — score vs course rating, no GPS)",
+        f"**Average: +{sco['averageOverRating18']}/18 over rating** "
+        f"(scratch = the rating). Potential (better half ≈ handicap): "
+        f"**+{sco['potentialOverRating18']}** · best round +{sco['bestOverRating18']} · "
+        f"Garmin handicap {sco['garminHandicap']}.",
+        f"_The gap between average (+{sco['averageOverRating18']}) and potential "
+        f"(+{sco['potentialOverRating18']}) is your volatility — closing it = fewer "
+        f"blow-up rounds. Break 90 on these tees ≈ +22._",
+        "",
+        "## Strokes Gained vs scratch (fixed ruler)",
         f"**Current form** (last {doc['window']} clean rounds: "
         f"{', '.join(cf['rounds'])}) — total **{cf['total']:+.1f}/18**.",
         f"Since your start ({', '.join(doc['startForm']['rounds'])}): "
@@ -147,16 +186,18 @@ def render_markdown(doc: dict) -> str:
         "clean rounds, → flat, ↓ declining._",
         "",
         "## Per-round history",
-        "| Date | Course | Score | OTT | APP | SHORT | Putt | Total | |",
-        "|---|---|--:|--:|--:|--:|--:|--:|:--|",
+        "_vsRtg = score over course rating per 18 (authoritative). SG columns per 18._",
+        "| Date | Course | Score | H | vsRtg | OTT | APP | SHORT | Putt | SGtot | |",
+        "|---|---|--:|--:|--:|--:|--:|--:|--:|--:|:--|",
     ]
     for r in doc["timeSeries"]:
         p = r["per18"]
         flag = "" if r["clean"] else " ⚠ excl"
+        ovr = f"+{r['overRating18']}" if r["overRating18"] is not None else "—"
         lines.append(
-            f"| {r['date']} | {r['course'][:20]} | {r['score']} | {p['offTee']:+.1f} | "
-            f"{p['approach']:+.1f} | {p['shortGame']:+.1f} | {p['putting']:+.1f} | "
-            f"{r['total']:+.1f} |{flag} |"
+            f"| {r['date']} | {r['course'][:18]} | {r['score']} | {r['holes']} | {ovr} | "
+            f"{p['offTee']:+.1f} | {p['approach']:+.1f} | {p['shortGame']:+.1f} | "
+            f"{p['putting']:+.1f} | {r['total']:+.1f} |{flag} |"
         )
     lines += ["", "_All values per-18. ⚠ excl = over-recorded round, excluded from current "
               "form/trend. As you log rounds, re-run `python -m src.progress`._"]
