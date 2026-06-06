@@ -147,12 +147,103 @@ def render_markdown(doc: dict) -> str:
     return "\n".join(lines)
 
 
+SG_JSON = Path("data/processed/strokes_gained.json")
+SG_MD = Path("data/processed/strokes_gained.md")
+SG_CATS = ["offTee", "approach", "aroundGreen", "putting"]
+SG_LABELS = {"offTee": "Off-the-Tee", "approach": "Approach",
+             "aroundGreen": "Around-Green", "putting": "Putting"}
+
+
+def build_sg_summary() -> dict:
+    """Aggregate Strokes Gained across rounds, normalized per-18-holes so 9- and
+    18-hole rounds compare fairly. The category split is the coaching signal."""
+    since = analysis_start_date()
+    rounds = load_rounds(since)
+    totals = dict.fromkeys(SG_CATS, 0.0)
+    total_holes = 0
+    penalties = 0
+    per_round = []
+    for d in rounds:
+        sg = d["strokesGained"]
+        c = sg["byCategory"]
+        holes = d["score"]["holesCompleted"] or 18
+        total_holes += holes
+        penalties += sg["penaltyStrokes"]
+        for cat in SG_CATS:
+            totals[cat] += c[cat]
+        per_round.append({
+            "date": d["round"]["date"][:10],
+            "course": d["course"]["name"],
+            "holes": holes,
+            "score": d["score"]["strokes"],
+            "byCategory": c,
+            "penaltyStrokes": sg["penaltyStrokes"],
+            "polluted": bool(d["reconciliation"]["suspectHoles"]),
+        })
+    per18 = {cat: round(totals[cat] / total_holes * 18, 1) for cat in SG_CATS}
+    doc = {
+        "generatedFrom": {"rounds": len(rounds), "totalHoles": total_holes,
+                          "analysisStartDate": since},
+        "baseline": "PGA Tour (scratch), approximate",
+        "perRound18Avg": per18,                       # the headline: avg leak per 18 by category
+        "totalByCategory": {k: round(v, 1) for k, v in totals.items()},
+        "penaltyStrokesTotal": penalties,
+        "perRound": per_round,
+        "note": (
+            "Per-18-hole averages over recorded shots vs a scratch baseline. The most "
+            "negative category is where to focus. Putting is GPS-noisy; 2 rounds have "
+            "sensor-polluted holes (flagged 'polluted') that distort their OTT/ARG/Putt."
+        ),
+    }
+    SG_JSON.write_text(json.dumps(doc, indent=2))
+    SG_MD.write_text(render_sg_markdown(doc))
+    return doc
+
+
+def render_sg_markdown(doc: dict) -> str:
+    g = doc["generatedFrom"]
+    p = doc["perRound18Avg"]
+    ranked = sorted(SG_CATS, key=lambda c: p[c])
+    lines = [
+        f"# Strokes Gained — {g['rounds']} rounds ({g['totalHoles']} holes) since "
+        f"{g['analysisStartDate']}",
+        "_vs scratch baseline, recorded shots, normalized per 18 holes._",
+        "",
+        f"**Biggest leak: {SG_LABELS[ranked[0]]} ({p[ranked[0]]:+.1f}/18).** "
+        f"Priority order: " + " → ".join(SG_LABELS[c] for c in ranked),
+        "",
+        "| Category | Per-18 avg | Total |",
+        "|---|--:|--:|",
+    ]
+    for cat in ranked:
+        lines.append(f"| {SG_LABELS[cat]} | {p[cat]:+.1f} | {doc['totalByCategory'][cat]:+.1f} |")
+    lines += [
+        f"| **Penalties** | | **+{doc['penaltyStrokesTotal']} strokes (~-{doc['penaltyStrokesTotal']})** |",
+        "",
+        "| Date | Course | Score | OTT | APP | ARG | Putt | |",
+        "|---|---|--:|--:|--:|--:|--:|:--|",
+    ]
+    for r in doc["perRound"]:
+        c = r["byCategory"]
+        flag = " ⚠ polluted" if r["polluted"] else ""
+        lines.append(
+            f"| {r['date']} | {r['course'][:22]} | {r['score']} | {c['offTee']:+.1f} | "
+            f"{c['approach']:+.1f} | {c['aroundGreen']:+.1f} | {c['putting']:+.1f} |{flag} |"
+        )
+    lines += ["", "_Putting is GPS-noisy — least reliable bucket. ⚠ = round has sensor-"
+              "polluted holes that distort its non-approach numbers._"]
+    return "\n".join(lines)
+
+
 def main() -> None:
     doc = build_club_stats()
     g = doc["generatedFrom"]
     print(f"Wrote {OUT_JSON} and {OUT_MD}")
     print(f"  {g['rounds']} rounds, {len(doc['clubs'])} clubs, "
           f"{g['suspectHoleShotsExcluded']} suspect-hole shots excluded")
+    sg = build_sg_summary()
+    print(f"Wrote {SG_JSON} and {SG_MD}")
+    print("  per-18 SG: " + ", ".join(f"{k}={v:+.1f}" for k, v in sg["perRound18Avg"].items()))
 
 
 if __name__ == "__main__":

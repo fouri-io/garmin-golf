@@ -84,6 +84,19 @@
       "puttRating": "POOR"
     }
   },
+  "strokesGained": {
+    "baseline": "PGA Tour (scratch), approximate",
+    "totalRecordedVsScratch": -35.3,
+    "byCategory": {
+      "offTee": -7.56,
+      "approach": -22.85,
+      "aroundGreen": -1.83,
+      "putting": -3.06
+    },
+    "categorizedShots": 101,
+    "penaltyStrokes": 1,
+    "note": "Per-shot SG over RECORDED shots only \u2014 penalties (no shot position, ~-1 each) and un-sensed shots are NOT included. Negative is normal vs a scratch baseline; read the category split. Putting is GPS-noisy (least reliable bucket)."
+  },
   "garminStats": {
     "holesPlayed": 18,
     "fairwaysRecorded": 14,
@@ -187,7 +200,9 @@
             "side": "right",
             "lateralYds": 118.0
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "offTee",
+          "strokesGained": -0.933
         },
         {
           "shotNumber": 2,
@@ -224,7 +239,9 @@
             "side": "right",
             "lateralYds": 44.9
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "approach",
+          "strokesGained": -0.452
         },
         {
           "shotNumber": 3,
@@ -261,7 +278,9 @@
             "side": "left",
             "lateralYds": 13.4
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.821
         },
         {
           "shotNumber": 4,
@@ -298,7 +317,9 @@
             "side": "right",
             "lateralYds": 13.2
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "approach",
+          "strokesGained": -0.722
         },
         {
           "shotNumber": 5,
@@ -335,7 +356,9 @@
             "side": "left",
             "lateralYds": 7.6
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -0.553
         },
         {
           "shotNumber": 6,
@@ -372,7 +395,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.975
         }
       ]
     },
@@ -436,7 +461,9 @@
             "side": "left",
             "lateralYds": 13.1
           },
-          "resultCategory": "long-left"
+          "resultCategory": "long-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.641
         },
         {
           "shotNumber": 2,
@@ -473,7 +500,9 @@
             "side": "straight",
             "lateralYds": 3.4
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -0.105
         },
         {
           "shotNumber": 3,
@@ -510,7 +539,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.68
         }
       ]
     },
@@ -574,7 +605,9 @@
             "side": "right",
             "lateralYds": 27.8
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "offTee",
+          "strokesGained": -0.639
         },
         {
           "shotNumber": 2,
@@ -611,7 +644,9 @@
             "side": "left",
             "lateralYds": 26.8
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.753
         },
         {
           "shotNumber": 3,
@@ -648,7 +683,9 @@
             "side": "straight",
             "lateralYds": 3.8
           },
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "sgCategory": "approach",
+          "strokesGained": -0.799
         },
         {
           "shotNumber": 4,
@@ -685,7 +722,9 @@
             "side": "straight",
             "lateralYds": 1.0
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": 0.629
         },
         {
           "shotNumber": 5,
@@ -722,7 +761,9 @@
             "side": "straight",
             "lateralYds": 2.4
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -1.894
         },
         {
           "shotNumber": 6,
@@ -759,7 +800,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.934
         }
       ]
     },
@@ -823,7 +866,9 @@
             "side": "right",
             "lateralYds": 87.7
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "offTee",
+          "strokesGained": -0.272
         },
         {
           "shotNumber": 2,
@@ -860,7 +905,9 @@
             "side": "right",
             "lateralYds": 22.4
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "approach",
+          "strokesGained": -0.744
         },
         {
           "shotNumber": 3,
@@ -897,7 +944,9 @@
             "side": "left",
             "lateralYds": 37.2
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.416
         },
         {
           "shotNumber": 4,
@@ -934,7 +983,9 @@
             "side": "straight",
             "lateralYds": 0.6
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "approach",
+          "strokesGained": -0.178
         },
         {
           "shotNumber": 5,
@@ -971,7 +1022,9 @@
             "side": "straight",
             "lateralYds": 3.4
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -0.887
         },
         {
           "shotNumber": 6,
@@ -1008,7 +1061,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.905
         }
       ]
     },
@@ -1072,7 +1127,9 @@
             "side": "left",
             "lateralYds": 7.0
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.995
         },
         {
           "shotNumber": 2,
@@ -1109,7 +1166,9 @@
             "side": "right",
             "lateralYds": 11.0
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "approach",
+          "strokesGained": -0.555
         },
         {
           "shotNumber": 3,
@@ -1146,7 +1205,9 @@
             "side": "straight",
             "lateralYds": 2.6
           },
-          "resultCategory": "long"
+          "resultCategory": "long",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -0.992
         },
         {
           "shotNumber": 4,
@@ -1183,7 +1244,9 @@
             "side": "straight",
             "lateralYds": 0.9
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -0.123
         },
         {
           "shotNumber": 5,
@@ -1220,7 +1283,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.59
         }
       ]
     },
@@ -1284,7 +1349,9 @@
             "side": "left",
             "lateralYds": 7.8
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "offTee",
+          "strokesGained": -0.508
         },
         {
           "shotNumber": 2,
@@ -1321,7 +1388,9 @@
             "side": "right",
             "lateralYds": 25.9
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "approach",
+          "strokesGained": -0.937
         },
         {
           "shotNumber": 3,
@@ -1358,7 +1427,9 @@
             "side": "straight",
             "lateralYds": 3.2
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "approach",
+          "strokesGained": -0.061
         },
         {
           "shotNumber": 4,
@@ -1395,7 +1466,9 @@
             "side": "straight",
             "lateralYds": 2.8
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -0.76
         },
         {
           "shotNumber": 5,
@@ -1432,7 +1505,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.649
         }
       ]
     },
@@ -1496,7 +1571,9 @@
             "side": "right",
             "lateralYds": 16.1
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "offTee",
+          "strokesGained": -0.398
         },
         {
           "shotNumber": 2,
@@ -1533,7 +1610,9 @@
             "side": "right",
             "lateralYds": 46.3
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "approach",
+          "strokesGained": -0.643
         },
         {
           "shotNumber": 3,
@@ -1570,7 +1649,9 @@
             "side": "straight",
             "lateralYds": 1.8
           },
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "sgCategory": "approach",
+          "strokesGained": -0.466
         },
         {
           "shotNumber": 4,
@@ -1607,7 +1688,9 @@
             "side": "straight",
             "lateralYds": 1.4
           },
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "sgCategory": "approach",
+          "strokesGained": -0.868
         },
         {
           "shotNumber": 5,
@@ -1644,7 +1727,9 @@
             "side": "straight",
             "lateralYds": 2.2
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -0.683
         },
         {
           "shotNumber": 6,
@@ -1681,7 +1766,9 @@
             "side": "straight",
             "lateralYds": 0.8
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -1.006
         },
         {
           "shotNumber": 7,
@@ -1718,7 +1805,9 @@
             "side": "straight",
             "lateralYds": 2.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -1.28
         },
         {
           "shotNumber": 8,
@@ -1755,7 +1844,9 @@
             "side": "straight",
             "lateralYds": 1.2
           },
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -1.004
         },
         {
           "shotNumber": 9,
@@ -1792,7 +1883,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": 1.429
         }
       ]
     },
@@ -1856,7 +1949,9 @@
             "side": "right",
             "lateralYds": 95.0
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "offTee",
+          "strokesGained": -0.513
         },
         {
           "shotNumber": 2,
@@ -1893,7 +1988,9 @@
             "side": "left",
             "lateralYds": 10.5
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.926
         },
         {
           "shotNumber": 3,
@@ -1930,7 +2027,9 @@
             "side": "left",
             "lateralYds": 59.6
           },
-          "resultCategory": "off-map"
+          "resultCategory": "off-map",
+          "sgCategory": "approach",
+          "strokesGained": -1.318
         },
         {
           "shotNumber": 4,
@@ -1967,7 +2066,9 @@
             "side": "right",
             "lateralYds": 15.6
           },
-          "resultCategory": "long-right"
+          "resultCategory": "long-right",
+          "sgCategory": "approach",
+          "strokesGained": 0.112
         },
         {
           "shotNumber": 5,
@@ -2004,7 +2105,9 @@
             "side": "straight",
             "lateralYds": 2.9
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -0.326
         },
         {
           "shotNumber": 6,
@@ -2041,7 +2144,9 @@
             "side": "straight",
             "lateralYds": 0.2
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -0.828
         },
         {
           "shotNumber": 7,
@@ -2078,7 +2183,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.75
         }
       ]
     },
@@ -2142,7 +2249,9 @@
             "side": "right",
             "lateralYds": 34.6
           },
-          "resultCategory": "off-map"
+          "resultCategory": "off-map",
+          "sgCategory": "offTee",
+          "strokesGained": -1.309
         },
         {
           "shotNumber": 2,
@@ -2179,7 +2288,9 @@
             "side": "left",
             "lateralYds": 15.3
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": 0.295
         },
         {
           "shotNumber": 3,
@@ -2216,7 +2327,9 @@
             "side": "straight",
             "lateralYds": 2.9
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "approach",
+          "strokesGained": -0.362
         },
         {
           "shotNumber": 4,
@@ -2253,7 +2366,9 @@
             "side": "right",
             "lateralYds": 8.1
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -0.993
         },
         {
           "shotNumber": 5,
@@ -2290,7 +2405,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.934
         }
       ]
     },
@@ -2354,7 +2471,9 @@
             "side": "right",
             "lateralYds": 64.6
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "offTee",
+          "strokesGained": -0.221
         },
         {
           "shotNumber": 2,
@@ -2391,7 +2510,9 @@
             "side": "right",
             "lateralYds": 17.9
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "approach",
+          "strokesGained": -0.754
         },
         {
           "shotNumber": 3,
@@ -2428,7 +2549,9 @@
             "side": "left",
             "lateralYds": 37.8
           },
-          "resultCategory": "long-left"
+          "resultCategory": "long-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.63
         },
         {
           "shotNumber": 4,
@@ -2465,7 +2588,9 @@
             "side": "straight",
             "lateralYds": 3.9
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "approach",
+          "strokesGained": -0.132
         },
         {
           "shotNumber": 5,
@@ -2502,7 +2627,9 @@
             "side": "straight",
             "lateralYds": 4.9
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -0.865
         },
         {
           "shotNumber": 6,
@@ -2539,7 +2666,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.791
         }
       ]
     },
@@ -2603,7 +2732,9 @@
             "side": "straight",
             "lateralYds": 4.6
           },
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "sgCategory": "offTee",
+          "strokesGained": -0.072
         },
         {
           "shotNumber": 2,
@@ -2640,7 +2771,9 @@
             "side": "left",
             "lateralYds": 8.8
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.742
         },
         {
           "shotNumber": 3,
@@ -2677,7 +2810,9 @@
             "side": "left",
             "lateralYds": 7.7
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.848
         },
         {
           "shotNumber": 4,
@@ -2714,7 +2849,9 @@
             "side": "straight",
             "lateralYds": 2.8
           },
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "sgCategory": "approach",
+          "strokesGained": -0.717
         },
         {
           "shotNumber": 5,
@@ -2751,7 +2888,9 @@
             "side": "straight",
             "lateralYds": 2.8
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -0.457
         },
         {
           "shotNumber": 6,
@@ -2788,7 +2927,9 @@
             "side": "right",
             "lateralYds": 6.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -1.011
         },
         {
           "shotNumber": 7,
@@ -2825,7 +2966,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.839
         }
       ]
     },
@@ -2889,7 +3032,9 @@
             "side": "straight",
             "lateralYds": 3.1
           },
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "sgCategory": "approach",
+          "strokesGained": -0.616
         },
         {
           "shotNumber": 2,
@@ -2926,7 +3071,9 @@
             "side": "right",
             "lateralYds": 10.6
           },
-          "resultCategory": "long-right"
+          "resultCategory": "long-right",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -1.001
         },
         {
           "shotNumber": 3,
@@ -2963,7 +3110,9 @@
             "side": "straight",
             "lateralYds": 0.7
           },
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -0.964
         },
         {
           "shotNumber": 4,
@@ -3000,7 +3149,9 @@
             "side": "straight",
             "lateralYds": 1.4
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": 0.293
         },
         {
           "shotNumber": 5,
@@ -3037,7 +3188,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.274
         }
       ]
     },
@@ -3101,7 +3254,9 @@
             "side": "right",
             "lateralYds": 38.1
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "offTee",
+          "strokesGained": -0.498
         },
         {
           "shotNumber": 2,
@@ -3138,7 +3293,9 @@
             "side": "left",
             "lateralYds": 5.1
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.314
         },
         {
           "shotNumber": 3,
@@ -3175,7 +3332,9 @@
             "side": "straight",
             "lateralYds": 3.3
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -0.236
         },
         {
           "shotNumber": 4,
@@ -3212,7 +3371,9 @@
             "side": "straight",
             "lateralYds": 5.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -1.201
         },
         {
           "shotNumber": 5,
@@ -3249,7 +3410,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.951
         }
       ]
     },
@@ -3313,7 +3476,9 @@
             "side": "straight",
             "lateralYds": 3.1
           },
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "sgCategory": "approach",
+          "strokesGained": -0.598
         },
         {
           "shotNumber": 2,
@@ -3350,7 +3515,9 @@
             "side": "left",
             "lateralYds": 8.0
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -0.377
         },
         {
           "shotNumber": 3,
@@ -3387,7 +3554,9 @@
             "side": "straight",
             "lateralYds": 0.8
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -0.874
         },
         {
           "shotNumber": 4,
@@ -3424,7 +3593,9 @@
             "side": "straight",
             "lateralYds": 1.8
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -0.757
         },
         {
           "shotNumber": 5,
@@ -3461,7 +3632,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.575
         }
       ]
     },
@@ -3525,7 +3698,9 @@
             "side": "right",
             "lateralYds": 61.8
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "offTee",
+          "strokesGained": -0.616
         },
         {
           "shotNumber": 2,
@@ -3562,7 +3737,9 @@
             "side": "left",
             "lateralYds": 30.9
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.637
         },
         {
           "shotNumber": 3,
@@ -3599,7 +3776,9 @@
             "side": "straight",
             "lateralYds": 2.2
           },
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "sgCategory": "approach",
+          "strokesGained": -0.607
         },
         {
           "shotNumber": 4,
@@ -3636,7 +3815,9 @@
             "side": "left",
             "lateralYds": 5.4
           },
-          "resultCategory": "long-left"
+          "resultCategory": "long-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.827
         },
         {
           "shotNumber": 5,
@@ -3673,7 +3854,9 @@
             "side": "left",
             "lateralYds": 6.5
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": -0.458
         },
         {
           "shotNumber": 6,
@@ -3710,7 +3893,9 @@
             "side": "left",
             "lateralYds": 14.7
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -1.546
         },
         {
           "shotNumber": 7,
@@ -3747,7 +3932,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": 1.422
         }
       ]
     },
@@ -3811,7 +3998,9 @@
             "side": "left",
             "lateralYds": 18.7
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "offTee",
+          "strokesGained": -0.301
         },
         {
           "shotNumber": 2,
@@ -3848,7 +4037,9 @@
             "side": "right",
             "lateralYds": 61.7
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "approach",
+          "strokesGained": -0.619
         },
         {
           "shotNumber": 3,
@@ -3885,7 +4076,9 @@
             "side": "left",
             "lateralYds": 8.3
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.887
         },
         {
           "shotNumber": 4,
@@ -3922,7 +4115,9 @@
             "side": "right",
             "lateralYds": 24.9
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "approach",
+          "strokesGained": -0.502
         },
         {
           "shotNumber": 5,
@@ -3959,7 +4154,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "aroundGreen",
+          "strokesGained": 1.672
         }
       ]
     },
@@ -4023,7 +4220,9 @@
             "side": "left",
             "lateralYds": 38.7
           },
-          "resultCategory": "off-map"
+          "resultCategory": "off-map",
+          "sgCategory": "offTee",
+          "strokesGained": -1.185
         },
         {
           "shotNumber": 2,
@@ -4060,7 +4259,9 @@
             "side": "right",
             "lateralYds": 21.9
           },
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "sgCategory": "approach",
+          "strokesGained": 0.204
         },
         {
           "shotNumber": 3,
@@ -4097,7 +4298,9 @@
             "side": "straight",
             "lateralYds": 4.6
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "approach",
+          "strokesGained": -0.476
         },
         {
           "shotNumber": 4,
@@ -4134,7 +4337,9 @@
             "side": "left",
             "lateralYds": 5.1
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": -0.816
         },
         {
           "shotNumber": 5,
@@ -4171,7 +4376,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.856
         }
       ]
     },
@@ -4235,7 +4442,9 @@
             "side": "left",
             "lateralYds": 17.3
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "offTee",
+          "strokesGained": -0.091
         },
         {
           "shotNumber": 2,
@@ -4272,7 +4481,9 @@
             "side": "left",
             "lateralYds": 37.0
           },
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "sgCategory": "approach",
+          "strokesGained": -0.809
         },
         {
           "shotNumber": 3,
@@ -4309,7 +4520,9 @@
             "side": "straight",
             "lateralYds": 3.1
           },
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "sgCategory": "approach",
+          "strokesGained": -0.087
         },
         {
           "shotNumber": 4,
@@ -4346,7 +4559,9 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt"
+          "resultCategory": "putt",
+          "sgCategory": "putting",
+          "strokesGained": 0.956
         }
       ]
     }

@@ -25,6 +25,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from . import strokes_gained
 from .geo import semicircles_to_degrees as s2d
 from .geo import shot_geometry
 
@@ -257,6 +258,9 @@ def build_round_document(detail_raw: dict, shots_raw: dict, club_cfg: dict) -> d
             "shots": hole_shots,
         })
 
+    # Strokes Gained annotates each shot (sgCategory, strokesGained) in place.
+    strokes_gained_summary = strokes_gained.compute(holes)
+
     return {
         "schemaVersion": SCHEMA_VERSION,
         "scorecardId": sc["id"],
@@ -301,6 +305,7 @@ def build_round_document(detail_raw: dict, shots_raw: dict, club_cfg: dict) -> d
         "coachSummary": _coach_summary(holes, total_strokes, total_putts, total_penalties,
                                        det.get("scorecardStats", {}).get("round") or {},
                                        det.get("statsComparison")),
+        "strokesGained": strokes_gained_summary,
         "garminStats": det.get("scorecardStats", {}).get("round"),   # preserved verbatim
         "garminRatings": det.get("statsComparison"),                 # preserved verbatim
         "garminLongestShotMeters": det.get("longestShotInMeters"),
@@ -374,6 +379,14 @@ def _recon_line(r: dict) -> str:
     return line
 
 
+def _sg_line(sg: dict) -> str:
+    c = sg["byCategory"]
+    return (f"Strokes Gained vs scratch (recorded shots): "
+            f"OTT {c['offTee']:+.1f} · APP {c['approach']:+.1f} · "
+            f"ARG {c['aroundGreen']:+.1f} · PUTT {c['putting']:+.1f} "
+            f"= {sg['totalRecordedVsScratch']:+.1f}; +{sg['penaltyStrokes']} penalties")
+
+
 def render_markdown(doc: dict) -> str:
     s, c, sc = doc["round"], doc["course"], doc["score"]
     cs = doc["coachSummary"]
@@ -390,6 +403,7 @@ def render_markdown(doc: dict) -> str:
         f"avg 1st putt {cs['first_putt_distance_avg_ft']}ft · "
         f"long drive {cs['longest_drive_yds']}y",
         _recon_line(doc["reconciliation"]),
+        _sg_line(doc["strokesGained"]),
         "",
     ]
     for h in doc["holes"]:
