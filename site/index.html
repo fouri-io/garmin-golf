@@ -39,6 +39,13 @@
   .neg{color:var(--bad)}.pos{color:var(--good)}.mut{color:var(--muted)}
   .card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px}
   .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 8px}
+  .lever h2{margin-bottom:10px}
+  .lev3{display:flex;gap:8px;text-align:center}
+  .lev3>div{flex:1;border-radius:12px;padding:10px 4px;background:#f3f6f9;cursor:pointer;
+    border:2px solid transparent}
+  .lev3>div.on{background:#eaf1f8;border-color:var(--accent)}
+  .lev3 .wl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .lev3 .wv{font-size:25px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
   .leakcall{display:flex;align-items:center;gap:10px;background:#fbeceb;border-radius:12px;
     padding:12px;margin-bottom:12px}
   .leakcall .ico{font-size:22px}.leakcall b{color:var(--bad)}
@@ -99,8 +106,14 @@
         <button data-w="allTime">All-time</button></div></div>
     <div class="hero"><div class="lab">Scoring · over rating <span class="pill" id="winpill"></span></div>
       <div class="big" id="score">—</div><div class="sub" id="scoresub"></div></div>
+    <div class="card lever"><h2>SG 0–100 · leverage number
+        <span class="mut" style="text-transform:none;font-weight:400;letter-spacing:0"> — 100yd &amp; in, no putts · where scores move</span></h2>
+      <div class="lev3" id="lev3">
+        <div data-w="thisRound"><div class="wl">This round</div><div class="wv">—</div></div>
+        <div data-w="last5"><div class="wl">Last 5</div><div class="wv">—</div></div>
+        <div data-w="allTime"><div class="wl">All-time</div><div class="wv">—</div></div></div></div>
     <div class="tiles">
-      <div class="tile"><div class="lab">SG 0–100</div><div class="v" id="lev">—</div></div>
+      <div class="tile"><div class="lab">Putts /18</div><div class="v" id="putts">—</div></div>
       <div class="tile"><div class="lab">Penalties /18</div><div class="v" id="pen">—</div></div>
       <div class="tile"><div class="lab">Doubles+ /18</div><div class="v" id="dbl">—</div></div>
       <div class="tile"><div class="lab">3-putts /18</div><div class="v" id="tp">—</div></div></div>
@@ -161,8 +174,11 @@ function renderProgress(){
   document.getElementById('score').textContent=sc.overRating18===null?"—":"+"+sc.overRating18;
   document.getElementById('scoresub').textContent=
     `potential +${P.scoring.potentialOverRating18} · Break 90 = +${P.scoring.break90OverRating} · authoritative`;
-  const lv=lever(win,base),le=document.getElementById('lev');
-  le.textContent=fmt(lv);le.className="v "+(lv===null?"":lv>=0?"pos":"neg");
+  ['thisRound','last5','allTime'].forEach(w=>{
+    const lv=lever(w,base),cell=document.querySelector(`#lev3 [data-w="${w}"]`),v=cell.querySelector('.wv');
+    v.textContent=fmt(lv);v.className="wv "+(lv===null?"mut":lv>=0?"pos":"neg");
+    cell.classList.toggle('on',w===win);});
+  document.getElementById('putts').textContent=sc.putts18.toFixed(0);
   document.getElementById('pen').textContent=sc.penalties18.toFixed(1);
   const db=document.getElementById('dbl');db.textContent=sc.doubles18.toFixed(1);
   db.className="v "+(sc.doubles18>=4?"neg":"");
@@ -244,8 +260,11 @@ function renderClubs(){
       <td>${c.p25Yds}–${c.p75Yds}</td><td>${c.maxYds}</td></tr>`;}).join("");
 }
 
-document.getElementById('win').onclick=e=>{if(!e.target.dataset.w)return;win=e.target.dataset.w;
-  [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===e.target));renderProgress();};
+function setWin(w){win=w;
+  [...document.getElementById('win').children].forEach(b=>b.classList.toggle('on',b.dataset.w===w));
+  renderProgress();}
+document.getElementById('win').onclick=e=>{if(e.target.dataset.w)setWin(e.target.dataset.w);};
+document.getElementById('lev3').onclick=e=>{const c=e.target.closest('[data-w]');if(c)setWin(c.dataset.w);};
 document.getElementById('base').onclick=e=>{if(!e.target.dataset.b)return;base=e.target.dataset.b;
   [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===e.target));renderProgress();};
 document.getElementById('tabs').onclick=e=>{const t=e.target.closest('[data-t]');if(!t)return;
