@@ -1,7 +1,9 @@
 # Golf Progress Dashboard
 _From 9 rounds since 2026-05-01. Latest round: 2026-06-04. Re-run `python -m src.progress` after each round._
 
-## 1 · Scoring level (authoritative — score vs course rating, no GPS)
+> **Reading the signs:** two different conventions. Section 1 (score vs rating) is "over par" style — **+ = strokes OVER scratch, lower is better**. Section 3 (Strokes Gained) is analytics style — **− = strokes LOST to scratch, toward 0 is better**. They're mirror images: +29 over ≈ −29 gained = "~30 strokes from a pro."
+
+## 1 · Scoring level — strokes OVER scratch (lower is better, 0 = scratch)
 **Average +29.1/18** · Potential (better half ≈ handicap) **+19.8** · best +14.0 · Garmin handicap 23.6 · **Break-90 ≈ +22**.
 _Average − potential = ~9 strokes of volatility (your blow-up tax — fewer doubles closes it)._
 
@@ -13,7 +15,7 @@ _Average − potential = ~9 strokes of volatility (your blow-up tax — fewer do
 | Doubles+ | 2.0 | 8.0 | 8.1 |
 | Putts (3-putts) | 42 | 40 | 39 |
 
-## 3 · Strokes Gained vs scratch (per 18)
+## 3 · Strokes Gained vs scratch — negative = strokes LOST (toward 0 is better)
 **SG 0–100, your leverage number:** This round -7.8 · Last 5 -10.6 · All-time -10.1  _(100yd-and-in, no putts — where scores move)_
 
 | Bucket | This round | Last 5 | All-time |

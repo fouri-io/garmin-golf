@@ -136,7 +136,12 @@ def render_markdown(doc: dict) -> str:
         f"Latest round: {doc['thisRoundDate']}{flag}. Re-run `python -m src.progress` "
         "after each round._",
         "",
-        "## 1 · Scoring level (authoritative — score vs course rating, no GPS)",
+        "> **Reading the signs:** two different conventions. Section 1 (score vs rating) is "
+        "\"over par\" style — **+ = strokes OVER scratch, lower is better**. Section 3 "
+        "(Strokes Gained) is analytics style — **− = strokes LOST to scratch, toward 0 is "
+        "better**. They're mirror images: +29 over ≈ −29 gained = \"~30 strokes from a pro.\"",
+        "",
+        "## 1 · Scoring level — strokes OVER scratch (lower is better, 0 = scratch)",
         f"**Average +{sc['averageOverRating18']}/18** · Potential (better half ≈ handicap) "
         f"**+{sc['potentialOverRating18']}** · best +{sc['bestOverRating18']} · "
         f"Garmin handicap {sc['garminHandicap']} · **Break-90 ≈ +{sc['break90OverRating']}**.",
@@ -155,7 +160,7 @@ def render_markdown(doc: dict) -> str:
         _row("Putts (3-putts)", au["thisRound"]["putts18"], au["last5"]["putts18"],
              au["allTime"]["putts18"], "{:.0f}"),
         "",
-        "## 3 · Strokes Gained vs scratch (per 18)",
+        "## 3 · Strokes Gained vs scratch — negative = strokes LOST (toward 0 is better)",
         f"**SG 0–100, your leverage number:** This round "
         f"{_fmt(this_sg, 'sg0to100')} · Last 5 {_fmt(sg['last5'], 'sg0to100')} · "
         f"All-time {_fmt(sg['allTime'], 'sg0to100')}  _(100yd-and-in, no putts — where scores move)_",
