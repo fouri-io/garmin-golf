@@ -13,7 +13,8 @@ _Average − potential = ~9 strokes of volatility (your blow-up tax — fewer do
 | Score vs rating | +18.4 | +28.5 | +29.1 |
 | Penalties | 0.0 | 1.8 | 2.0 |
 | Doubles+ | 2.0 | 8.0 | 8.1 |
-| Putts (3-putts) | 42 | 40 | 39 |
+| Putts | 42 | 40 | 39 |
+| 3-putts | 6.0 | 5.0 | 5.0 |
 
 ## 3 · Strokes Gained vs scratch — negative = strokes LOST (toward 0 is better)
 **SG 0–100, your leverage number:** This round -7.8 · Last 5 -10.6 · All-time -10.1  _(100yd-and-in, no putts — where scores move)_

@@ -157,8 +157,10 @@ def render_markdown(doc: dict) -> str:
              au["allTime"]["penalties18"], "{:.1f}"),
         _row("Doubles+", au["thisRound"]["doubles18"], au["last5"]["doubles18"],
              au["allTime"]["doubles18"], "{:.1f}"),
-        _row("Putts (3-putts)", au["thisRound"]["putts18"], au["last5"]["putts18"],
+        _row("Putts", au["thisRound"]["putts18"], au["last5"]["putts18"],
              au["allTime"]["putts18"], "{:.0f}"),
+        _row("3-putts", au["thisRound"]["threePutts18"], au["last5"]["threePutts18"],
+             au["allTime"]["threePutts18"], "{:.1f}"),
         "",
         "## 3 · Strokes Gained vs scratch — negative = strokes LOST (toward 0 is better)",
         f"**SG 0–100, your leverage number:** This round "
