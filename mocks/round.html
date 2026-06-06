@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Round detail — Mock</title>
+<style>
+  :root{--bg:#f4f6f8;--card:#fff;--ink:#1c2530;--muted:#7a8794;--line:#e6eaee;
+    --good:#1f9d57;--bad:#d6443c;--accent:#15497a;--green:#1f9d57;}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.45 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px}
+  .crumbs{font-size:13px;color:var(--muted);margin-bottom:6px}
+  .crumbs a{color:var(--accent);text-decoration:none}
+  h1{font-size:22px;margin:0 0 2px} .sub{color:var(--muted);font-size:13px}
+  .grid{display:grid;gap:14px;margin-top:16px} .k5{grid-template-columns:repeat(5,1fr)}
+  @media(max-width:820px){.k5{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;
+    box-shadow:0 1px 2px rgba(20,40,70,.04)}
+  .kpi .lab{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  .kpi .val{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:3px}
+  .neg{color:var(--bad)} .pos{color:var(--good)} .mut{color:var(--muted)}
+  .sec{margin-top:24px} h2{font-size:15px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--muted);margin:0 0 10px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:center}
+  thead th{font-size:11px;color:var(--muted);font-weight:600}
+  .scorebox{display:inline-block;min-width:24px;border-radius:6px;padding:1px 6px;font-weight:700}
+  .bogey{background:#fdeee0;color:#b5701c} .dbl{background:#fbe2df;color:#b5322a}
+  .par{background:#e6f4ec;color:#1f7a45}
+  .shots{font-size:13px;color:#41505e;text-align:left}
+  .map{height:230px;border-radius:12px;background:
+    linear-gradient(135deg,#cfe6c9,#a9d4b0 40%,#7fc08f);position:relative;overflow:hidden}
+  .map .dot{position:absolute;width:11px;height:11px;border-radius:50%;border:2px solid #fff;
+    background:#15497a;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+  .map .pin{position:absolute;font-size:18px}
+  .map .lab2{position:absolute;bottom:8px;left:10px;background:rgba(255,255,255,.85);
+    border-radius:6px;padding:3px 8px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crumbs"><a href="dashboard.html">← Dashboard</a> · rounds · 2026-06-01</div>
+  <h1>The Golf Club at Star Ranch</h1>
+  <div class="sub">2026-06-01 · 18 holes · Preferred tees (rating 67.4 / slope 110)</div>
+
+  <div class="grid k5">
+    <div class="card kpi"><div class="lab">Score</div><div class="val">99 <span class="mut" style="font-size:14px">+28</span></div></div>
+    <div class="card kpi"><div class="lab">vs rating /18</div><div class="val">+31.6</div></div>
+    <div class="card kpi"><div class="lab">Putts</div><div class="val">38</div></div>
+    <div class="card kpi"><div class="lab">Penalties</div><div class="val neg">5</div></div>
+    <div class="card kpi"><div class="lab">Doubles+</div><div class="val neg">7</div></div>
+  </div>
+
+  <div class="sec">
+    <h2>Strokes Gained this round (vs scratch)</h2>
+    <div class="card"><table>
+      <thead><tr><th>Off-Tee</th><th>Long 150+</th><th>Mid 50–150</th><th>Inside 50</th><th>Putting</th><th>SG 0–100</th></tr></thead>
+      <tbody><tr>
+        <td class="neg">−8.7</td><td class="neg">−5.6</td><td class="neg">−8.5</td>
+        <td class="neg">−9.0</td><td class="neg">−4.4</td><td class="neg"><b>−9.8</b></td>
+      </tr></tbody>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>Hole by hole</h2>
+    <div class="card"><table>
+      <thead><tr><th>#</th><th>Par</th><th>Score</th><th>FW</th><th>GIR</th><th>Putts</th>
+        <th>Pen</th><th class="shots">Shots (club · yds · lie→lie)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>4</td><td><span class="scorebox dbl">7</span></td><td>✓</td><td>—</td><td>2</td><td class="neg">1</td>
+          <td class="shots">Driver 190 tee→rough · 4i 151 rough→rough · LW 19 →bunker · (?) 28 →rough · Putter 13 →green</td></tr>
+        <tr><td>2</td><td>4</td><td><span class="scorebox dbl">7</span></td><td>R</td><td>—</td><td>3</td><td class="neg">1</td>
+          <td class="shots">Driver 11 tee→tee · Driver 203 →rough · 6i 108 →rough · 7i 123 →unknown …</td></tr>
+        <tr><td>3</td><td>4</td><td><span class="scorebox bogey">5</span></td><td>✓</td><td>—</td><td>2</td><td>0</td>
+          <td class="shots">Driver 196 tee→fairway · 7i 131 →rough · (?) 56 →rough · Putter 26 →green …</td></tr>
+        <tr><td>4</td><td>3</td><td><span class="scorebox par">3</span></td><td>—</td><td>✓</td><td>1</td><td>0</td>
+          <td class="shots">8i 138 tee→green · Putter 49 →hole</td></tr>
+        <tr><td class="mut" colspan="8" style="text-align:center">… holes 5–18 …</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>Shot map — Hole 1 <span class="mut" style="text-transform:none;font-weight:400">(Phase 2 stretch · satellite tiles + your georeferenced shots)</span></h2>
+    <div class="card"><div class="map">
+      <div class="dot" style="left:8%;top:78%"></div>
+      <div class="dot" style="left:34%;top:60%"></div>
+      <div class="dot" style="left:52%;top:48%"></div>
+      <div class="dot" style="left:63%;top:40%"></div>
+      <div class="dot" style="left:72%;top:30%"></div>
+      <div class="pin" style="left:75%;top:22%">⛳</div>
+      <div class="lab2">Driver → 4i → LW(bunker) → out → on. We already have lat/lon for every shot.</div>
+    </div></div>
+  </div>
+</div>
+</body>
+</html>

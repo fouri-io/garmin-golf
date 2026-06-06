@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Golf Progress — Mock v2</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  :root{--bg:#f4f6f8;--card:#fff;--ink:#1c2530;--muted:#7a8794;--line:#e6eaee;
+    --good:#1f9d57;--bad:#d6443c;--accent:#15497a;--warn:#e8a33d;}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.45 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:1060px;margin:0 auto;padding:24px}
+  header{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  h1{font-size:22px;margin:0} .sub{color:var(--muted);font-size:13px}
+  .controls{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:16px 0}
+  .seg{display:inline-flex;background:#e9edf1;border-radius:10px;padding:3px}
+  .seg button{border:0;background:none;padding:7px 13px;border-radius:8px;font-size:13px;
+    cursor:pointer;color:var(--muted);font-weight:600}
+  .seg button.on{background:#fff;color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .seglab{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-right:2px}
+  .note{background:#eef4fb;border:1px solid #d8e6f5;border-radius:10px;padding:10px 14px;
+    font-size:13px;color:#2c4763;margin-bottom:14px}
+  .grid{display:grid;gap:14px} .k4{grid-template-columns:repeat(4,1fr)}
+  .k2{grid-template-columns:1.3fr 1fr}
+  @media(max-width:820px){.k4{grid-template-columns:repeat(2,1fr)}.k2{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;
+    box-shadow:0 1px 2px rgba(20,40,70,.04)}
+  .kpi .lab{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  .kpi .val{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:4px}
+  .kpi .hint{color:var(--muted);font-size:12px;margin-top:2px}
+  .sec{margin-top:24px} h2{font-size:15px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--muted);margin:0 0 10px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th,td{text-align:right;padding:9px 10px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:12px;color:var(--muted);font-weight:600}
+  .neg{color:var(--bad)} .pos{color:var(--good)} .mut{color:var(--muted)}
+  /* diverging bar centered on the target band */
+  .track{position:relative;height:16px;background:#eef1f4;border-radius:5px;min-width:160px}
+  .track .target{position:absolute;top:0;bottom:0;width:2px;background:#9aa6b2}
+  .track .fill{position:absolute;top:3px;height:10px;border-radius:3px}
+  .fill.g{background:var(--good)} .fill.r{background:var(--bad)}
+  .foot{color:var(--muted);font-size:12px;margin-top:8px}
+  .leak{font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>⛳ Golf Progress</h1>
+      <div class="sub">9 rounds since 2026-05-01 · current form (last 3 clean) · per 18</div></div>
+  </header>
+
+  <div class="controls">
+    <div><span class="seglab">Compare vs</span>
+      <span class="seg" id="base">
+        <button data-b="scratch" class="on">Scratch (ruler)</button>
+        <button data-b="level">My level · 23</button>
+        <button data-b="target">Target · 15</button>
+      </span>
+    </div>
+    <div><span class="seglab">Buckets</span>
+      <span class="seg" id="mode">
+        <button data-m="custom" class="on">Custom (yours)</button>
+        <button data-m="standard">Standard (PGA)</button>
+      </span>
+    </div>
+  </div>
+
+  <div class="note" id="benchnote"></div>
+
+  <div class="grid k4">
+    <div class="card kpi"><div class="lab">Scoring (over rating)</div><div class="val">+29.1</div>
+      <div class="hint">potential +19.8 · handicap 23.6</div></div>
+    <div class="card kpi"><div class="lab">SG 0–100 · leverage</div><div class="val" id="lev"></div>
+      <div class="hint">100yd & in, no putts</div></div>
+    <div class="card kpi"><div class="lab">Up &amp; down (scramble)</div><div class="val neg">22%</div>
+      <div class="hint">vs 23-HCP ~30% · scratch ~60%</div></div>
+    <div class="card kpi"><div class="lab">Break 90 target</div><div class="val">+22</div>
+      <div class="hint">~10 strokes to go</div></div>
+  </div>
+
+  <!-- SG by bucket: diverging bars around the comparison line -->
+  <div class="sec">
+    <h2>Strokes Gained by bucket <span class="mut" style="text-transform:none;font-weight:400" id="sgcap"></span></h2>
+    <div class="card">
+      <table><thead><tr><th>Bucket</th><th>SG /18</th><th style="text-align:center">vs benchmark (◆)</th></tr></thead>
+        <tbody id="sgbody"></tbody></table>
+      <div class="foot" id="sgfoot"></div>
+    </div>
+  </div>
+
+  <div class="grid k2">
+    <!-- Proximity -->
+    <div class="card"><h2 style="margin-top:0">Approach proximity (avg leave)</h2>
+      <table><thead><tr><th>From</th><th>You</th><th>23-HCP</th><th>Scratch</th></tr></thead><tbody>
+        <tr><td>175+ yd</td><td class="neg">49 ft</td><td>52</td><td>38</td></tr>
+        <tr><td>150–175</td><td>41 ft</td><td>44</td><td>33</td></tr>
+        <tr><td>125–150</td><td>35 ft</td><td>38</td><td>27</td></tr>
+        <tr><td>100–125</td><td class="neg">33 ft</td><td>31</td><td>22</td></tr>
+        <tr><td>50–100</td><td class="neg leak">31 ft</td><td>26</td><td>17</td></tr>
+        <tr><td>inside 50</td><td class="neg leak">24 ft</td><td>19</td><td>11</td></tr>
+      </tbody></table>
+      <div class="foot">We already store distance-to-pin before &amp; after every shot — this is free.</div>
+    </div>
+    <!-- Up & down breakdown -->
+    <div class="card"><h2 style="margin-top:0">Up &amp; down by lie</h2>
+      <table><thead><tr><th>Lie</th><th>Saves</th><th>You</th><th>23-HCP</th></tr></thead><tbody>
+        <tr><td>Fairway &lt;30y</td><td>3/8</td><td>38%</td><td>40%</td></tr>
+        <tr><td>Rough &lt;30y</td><td class="neg">1/9</td><td>11%</td><td>25%</td></tr>
+        <tr><td>Bunker</td><td class="neg">0/4</td><td>0%</td><td>18%</td></tr>
+        <tr><td><b>Overall</b></td><td><b>4/21</b></td><td class="neg"><b>19%</b></td><td>30%</td></tr>
+      </tbody></table>
+      <div class="foot">First pitch after a missed green is the weak link — matches the coach's read.</div>
+    </div>
+  </div>
+
+  <!-- Trend with target band -->
+  <div class="sec"><h2>SG total over time — with target band (Arccos-style)</h2>
+    <div class="card"><canvas id="trend" height="84"></canvas></div></div>
+</div>
+
+<script>
+const DATA = {
+  scratch:{note:"<b>vs Scratch (a pro)</b> — the fixed ruler. Everything red is normal; this is for long-term tracking. 0 = tour level.",
+    lever:"−10.6", total:-33.2, band:[-22,-18],
+    custom:{OTT:-7.5,Long:-5.6,Mid:-6.8,In50:-8.7,Putt:-4.6},
+    standard:{OTT:-7.5,APP:-12.4,ARG:-8.7,Putt:-4.6}},
+  level:{note:"<b>vs a 23-handicap (your level)</b> — now <b>+ = better than your peers, − = worse</b>. Where you beat 23-HCP is a strength to lean on.",
+    lever:"−1.5", total:2.0, band:[-1,1],
+    custom:{OTT:0.5,Long:2.0,Mid:1.0,In50:-2.5,Putt:1.0},
+    standard:{OTT:0.5,APP:3.0,ARG:-2.5,Putt:1.0}},
+  target:{note:"<b>vs your 15-handicap goal</b> — every − is a gap you must close to get there. Biggest gaps = highest-return practice.",
+    lever:"−5.5", total:-8.5, band:[0,0],
+    custom:{OTT:-1.5,Long:-0.5,Mid:-1.5,In50:-4.0,Putt:-1.0},
+    standard:{OTT:-1.5,APP:-2.0,ARG:-4.0,Putt:-1.0}},
+};
+const LAB={OTT:"Off-the-Tee",Long:"Long approach 150+",Mid:"Mid approach 50–150",
+  In50:"Inside 50",Putt:"Putting",APP:"Approach (PGA)",ARG:"Around-Green &lt;30yd"};
+const ORDER={custom:["OTT","Long","Mid","In50","Putt"],standard:["OTT","APP","ARG","Putt"]};
+let base="scratch", mode="custom";
+
+function render(){
+  const d=DATA[base], keys=ORDER[mode], vals=d[mode];
+  document.getElementById('benchnote').innerHTML=d.note;
+  document.getElementById('lev').textContent=d.lever;
+  document.getElementById('lev').className="val "+(parseFloat(d.lever)>=0?"pos":"neg");
+  document.getElementById('sgcap').textContent =
+    "("+(mode==="custom"?"your distance buckets":"PGA standard categories")+", vs "+
+    (base==="scratch"?"scratch":base==="level"?"23-HCP":"15 target")+")";
+  const maxAbs=Math.max(...keys.map(k=>Math.abs(vals[k])),3);
+  const body=document.getElementById('sgbody'); body.innerHTML="";
+  keys.forEach(k=>{
+    const v=vals[k], cls=v>=0?"pos":"neg", w=Math.abs(v)/maxAbs*48;
+    const left=v>=0?50:50-w;
+    body.insertAdjacentHTML('beforeend',
+      `<tr><td>${LAB[k]}</td><td class="${cls}">${v>0?'+':''}${v.toFixed(1)}</td>
+       <td><div class="track"><div class="target" style="left:50%"></div>
+         <div class="fill ${v>=0?'g':'r'}" style="left:${left}%;width:${w}%"></div></div></td></tr>`);
+  });
+  body.insertAdjacentHTML('beforeend',
+    `<tr><td><b>Total</b></td><td class="${d.total>=0?'pos':'neg'}"><b>${d.total>0?'+':''}${d.total.toFixed(1)}</b></td><td></td></tr>`);
+  document.getElementById('sgfoot').innerHTML =
+    "◆ line = your benchmark (0). Green = better than it, red = worse. "+
+    (mode==="standard"?"Standard categories = comparable to Shot Scope / PGA.":
+     "Custom buckets = tuned to how you think about your game.");
+  drawTrend(d.band);
+}
+let chart;
+function drawTrend(band){
+  const labels=["5/06","5/15","5/29","6/01","6/04"];
+  const you=base==="scratch"?[-43.4,-33.2,-35.2,-36.3,-22.7]
+           :base==="level"?[-12,-2,-3,-4,8]:[-20,-10,-11,-12,0];
+  const lo=band[0], hi=band[1];
+  if(chart) chart.destroy();
+  chart=new Chart(document.getElementById('trend'),{type:'line',
+    data:{labels,datasets:[
+      {label:"target band",data:labels.map(()=>hi),fill:'+1',backgroundColor:'rgba(150,166,178,.18)',
+        borderColor:'rgba(150,166,178,.4)',borderWidth:1,pointRadius:0,tension:0},
+      {label:"band lo",data:labels.map(()=>lo),borderColor:'rgba(150,166,178,.4)',borderWidth:1,pointRadius:0},
+      {label:"You",data:you,borderColor:'#15497a',backgroundColor:'rgba(21,73,122,.06)',
+        fill:false,tension:.3,pointRadius:4,pointBackgroundColor:'#15497a'}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{title:{display:true,text:'toward 0 = better'}}}}});
+}
+document.getElementById('base').addEventListener('click',e=>{
+  if(!e.target.dataset.b)return; base=e.target.dataset.b;
+  [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===e.target)); render();});
+document.getElementById('mode').addEventListener('click',e=>{
+  if(!e.target.dataset.m)return; mode=e.target.dataset.m;
+  [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===e.target)); render();});
+render();
+</script>
+</body>
+</html>

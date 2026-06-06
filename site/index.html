@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#15497a">
+<title>Golf Progress</title>
+<style>
+  :root{--bg:#eef1f4;--card:#fff;--ink:#1c2530;--muted:#7a8794;--line:#e9edf1;
+    --good:#1f9d57;--bad:#d6443c;--accent:#15497a;--warn:#e8a33d;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  .app{max-width:920px;margin:0 auto;min-height:100vh;background:var(--bg);
+    padding:0 14px calc(84px + env(safe-area-inset-bottom));position:relative}
+  .top{display:flex;align-items:center;justify-content:space-between;
+    padding:calc(14px + env(safe-area-inset-top)) 4px 8px}
+  .top h1{font-size:19px;margin:0} .top .date{font-size:12px;color:var(--muted)}
+  .refresh{width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;border:0;
+    font-size:18px;box-shadow:0 2px 6px rgba(21,73,122,.4);cursor:pointer}
+  .ctl{margin:8px 0}.ctl .lab{font-size:10px;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.05em;margin:0 2px 4px;display:block}
+  .seg{display:flex;background:#e2e7ec;border-radius:12px;padding:3px}
+  .seg button{flex:1;border:0;background:none;padding:9px 4px;border-radius:9px;font-size:13px;
+    color:var(--muted);font-weight:600;cursor:pointer}
+  .seg button.on{background:#fff;color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+  .hero{background:linear-gradient(135deg,#15497a,#1d6fb8);color:#fff;border-radius:18px;
+    padding:16px;margin:12px 0}
+  .hero .lab{font-size:11px;opacity:.85;text-transform:uppercase;letter-spacing:.05em}
+  .hero .big{font-size:42px;font-weight:800;line-height:1;margin:4px 0}
+  .hero .sub{font-size:12px;opacity:.92}
+  .pill{display:inline-block;background:rgba(255,255,255,.22);border-radius:20px;padding:1px 9px;
+    font-size:11px;font-weight:700;margin-left:6px;vertical-align:middle}
+  .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+  @media(min-width:620px){.tiles{grid-template-columns:repeat(4,1fr)}}
+  .tile{background:var(--card);border-radius:14px;padding:12px}
+  .tile .lab{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .tile .v{font-size:22px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .neg{color:var(--bad)}.pos{color:var(--good)}.mut{color:var(--muted)}
+  .card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 8px}
+  .leakcall{display:flex;align-items:center;gap:10px;background:#fbeceb;border-radius:12px;
+    padding:12px;margin-bottom:12px}
+  .leakcall .ico{font-size:22px}.leakcall b{color:var(--bad)}
+  .bars{display:flex;justify-content:space-between;height:160px;position:relative;margin:6px 0 26px}
+  .zero{position:absolute;left:0;right:0;top:50%;border-top:1px dashed #c4ccd4}
+  .col{flex:1;position:relative}
+  .bar{position:absolute;left:22%;right:22%;border-radius:5px}
+  .bar.r{background:var(--bad)}.bar.g{background:var(--good)}
+  .vlab{position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:700;
+    font-variant-numeric:tabular-nums}
+  .clab{position:absolute;left:-6px;right:-6px;bottom:-22px;text-align:center;font-size:10px;color:var(--muted)}
+  .foot{font-size:11px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:13px}
+  th,td{text-align:right;padding:7px 6px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:11px;color:var(--muted);font-weight:600}
+  .warn{color:var(--warn)}
+  .tabbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
+    display:flex;justify-content:space-around;padding:8px 0 calc(10px + env(safe-area-inset-bottom));
+    z-index:10}
+  .tabbar .t{font-size:11px;color:var(--muted);text-align:center;cursor:pointer;border:0;background:none}
+  .tabbar .t.on{color:var(--accent)}.tabbar .t .i{font-size:18px;display:block}
+  .hide{display:none}
+  .legend{font-size:12px;color:#2c4763;background:#eef4fb;border:1px solid #d8e6f5;
+    border-radius:10px;padding:8px 12px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div><h1>⛳ Golf Progress</h1><div class="date" id="date"></div></div>
+    <button class="refresh" title="Rebuild from latest data (wire to your pipeline)">⟳</button>
+  </div>
+
+  <!-- PROGRESS TAB -->
+  <div id="tab-progress">
+    <div class="ctl"><span class="lab">Window — which rounds you're viewing</span>
+      <div class="seg" id="win">
+        <button data-w="thisRound">This round</button>
+        <button class="on" data-w="last5">Last 5</button>
+        <button data-w="allTime">All-time</button>
+      </div></div>
+
+    <div class="hero">
+      <div class="lab">Scoring · over rating <span class="pill" id="winpill">Last 5</span></div>
+      <div class="big" id="score">—</div>
+      <div class="sub" id="scoresub"></div>
+    </div>
+
+    <div class="tiles">
+      <div class="tile"><div class="lab">SG 0–100</div><div class="v" id="lev">—</div></div>
+      <div class="tile"><div class="lab">Penalties /18</div><div class="v" id="pen">—</div></div>
+      <div class="tile"><div class="lab">Doubles+ /18</div><div class="v" id="dbl">—</div></div>
+      <div class="tile"><div class="lab">3-putts /18</div><div class="v" id="tp">—</div></div>
+    </div>
+
+    <div class="leakcall"><div class="ico">🎯</div>
+      <div>#1 leak: <b id="leak">—</b><br><span class="foot">your highest-return practice target</span></div></div>
+
+    <div class="card">
+      <h2>Strokes Gained</h2>
+      <div class="ctl" style="margin:0 0 6px"><span class="lab">Compare vs</span>
+        <div class="seg" id="base">
+          <button class="on" data-b="scratch">Scratch</button>
+          <button data-b="myavg">My average</button>
+        </div></div>
+      <div class="bars" id="bars"><div class="zero"></div></div>
+      <div class="foot" id="bf"></div>
+    </div>
+  </div>
+
+  <!-- ROUNDS TAB -->
+  <div id="tab-rounds" class="hide">
+    <div class="legend">vsRtg = score over course rating (per 18). ⚠ = over-recorded (excluded from SG form).</div>
+    <div class="card"><table><thead><tr><th>Date</th><th>Course</th><th>Score</th><th>vsRtg</th></tr></thead>
+      <tbody id="roundsbody"></tbody></table></div>
+  </div>
+
+  <!-- CLUBS TAB -->
+  <div id="tab-clubs" class="hide">
+    <div class="legend">Full-swing shots only; median is your stock yardage. ⚠ = low sample.</div>
+    <div class="card"><table><thead><tr><th>Club</th><th>n</th><th>Median</th><th>p25–p75</th><th>Max</th></tr></thead>
+      <tbody id="clubsbody"></tbody></table></div>
+  </div>
+
+  <!-- MAPS TAB -->
+  <div id="tab-maps" class="hide">
+    <div class="card"><h2>Shot maps</h2>
+      <div class="foot">Coming soon — satellite overlays of your georeferenced shots (we already store lat/lon for every shot).</div></div>
+  </div>
+</div>
+
+<div class="tabbar" id="tabs">
+  <button class="t on" data-t="progress"><span class="i">📊</span>Progress</button>
+  <button class="t" data-t="rounds"><span class="i">⛳</span>Rounds</button>
+  <button class="t" data-t="clubs"><span class="i">🏌️</span>Clubs</button>
+  <button class="t" data-t="maps"><span class="i">🗺️</span>Maps</button>
+</div>
+
+<script>
+const DATA = {"progress": {"generatedFromRounds": 9, "since": "2026-05-01", "thisRoundDate": "2026-06-04", "thisRoundClean": true, "scoring": {"averageOverRating18": 29.1, "potentialOverRating18": 19.8, "bestOverRating18": 14.0, "garminHandicap": 23.6, "break90OverRating": 22}, "sg": {"thisRound": {"byCategory": {"offTee": -1.4, "longApproach": -1.2, "midApproach": -4.8, "inside50": -7.8, "putting": -7.5}, "total": -22.7, "sg0to100": -7.8, "cleanRounds": 1}, "last5": {"byCategory": {"offTee": -7.5, "longApproach": -5.6, "midApproach": -6.8, "inside50": -8.7, "putting": -4.6}, "total": -33.2, "sg0to100": -10.6, "cleanRounds": 3}, "allTime": {"byCategory": {"offTee": -6.8, "longApproach": -7.3, "midApproach": -6.7, "inside50": -8.5, "putting": -6.2}, "total": -35.5, "sg0to100": -10.1, "cleanRounds": 5}}, "authoritative": {"thisRound": {"overRating18": 18.4, "putts18": 42.0, "threePutts18": 6.0, "penalties18": 0.0, "doubles18": 2.0}, "last5": {"overRating18": 28.5, "putts18": 39.5, "threePutts18": 5.0, "penalties18": 1.8, "doubles18": 8.0}, "allTime": {"overRating18": 29.1, "putts18": 38.9, "threePutts18": 5.0, "penalties18": 2.0, "doubles18": 8.1}}, "timeSeries": [{"date": "2026-05-03", "course": "Harvey Penick Golf Campus ~ Nine Hole", "score": 36, "holes": 9, "overRating18": 14.0, "per18": {"offTee": -3.8, "longApproach": -0.8, "midApproach": -16.6, "inside50": -0.8, "putting": 2.4}, "clean": false}, {"date": "2026-05-06", "course": "Jimmy Clay Golf Course ~ Jimmy Clay", "score": 106, "holes": 18, "overRating18": 36.9, "per18": {"offTee": -7.6, "longApproach": -10.2, "midApproach": -8.2, "inside50": -9.3, "putting": -8.2}, "clean": true}, {"date": "2026-05-15", "course": "Harvey Penick Golf Campus ~ Nine Hole/Nine Hole", "score": 92, "holes": 18, "overRating18": 31.4, "per18": {"offTee": -4.2, "longApproach": -8.6, "midApproach": -4.9, "inside50": -7.3, "putting": -8.1}, "clean": true}, {"date": "2026-05-25", "course": "Hancock Golf Course", "score": 47, "holes": 9, "overRating18": 28.8, "per18": {"offTee": -30.5, "longApproach": -17.7, "midApproach": -26.9, "inside50": -21.6, "putting": -1.6}, "clean": false}, {"date": "2026-05-27", "course": "Falconhead Golf Club", "score": 101, "holes": 18, "overRating18": 32.3, "per18": {"offTee": -8.1, "longApproach": -8.2, "midApproach": -8.4, "inside50": -8.8, "putting": -8.7}, "clean": false}, {"date": "2026-05-29", "course": "Riverside Golf Course", "score": 99, "holes": 18, "overRating18": 31.8, "per18": {"offTee": -9.3, "longApproach": -7.8, "midApproach": -6.0, "inside50": -8.7, "putting": -3.3}, "clean": true}, {"date": "2026-05-30", "course": "Harvey Penick Golf Campus ~ Nine Hole", "score": 38, "holes": 9, "overRating18": 18.0, "per18": {"offTee": -8.3, "longApproach": -0.6, "midApproach": -21.9, "inside50": -11.0, "putting": -4.5}, "clean": false}, {"date": "2026-06-01", "course": "The Golf Club at Star Ranch", "score": 99, "holes": 18, "overRating18": 31.6, "per18": {"offTee": -8.7, "longApproach": -5.6, "midApproach": -8.5, "inside50": -9.0, "putting": -4.4}, "clean": true}, {"date": "2026-06-04", "course": "Harvey Penick Golf Campus ~ Nine Hole", "score": 39, "holes": 9, "overRating18": 18.4, "per18": {"offTee": -1.4, "longApproach": -1.2, "midApproach": -4.8, "inside50": -7.8, "putting": -7.5}, "clean": true}]}, "clubs": {"generatedFrom": {"rounds": 9, "analysisStartDate": "2026-05-01", "courses": ["Falconhead Golf Club", "Hancock Golf Course", "Harvey Penick Golf Campus ~ Nine Hole", "Harvey Penick Golf Campus ~ Nine Hole/Nine Hole", "Jimmy Clay Golf Course ~ Jimmy Clay", "Riverside Golf Course", "The Golf Club at Star Ranch"], "suspectHoleShotsExcluded": 111}, "clubs": [{"club": "Driver", "clubId": 924171171, "clubTypeId": 1, "shots": 42, "distanceShots": 42, "medianYds": 190, "meanYds": 180, "p25Yds": 174, "p75Yds": 204, "maxYds": 241, "stdevYds": 52.3, "lowConfidence": false}, {"club": "5 Wood", "clubId": 892530974, "clubTypeId": 3, "shots": 33, "distanceShots": 33, "medianYds": 164, "meanYds": 147, "p25Yds": 122, "p75Yds": 183, "maxYds": 202, "stdevYds": 47.9, "lowConfidence": false}, {"club": "7 Iron", "clubId": 892530981, "clubTypeId": 16, "shots": 58, "distanceShots": 58, "medianYds": 138, "meanYds": 125, "p25Yds": 111, "p75Yds": 154, "maxYds": 196, "stdevYds": 48.6, "lowConfidence": false}, {"club": "4 Hybrid", "clubId": 892530976, "clubTypeId": 7, "shots": 5, "distanceShots": 5, "medianYds": 135, "meanYds": 121, "p25Yds": 103, "p75Yds": 170, "maxYds": 194, "stdevYds": 65.8, "lowConfidence": false}, {"club": "8 Iron", "clubId": 892530982, "clubTypeId": 17, "shots": 26, "distanceShots": 26, "medianYds": 124, "meanYds": 97, "p25Yds": 42, "p75Yds": 134, "maxYds": 165, "stdevYds": 54.9, "lowConfidence": false}, {"club": "9 Iron", "clubId": 892530983, "clubTypeId": 18, "shots": 25, "distanceShots": 25, "medianYds": 111, "meanYds": 94, "p25Yds": 80, "p75Yds": 132, "maxYds": 162, "stdevYds": 49.3, "lowConfidence": false}, {"club": "6 Iron", "clubId": 892530980, "clubTypeId": 15, "shots": 5, "distanceShots": 5, "medianYds": 109, "meanYds": 119, "p25Yds": 92, "p75Yds": 173, "maxYds": 188, "stdevYds": 55.9, "lowConfidence": false}, {"club": "PW", "clubId": 892530984, "clubTypeId": 19, "shots": 52, "distanceShots": 27, "medianYds": 89, "meanYds": 79, "p25Yds": 67, "p75Yds": 102, "maxYds": 124, "stdevYds": 34.2, "lowConfidence": false}, {"club": "50\u00b0 GW", "clubId": 921562502, "clubTypeId": 20, "shots": 13, "distanceShots": 13, "medianYds": 77, "meanYds": 62, "p25Yds": 28, "p75Yds": 83, "maxYds": 103, "stdevYds": 31.4, "lowConfidence": false}, {"club": "54\u00b0 SW", "clubId": 921562987, "clubTypeId": 21, "shots": 37, "distanceShots": 6, "medianYds": 12, "meanYds": 19, "p25Yds": 6, "p75Yds": 33, "maxYds": 44, "stdevYds": 16.4, "lowConfidence": false}, {"club": "Putter", "clubId": 892530988, "clubTypeId": 23, "shots": 222, "distanceShots": 0, "medianYds": null, "meanYds": null, "p25Yds": null, "p75Yds": null, "maxYds": null, "stdevYds": null, "lowConfidence": true}], "note": "Distances are per-shot travel (yds) for full-ish shots (putts & chips excluded). Unknown-club and suspect-hole shots dropped. Small samples are flagged lowConfidence \u2014 these firm up as more rounds are added."}};
+const P = DATA.progress, SG = P.sg, AU = P.authoritative;
+const CATS=[["offTee","Off-Tee"],["longApproach","Long"],["midApproach","Mid"],
+            ["inside50","In50"],["putting","Putt"]];
+const WLAB={thisRound:"This round",last5:"Last 5",allTime:"All-time"};
+let win="last5", base="scratch";
+
+document.getElementById('date').textContent =
+  "Updated "+(P.thisRoundDate||"")+" · "+P.generatedFromRounds+" rounds";
+
+function bucket(w,b,key){
+  const s = SG[w] ? SG[w].byCategory[key] : null;
+  if(s===null) return null;
+  return b==="scratch" ? s : s - SG.allTime.byCategory[key];   // myavg = vs season norm
+}
+function lever(w,b){
+  if(!SG[w]) return null;
+  const s = SG[w].sg0to100;
+  return b==="scratch" ? s : s - SG.allTime.sg0to100;
+}
+function fmt(v){return v===null?"—":(v>0?"+":"")+v.toFixed(1);}
+
+function renderProgress(){
+  document.getElementById('winpill').textContent=WLAB[win];
+  const sc=AU[win];
+  document.getElementById('score').textContent = sc.overRating18===null?"—":"+"+sc.overRating18;
+  document.getElementById('scoresub').textContent =
+    `potential +${P.scoring.potentialOverRating18} · Break 90 = +${P.scoring.break90OverRating} · authoritative`;
+  const lv=lever(win,base), le=document.getElementById('lev');
+  le.textContent=fmt(lv); le.className="v "+(lv===null?"":lv>=0?"pos":"neg");
+  document.getElementById('pen').textContent=sc.penalties18.toFixed(1);
+  const db=document.getElementById('dbl'); db.textContent=sc.doubles18.toFixed(1);
+  db.className="v "+(sc.doubles18>=4?"neg":"");
+  document.getElementById('tp').textContent=sc.threePutts18.toFixed(1);
+
+  const vals=CATS.map(([k])=>bucket(win,base,k));
+  if(vals.some(v=>v===null)){
+    document.getElementById('leak').textContent="this round was over-recorded — SG unavailable";
+  } else {
+    let li=0; vals.forEach((v,i)=>{if(v<vals[li])li=i;});
+    const full={offTee:"Off-the-Tee",longApproach:"Long approach 150+",midApproach:"Mid approach 50–150",
+      inside50:"Inside 50",putting:"Putting"}[CATS[li][0]];
+    document.getElementById('leak').textContent=`${full} (${vals[li].toFixed(1)})`;
+  }
+  document.getElementById('bf').innerHTML = base==="scratch"
+    ? "Bars vs <b>scratch</b> (the fixed ruler) — negative is normal, toward 0 is better."
+    : "Bars vs <b>your season average</b> — green = better than your norm, red = worse.";
+  drawBars(vals);
+}
+function drawBars(vals){
+  const host=document.getElementById('bars');
+  host.querySelectorAll('.col').forEach(c=>c.remove());
+  const clean=vals.filter(v=>v!==null);
+  const mx=Math.max(...clean.map(v=>Math.abs(v)),3), half=70;
+  CATS.forEach(([k,short],i)=>{
+    const v=vals[i], col=document.createElement('div'); col.className='col';
+    if(v===null){col.innerHTML=`<div class="clab">${short}</div>`;host.appendChild(col);return;}
+    const h=Math.abs(v)/mx*half;
+    const top = v>=0 ? (half-h) : half;
+    const vtop = v>=0 ? (half-h-15) : (half+h+2);
+    col.innerHTML=`<div class="bar ${v>=0?'g':'r'}" style="top:${top}px;height:${h}px"></div>
+      <div class="vlab ${v>=0?'pos':'neg'}" style="top:${vtop}px">${v>0?'+':''}${v.toFixed(1)}</div>
+      <div class="clab">${short}</div>`;
+    host.appendChild(col);
+  });
+}
+function renderRounds(){
+  document.getElementById('roundsbody').innerHTML = P.timeSeries.slice().reverse().map(r=>{
+    const flag = r.clean ? "" : " ⚠";
+    const ovr = r.overRating18===null?"—":"+"+r.overRating18;
+    return `<tr><td>${r.date}${flag}</td><td>${r.course.slice(0,22)}</td>
+      <td>${r.score} <span class="mut">(${r.holes})</span></td><td>${ovr}</td></tr>`;
+  }).join("");
+}
+function renderClubs(){
+  document.getElementById('clubsbody').innerHTML = DATA.clubs.clubs.map(c=>{
+    if(c.medianYds===null) return `<tr><td>${c.club}</td><td>${c.shots}</td><td>—</td><td>—</td><td>—</td></tr>`;
+    const w=c.lowConfidence?" ⚠":"";
+    return `<tr><td>${c.club}${w}</td><td>${c.distanceShots}</td><td><b>${c.medianYds}</b></td>
+      <td>${c.p25Yds}–${c.p75Yds}</td><td>${c.maxYds}</td></tr>`;
+  }).join("");
+}
+
+document.getElementById('win').onclick=e=>{if(!e.target.dataset.w)return;win=e.target.dataset.w;
+  [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===e.target));renderProgress();};
+document.getElementById('base').onclick=e=>{if(!e.target.dataset.b)return;base=e.target.dataset.b;
+  [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===e.target));renderProgress();};
+document.getElementById('tabs').onclick=e=>{const t=e.target.closest('[data-t]');if(!t)return;
+  [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===t));
+  ['progress','rounds','clubs','maps'].forEach(n=>
+    document.getElementById('tab-'+n).classList.toggle('hide',n!==t.dataset.t));};
+
+renderProgress(); renderRounds(); renderClubs();
+</script>
+</body>
+</html>

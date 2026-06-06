@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Golf Progress — Mobile Mock v2</title>
+<style>
+  :root{--bg:#eef1f4;--card:#fff;--ink:#1c2530;--muted:#7a8794;--line:#e9edf1;
+    --good:#1f9d57;--bad:#d6443c;--accent:#15497a;--warn:#e8a33d;}
+  *{box-sizing:border-box}
+  body{margin:0;background:#cdd4db;font:15px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink);display:flex;justify-content:center;padding:24px 12px}
+  .phone{width:390px;max-width:100%;background:var(--bg);border-radius:38px;overflow:hidden;
+    box-shadow:0 18px 50px rgba(20,40,70,.35);border:10px solid #11151b;position:relative}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:26px;
+    background:#11151b;border-radius:0 0 16px 16px;z-index:5}
+  .screen{height:800px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .pad{padding:0 14px 84px}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:34px 4px 6px}
+  .top h1{font-size:18px;margin:0} .top .date{font-size:12px;color:var(--muted)}
+  .refresh{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;border:0;
+    font-size:17px;box-shadow:0 2px 6px rgba(21,73,122,.4)}
+  .ctl{margin:8px 0} .ctl .lab{font-size:10px;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.05em;margin:0 2px 4px;display:block}
+  .seg{display:flex;background:#e2e7ec;border-radius:12px;padding:3px}
+  .seg button{flex:1;border:0;background:none;padding:9px 0;border-radius:9px;font-size:13px;
+    color:var(--muted);font-weight:600}
+  .seg button.on{background:#fff;color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+  .hero{background:linear-gradient(135deg,#15497a,#1d6fb8);color:#fff;border-radius:18px;
+    padding:16px;margin:12px 0}
+  .hero .lab{font-size:11px;opacity:.85;text-transform:uppercase;letter-spacing:.05em}
+  .hero .big{font-size:40px;font-weight:800;line-height:1;margin:4px 0}
+  .hero .sub{font-size:12px;opacity:.9}
+  .win{display:inline-block;background:rgba(255,255,255,.22);border-radius:20px;padding:1px 9px;
+    font-size:11px;font-weight:700;margin-left:6px;vertical-align:middle}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .tile{background:var(--card);border-radius:14px;padding:12px}
+  .tile .lab{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .tile .v{font-size:22px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .neg{color:var(--bad)} .pos{color:var(--good)} .mut{color:var(--muted)}
+  .card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+    margin:0 0 4px;display:flex;justify-content:space-between;align-items:center}
+  .card h2 .vs{font-size:10px;color:var(--accent);background:#eaf1f8;border-radius:10px;padding:2px 7px}
+  .leakcall{display:flex;align-items:center;gap:10px;background:#fbeceb;border-radius:12px;padding:12px;margin-bottom:12px}
+  .leakcall .ico{font-size:22px} .leakcall b{color:var(--bad)}
+  /* vertical SG bars */
+  .bars{display:flex;justify-content:space-between;align-items:stretch;height:150px;
+    position:relative;margin-top:6px}
+  .zero{position:absolute;left:0;right:0;top:50%;border-top:1px dashed #c4ccd4}
+  .col{flex:1;position:relative;display:flex;flex-direction:column;align-items:center}
+  .barwrap{position:absolute;left:50%;transform:translateX(-50%);width:60%}
+  .bar{position:absolute;left:0;right:0;border-radius:5px}
+  .bar.r{background:var(--bad)} .bar.g{background:var(--good)}
+  .vlab{position:absolute;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;
+    left:50%;transform:translateX(-50%)}
+  .clab{position:absolute;bottom:-20px;font-size:10px;color:var(--muted);text-align:center;width:64px}
+  .foot{font-size:11px;color:var(--muted)}
+  .bk{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+  .bk:last-child{border-bottom:0} .bk .name{flex:1;font-size:14px}
+  .tabbar{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
+    display:flex;justify-content:space-around;padding:8px 0 18px}
+  .tabbar .t{font-size:11px;color:var(--muted);text-align:center}
+  .tabbar .t.on{color:var(--accent)} .tabbar .t .i{font-size:18px;display:block}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <div class="screen"><div class="pad">
+    <div class="top">
+      <div><h1>⛳ Progress</h1><div class="date">Updated 2026-06-04 · 9 rounds</div></div>
+      <button class="refresh" title="pull + rebuild">⟳</button>
+    </div>
+
+    <div class="ctl"><span class="lab">Window — which rounds you're viewing</span>
+      <div class="seg" id="win">
+        <button data-w="this">This round</button>
+        <button class="on" data-w="last5">Last 5</button>
+        <button data-w="all">All-time</button>
+      </div></div>
+
+    <div class="hero">
+      <div class="lab">Scoring · over rating <span class="win" id="winpill">Last 5</span></div>
+      <div class="big" id="score">+28.5</div>
+      <div class="sub">potential +19.8 · Break 90 = +22 · authoritative (no GPS)</div>
+    </div>
+
+    <div class="row2">
+      <div class="tile"><div class="lab">SG 0–100 leverage</div><div class="v neg" id="lev">−10.6</div></div>
+      <div class="tile"><div class="lab">Up &amp; down</div><div class="v neg" id="ud">22%</div></div>
+      <div class="tile"><div class="lab">Penalties /18</div><div class="v" id="pen">1.8</div></div>
+      <div class="tile"><div class="lab">Doubles+ /18</div><div class="v neg" id="dbl">8.0</div></div>
+    </div>
+
+    <div class="leakcall"><div class="ico">🎯</div>
+      <div>#1 leak: <b id="leak">Inside 50 (−8.7)</b><br>
+        <span class="foot">where your wedge practice should pay off</span></div></div>
+
+    <div class="card">
+      <h2><span>Strokes Gained</span>
+        <span class="vs">
+          <span class="lab" style="display:none"></span>
+        </span></h2>
+      <div class="ctl" style="margin:2px 0 6px"><span class="lab">Compare SG vs</span>
+        <div class="seg" id="base">
+          <button class="on" data-b="scratch">Scratch</button>
+          <button data-b="level">My 23</button>
+          <button data-b="target">Target 15</button>
+        </div></div>
+      <div class="bars" id="bars"><div class="zero"></div></div>
+      <div class="foot" id="bf" style="margin-top:26px"></div>
+    </div>
+  </div></div>
+
+  <div class="tabbar">
+    <div class="t on"><span class="i">📊</span>Progress</div>
+    <div class="t"><span class="i">⛳</span>Rounds</div>
+    <div class="t"><span class="i">🏌️</span>Clubs</div>
+    <div class="t"><span class="i">🗺️</span>Maps</div>
+  </div>
+</div>
+
+<script>
+// Real scratch numbers per window (from progress.md); baselines applied as offsets.
+const KEYS=["OTT","Long","Mid","In50","Putt"];
+const WIN={
+  this:{name:"This round", score:"+18.4", pen:"0.0", dbl:"2.0", ud:"33%", sg0:-7.8,
+        b:[-1.4,-1.2,-4.8,-7.8,-7.5]},
+  last5:{name:"Last 5", score:"+28.5", pen:"1.8", dbl:"8.0", ud:"22%", sg0:-10.6,
+        b:[-7.5,-5.6,-6.8,-8.7,-4.6]},
+  all:{name:"All-time", score:"+29.1", pen:"2.0", dbl:"8.1", ud:"20%", sg0:-10.1,
+        b:[-6.8,-7.3,-6.7,-8.5,-6.2]},
+};
+const OFF={scratch:[0,0,0,0,0], level:[8.0,7.6,7.8,6.2,5.6], target:[6.0,5.1,5.3,4.7,3.6]};
+const SG0OFF={scratch:0, level:9.0, target:5.0};
+const BNOTE={scratch:"vs scratch (the ruler) — negative is normal.",
+  level:"vs a 23-HCP — green = you beat your level.",
+  target:"vs your 15 goal — each red is a gap to close."};
+let win="last5", base="scratch";
+
+function render(){
+  const w=WIN[win], off=OFF[base];
+  document.getElementById('winpill').textContent=w.name;
+  document.getElementById('score').textContent=w.score;
+  document.getElementById('pen').textContent=w.pen;
+  document.getElementById('dbl').textContent=w.dbl;
+  document.getElementById('ud').textContent=w.ud;
+  const lev=(w.sg0+SG0OFF[base]);
+  const le=document.getElementById('lev'); le.textContent=(lev>0?'+':'')+lev.toFixed(1);
+  le.className="v "+(lev>=0?"pos":"neg");
+  const vals=w.b.map((v,i)=>v+off[i]);
+  // leak = most negative
+  let li=0; vals.forEach((v,i)=>{if(v<vals[li])li=i;});
+  document.getElementById('leak').textContent=`${full(KEYS[li])} (${vals[li].toFixed(1)})`;
+  document.getElementById('bf').textContent=BNOTE[base];
+  drawBars(vals);
+}
+function full(k){return {OTT:"Off-the-Tee",Long:"Long 150+",Mid:"Mid 50–150",In50:"Inside 50",Putt:"Putting"}[k];}
+function drawBars(vals){
+  const host=document.getElementById('bars');
+  host.querySelectorAll('.col').forEach(c=>c.remove());
+  const mx=Math.max(...vals.map(v=>Math.abs(v)),3), half=66; // px each side of zero
+  vals.forEach((v,i)=>{
+    const h=Math.abs(v)/mx*half, cls=v>=0?'g':'r';
+    const col=document.createElement('div'); col.className='col';
+    const top = v>=0 ? `top:${half-h}px` : `top:${half}px`;
+    const vlabTop = v>=0 ? `top:${half-h-16}px` : `top:${half+h+2}px`;
+    col.innerHTML=`<div class="barwrap" style="top:0;bottom:0">
+        <div class="bar ${cls}" style="${top};height:${h}px"></div>
+        <div class="vlab ${v>=0?'pos':'neg'}" style="${vlabTop}">${v>0?'+':''}${v.toFixed(1)}</div>
+        <div class="clab">${KEYS[i]}</div></div>`;
+    host.appendChild(col);
+  });
+}
+document.getElementById('win').addEventListener('click',e=>{
+  if(!e.target.dataset.w)return; win=e.target.dataset.w;
+  [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===e.target)); render();});
+document.getElementById('base').addEventListener('click',e=>{
+  if(!e.target.dataset.b)return; base=e.target.dataset.b;
+  [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===e.target)); render();});
+render();
+</script>
+</body>
+</html>
