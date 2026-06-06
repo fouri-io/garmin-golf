@@ -11,6 +11,7 @@ dependencies = [
     "pandas",
     "python-dotenv",
     "matplotlib",
+    "anthropic",      # AI coach (round reports); optional at runtime — degrades if no key
 ]
 
 [project.optional-dependencies]

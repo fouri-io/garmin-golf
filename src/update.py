@@ -22,7 +22,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from . import analyze, parse, progress, pull, site
+from . import analyze, coach, parse, progress, pull, site
 from .config import publish_target
 
 SITE_FILE = Path("site/index.html")
@@ -68,6 +68,10 @@ def main() -> None:
     ap.add_argument("--publish", action="store_true", help="copy built site to publish.targetDir")
     ap.add_argument("--push", action="store_true",
                     help="publish AND git commit+push that repo (auto-deploys)")
+    ap.add_argument("--coach", action="store_true",
+                    help="generate an AI coach report for the latest round (needs ANTHROPIC_API_KEY)")
+    ap.add_argument("--no-coach", action="store_true",
+                    help="skip the coach even when a new round was pulled")
     a = ap.parse_args()
 
     if a.scorecard or a.all:
@@ -89,6 +93,13 @@ def main() -> None:
     print("Building aggregates...")
     analyze.build_club_stats()
     progress.build()
+
+    # Coach runs before site so its report gets inlined. Default: when a new round was
+    # pulled (and not suppressed); always when --coach is given.
+    if a.coach or ((a.scorecard or a.all) and not a.no_coach):
+        print("AI coach...")
+        coach.coach_round()
+
     out = site.build()
     print(f"  site -> {out}")
 

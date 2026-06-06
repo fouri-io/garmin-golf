@@ -59,12 +59,26 @@ def _compact_round(path: Path) -> dict:
     }
 
 
+def _coach_reports() -> dict:
+    """AI coach round reports (markdown), newest first."""
+    cdir = PROCESSED / "coach"
+    reports = []
+    if cdir.exists():
+        for f in sorted(cdir.glob("*.md")):
+            if f.name in ("context.md", "latest.md"):
+                continue
+            reports.append({"stem": f.stem, "date": f.stem[:10].replace("_", "-"),
+                            "text": f.read_text()})
+    reports.sort(key=lambda r: r["stem"], reverse=True)
+    return {"reports": reports}
+
+
 def build() -> Path:
     progress = json.loads((PROCESSED / "progress.json").read_text())
     clubs = json.loads((PROCESSED / "club_stats.json").read_text())
     rounds = sorted((_compact_round(Path(p)) for p in glob.glob(str(ROUNDS_DIR / "*.json"))),
                     key=lambda r: r["date"], reverse=True)
-    data = {"progress": progress, "clubs": clubs, "rounds": rounds}
+    data = {"progress": progress, "clubs": clubs, "rounds": rounds, "coach": _coach_reports()}
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     html = TEMPLATE.replace("/*__DATA__*/null", json.dumps(data))
     out = OUT_DIR / "index.html"
@@ -165,6 +179,14 @@ TEMPLATE = r"""<!doctype html>
   th:first-child,td:first-child{text-align:left}thead th{font-size:11px;color:var(--muted);font-weight:600}
   .legend{font-size:12px;color:#2c4763;background:#eef4fb;border:1px solid #d8e6f5;
     border-radius:10px;padding:8px 12px;margin-bottom:10px}
+  /* coach */
+  .coachhdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .coachhdr .ai{background:linear-gradient(135deg,#15497a,#1d6fb8);color:#fff;border-radius:8px;
+    padding:3px 8px;font-size:11px;font-weight:700}
+  #coachReport h4{font-size:14px;margin:13px 0 4px;color:var(--accent)}
+  #coachReport h4:first-child{margin-top:0}
+  #coachReport p{margin:0 0 9px;font-size:14px;line-height:1.5}
+  #coachReport ul{margin:0 0 9px;padding-left:18px}#coachReport li{margin:3px 0;font-size:14px}
   /* trend */
   .tpill{font-size:11px;font-weight:700;border-radius:20px;padding:2px 9px}
   .tpill.up{background:#e4f5ec;color:var(--good)}.tpill.down{background:#fbe7e5;color:var(--bad)}
@@ -242,6 +264,14 @@ TEMPLATE = r"""<!doctype html>
     <div class="card"><table><thead><tr><th>Club</th><th>n</th><th>Median</th><th>p25–p75</th><th>Max</th></tr></thead>
       <tbody id="clubsbody"></tbody></table></div></div>
 
+  <div id="tab-coach" class="hide">
+    <div class="coachhdr"><span class="ai">AI COACH</span>
+      <select class="rsel" id="coachRound" style="margin:0;flex:1"></select></div>
+    <div class="card" id="coachReport"></div>
+    <div class="foot" style="padding:0 4px">Generated at update time from your profile +
+      this round + your trend. Honest about which numbers are GPS-approximate.</div>
+  </div>
+
   <div id="tab-maps" class="hide">
     <select class="rsel" id="mapRound"></select>
     <div class="holenav"><button id="hprev">◀</button>
@@ -260,6 +290,7 @@ TEMPLATE = r"""<!doctype html>
   <button class="t" data-t="rounds"><span class="i">⛳</span>Rounds</button>
   <button class="t" data-t="clubs"><span class="i">🏌️</span>Clubs</button>
   <button class="t" data-t="maps"><span class="i">🗺️</span>Maps</button>
+  <button class="t" data-t="coach"><span class="i">🧠</span>Coach</button>
 </div>
 
 <script>
@@ -468,12 +499,38 @@ function renderTrend(){
   document.getElementById('trendfoot').textContent=`${pts.length} ${m.clean?'clean ':''}rounds`;
 }
 
+/* ---- coach (tiny markdown renderer) ---- */
+function md(t){
+  if(!t)return '';
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const inline=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>');
+  let out='',inList=false;
+  t.split('\n').forEach(line=>{line=line.trim();let m;
+    if(!line){if(inList){out+='</ul>';inList=false;}return;}
+    if(m=line.match(/^#{1,4}\s+(.*)/)){if(inList){out+='</ul>';inList=false;}out+=`<h4>${inline(m[1])}</h4>`;}
+    else if(m=line.match(/^[-*]\s+(.*)/)){if(!inList){out+='<ul>';inList=true;}out+=`<li>${inline(m[1])}</li>`;}
+    else{if(inList){out+='</ul>';inList=false;}out+=`<p>${inline(line)}</p>`;}});
+  if(inList)out+='</ul>';return out;
+}
+function renderCoach(){
+  const reps=(DATA.coach&&DATA.coach.reports)||[],sel=document.getElementById('coachRound');
+  if(!reps.length){sel.style.display='none';
+    document.getElementById('coachReport').innerHTML=
+      '<div class="foot">No coach reports yet. Set <code>ANTHROPIC_API_KEY</code> in .env, then run <code>python -m src.update &lt;id&gt; --coach</code> (or just pull a round).</div>';
+    return;}
+  sel.style.display='';
+  if(!sel.dataset.init){sel.innerHTML=reps.map((r,i)=>`<option value="${i}">${r.date} round</option>`).join("");
+    sel.dataset.init=1;sel.onchange=e=>{document.getElementById('coachReport').innerHTML=md(reps[+e.target.value].text);};}
+  document.getElementById('coachReport').innerHTML=md(reps[0].text);
+}
+
 function setTab(name){
   [...document.getElementById('tabs').children].forEach(b=>b.classList.toggle('on',b.dataset.t===name));
-  ['progress','trend','rounds','clubs','maps'].forEach(n=>document.getElementById('tab-'+n).classList.toggle('hide',n!==name));
+  ['progress','trend','rounds','clubs','maps','coach'].forEach(n=>document.getElementById('tab-'+n).classList.toggle('hide',n!==name));
   if(name==="trend")renderTrend();
   if(name==="rounds")renderRoundsList();
-  if(name==="maps")showMap();}
+  if(name==="maps")showMap();
+  if(name==="coach")renderCoach();}
 document.getElementById('tabs').onclick=e=>{const t=e.target.closest('[data-t]');if(t)setTab(t.dataset.t);};
 function gotoMap(ri,hn){
   initMap();mRound=ri;document.getElementById('mapRound').value=ri;
