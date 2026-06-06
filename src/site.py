@@ -165,6 +165,11 @@ TEMPLATE = r"""<!doctype html>
   th:first-child,td:first-child{text-align:left}thead th{font-size:11px;color:var(--muted);font-weight:600}
   .legend{font-size:12px;color:#2c4763;background:#eef4fb;border:1px solid #d8e6f5;
     border-radius:10px;padding:8px 12px;margin-bottom:10px}
+  /* trend */
+  .tpill{font-size:11px;font-weight:700;border-radius:20px;padding:2px 9px}
+  .tpill.up{background:#e4f5ec;color:var(--good)}.tpill.down{background:#fbe7e5;color:var(--bad)}
+  .tpill.flat{background:#eef1f4;color:var(--muted)}
+  #trendhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
   /* maps */
   .rsel{width:100%;background:var(--card);color:var(--ink);border:1px solid var(--line);
     border-radius:12px;padding:11px 12px;font-size:15px;font-weight:600;margin-bottom:8px}
@@ -218,6 +223,15 @@ TEMPLATE = r"""<!doctype html>
       <div class="foot" id="bf"></div></div>
   </div>
 
+  <div id="tab-trend" class="hide">
+    <div class="ctl"><span class="lab">Metric over time</span>
+      <select class="rsel" id="trendMetric"></select></div>
+    <div class="card"><div id="trendhead"></div><div id="trendchart"></div>
+      <div class="foot" id="trendfoot"></div></div>
+    <div class="foot" style="padding:0 4px">Each point is a round, oldest → newest.
+      Filled = clean round; grey = over-recorded (kept for score, excluded from SG).</div>
+  </div>
+
   <div id="tab-rounds" class="hide">
     <div id="roundsList"></div>
     <div id="roundDetail" class="hide"></div>
@@ -241,7 +255,8 @@ TEMPLATE = r"""<!doctype html>
 </div>
 
 <div class="tabbar" id="tabs">
-  <button class="t on" data-t="progress"><span class="i">📊</span>Progress</button>
+  <button class="t on" data-t="progress"><span class="i">📊</span>Overview</button>
+  <button class="t" data-t="trend"><span class="i">📈</span>Trend</button>
   <button class="t" data-t="rounds"><span class="i">⛳</span>Rounds</button>
   <button class="t" data-t="clubs"><span class="i">🏌️</span>Clubs</button>
   <button class="t" data-t="maps"><span class="i">🗺️</span>Maps</button>
@@ -410,9 +425,53 @@ function drawHole(){
 }
 function showMap(){initMap();setTimeout(()=>{lmap.invalidateSize();drawHole();},30);}
 
+/* ---- trend (SVG line charts over rounds) ---- */
+const TS=P.timeSeries;
+const sumCats=r=>CATS.reduce((a,[k])=>a+(r.per18[k]||0),0);
+const TREND=[
+  {k:'total',label:'SG total (toward 0 = better)',clean:true,low:false,get:sumCats},
+  {k:'over',label:'Score vs rating (lower = better)',clean:false,low:true,get:r=>r.overRating18},
+  {k:'offTee',label:'SG Off-the-Tee',clean:true,low:false,get:r=>r.per18.offTee},
+  {k:'longApproach',label:'SG Long approach',clean:true,low:false,get:r=>r.per18.longApproach},
+  {k:'midApproach',label:'SG Mid approach',clean:true,low:false,get:r=>r.per18.midApproach},
+  {k:'inside50',label:'SG Inside 50',clean:true,low:false,get:r=>r.per18.inside50},
+  {k:'putting',label:'SG Putting',clean:true,low:false,get:r=>r.per18.putting}];
+let trendMetric='total';
+document.getElementById('trendMetric').innerHTML=TREND.map(m=>`<option value="${m.k}">${m.label}</option>`).join("");
+document.getElementById('trendMetric').onchange=e=>{trendMetric=e.target.value;renderTrend();};
+function slope(ys){const n=ys.length;if(n<2)return 0;const mx=(n-1)/2,my=ys.reduce((a,b)=>a+b,0)/n;
+  let nu=0,de=0;ys.forEach((y,i)=>{nu+=(i-mx)*(y-my);de+=(i-mx)**2;});return de?nu/de:0;}
+function dir(ys,low){const s=slope(ys);if(Math.abs(s)<0.3)return{t:'→ flat',c:'flat'};
+  return (low?-s:s)>0?{t:'↑ improving',c:'up'}:{t:'↓ slipping',c:'down'};}
+function chart(pts,zero){
+  if(pts.length<2)return '<div class="foot">need ≥2 rounds to show a trend</div>';
+  const W=320,H=170,L=30,R=10,T=12,B=26;let ys=pts.map(p=>p.y);
+  let mn=Math.min(...ys),mx=Math.max(...ys);if(zero){mn=Math.min(mn,0);mx=Math.max(mx,0);}
+  if(mn===mx){mn-=1;mx+=1;}const pd=(mx-mn)*0.15||1;mn-=pd;mx+=pd;
+  const X=i=>L+(W-L-R)*(i/(pts.length-1)),Y=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
+  let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">`;
+  if(zero&&0>=mn&&0<=mx){const z=Y(0);s+=`<line x1="${L}" y1="${z}" x2="${W-R}" y2="${z}" stroke="#c4ccd4" stroke-dasharray="3"/>`;}
+  s+=`<text x="2" y="${Y(mx)+3}" font-size="9" fill="#7a8794">${mx.toFixed(0)}</text>`;
+  s+=`<text x="2" y="${Y(mn)+3}" font-size="9" fill="#7a8794">${mn.toFixed(0)}</text>`;
+  s+=`<polyline points="${pts.map((p,i)=>X(i)+','+Y(p.y)).join(' ')}" fill="none" stroke="#15497a" stroke-width="2"/>`;
+  pts.forEach((p,i)=>{s+=`<circle cx="${X(i)}" cy="${Y(p.y)}" r="3.5" fill="${p.clean?'#15497a':'#9aa6b2'}"/>`;
+    if(pts.length<=8||i%2===0||i===pts.length-1)s+=`<text x="${X(i)}" y="${H-8}" font-size="8" fill="#7a8794" text-anchor="middle">${p.label}</text>`;});
+  return s+'</svg>';
+}
+function renderTrend(){
+  const m=TREND.find(x=>x.k===trendMetric);
+  const pts=TS.filter(r=>m.clean?r.clean:(r.overRating18!=null))
+    .map(r=>({label:r.date.slice(5).replace('-','/'),y:m.get(r),clean:r.clean}));
+  const d=pts.length>=2?dir(pts.map(p=>p.y),m.low):{t:'',c:'flat'};
+  document.getElementById('trendhead').innerHTML=`<b>${m.label}</b><span class="tpill ${d.c}">${d.t}</span>`;
+  document.getElementById('trendchart').innerHTML=chart(pts,m.k!=='over');
+  document.getElementById('trendfoot').textContent=`${pts.length} ${m.clean?'clean ':''}rounds`;
+}
+
 function setTab(name){
   [...document.getElementById('tabs').children].forEach(b=>b.classList.toggle('on',b.dataset.t===name));
-  ['progress','rounds','clubs','maps'].forEach(n=>document.getElementById('tab-'+n).classList.toggle('hide',n!==name));
+  ['progress','trend','rounds','clubs','maps'].forEach(n=>document.getElementById('tab-'+n).classList.toggle('hide',n!==name));
+  if(name==="trend")renderTrend();
   if(name==="rounds")renderRoundsList();
   if(name==="maps")showMap();}
 document.getElementById('tabs').onclick=e=>{const t=e.target.closest('[data-t]');if(t)setTab(t.dataset.t);};
