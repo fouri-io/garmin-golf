@@ -1,7 +1,7 @@
 {
-  "generatedFromRounds": 9,
+  "generatedFromRounds": 11,
   "since": "2026-05-01",
-  "thisRoundDate": "2026-06-04",
+  "thisRoundDate": "2026-06-08",
   "thisRoundClean": true,
   "baselines": {
     "scratch": {
@@ -18,13 +18,13 @@
     "myAverage": {
       "label": "My average",
       "byCategory": {
-        "offTee": -6.8,
-        "longApproach": -7.3,
-        "midApproach": -6.7,
-        "inside50": -8.5,
-        "putting": -6.2
+        "offTee": -6.0,
+        "longApproach": -6.5,
+        "midApproach": -6.5,
+        "inside50": -7.0,
+        "putting": -6.3
       },
-      "sg0to100": -10.1
+      "sg0to100": -8.5
     },
     "target15": {
       "label": "Target 15",
@@ -40,8 +40,8 @@
     }
   },
   "scoring": {
-    "averageOverRating18": 29.1,
-    "potentialOverRating18": 19.8,
+    "averageOverRating18": 27.8,
+    "potentialOverRating18": 17.6,
     "bestOverRating18": 14.0,
     "garminHandicap": 23.6,
     "break90OverRating": 22
@@ -49,62 +49,62 @@
   "sg": {
     "thisRound": {
       "byCategory": {
-        "offTee": -1.4,
-        "longApproach": -1.2,
-        "midApproach": -4.8,
-        "inside50": -7.8,
-        "putting": -7.5
+        "offTee": -2.7,
+        "longApproach": -6.0,
+        "midApproach": -5.0,
+        "inside50": -1.4,
+        "putting": -8.6
       },
-      "total": -22.7,
-      "sg0to100": -7.8,
+      "total": -23.7,
+      "sg0to100": -1.4,
       "cleanRounds": 1
     },
     "last5": {
       "byCategory": {
-        "offTee": -7.5,
-        "longApproach": -5.6,
-        "midApproach": -6.8,
-        "inside50": -8.7,
-        "putting": -4.6
+        "offTee": -4.8,
+        "longApproach": -3.7,
+        "midApproach": -6.6,
+        "inside50": -5.3,
+        "putting": -6.0
       },
-      "total": -33.2,
-      "sg0to100": -10.6,
-      "cleanRounds": 3
+      "total": -26.4,
+      "sg0to100": -6.9,
+      "cleanRounds": 4
     },
     "allTime": {
       "byCategory": {
-        "offTee": -6.8,
-        "longApproach": -7.3,
-        "midApproach": -6.7,
-        "inside50": -8.5,
-        "putting": -6.2
+        "offTee": -6.0,
+        "longApproach": -6.5,
+        "midApproach": -6.5,
+        "inside50": -7.0,
+        "putting": -6.3
       },
-      "total": -35.5,
-      "sg0to100": -10.1,
-      "cleanRounds": 5
+      "total": -32.3,
+      "sg0to100": -8.5,
+      "cleanRounds": 7
     }
   },
   "authoritative": {
     "thisRound": {
-      "overRating18": 18.4,
+      "overRating18": 21.4,
       "putts18": 42.0,
       "threePutts18": 6.0,
       "penalties18": 0.0,
-      "doubles18": 2.0
+      "doubles18": 4.0
     },
     "last5": {
-      "overRating18": 28.5,
-      "putts18": 39.5,
-      "threePutts18": 5.0,
-      "penalties18": 1.8,
-      "doubles18": 8.0
+      "overRating18": 22.8,
+      "putts18": 39.3,
+      "threePutts18": 4.0,
+      "penalties18": 2.0,
+      "doubles18": 5.3
     },
     "allTime": {
-      "overRating18": 29.1,
-      "putts18": 38.9,
+      "overRating18": 27.8,
+      "putts18": 39.0,
       "threePutts18": 5.0,
-      "penalties18": 2.0,
-      "doubles18": 8.1
+      "penalties18": 1.9,
+      "doubles18": 7.5
     }
   },
   "timeSeries": [
@@ -240,6 +240,36 @@
         "midApproach": -4.8,
         "inside50": -7.8,
         "putting": -7.5
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-06-07",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 37,
+      "holes": 9,
+      "overRating18": 16.0,
+      "per18": {
+        "offTee": -2.3,
+        "longApproach": 0.0,
+        "midApproach": -6.0,
+        "inside50": 1.1,
+        "putting": -5.1
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-06-08",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 41,
+      "holes": 9,
+      "overRating18": 21.4,
+      "per18": {
+        "offTee": -2.7,
+        "longApproach": -6.0,
+        "midApproach": -5.0,
+        "inside50": -1.4,
+        "putting": -8.6
       },
       "clean": true
     }

@@ -1,32 +1,32 @@
 # Golf Progress Dashboard
-_From 9 rounds since 2026-05-01. Latest round: 2026-06-04. Re-run `python -m src.progress` after each round._
+_From 11 rounds since 2026-05-01. Latest round: 2026-06-08. Re-run `python -m src.progress` after each round._
 
 > **Reading the signs:** two different conventions. Section 1 (score vs rating) is "over par" style — **+ = strokes OVER scratch, lower is better**. Section 3 (Strokes Gained) is analytics style — **− = strokes LOST to scratch, toward 0 is better**. They're mirror images: +29 over ≈ −29 gained = "~30 strokes from a pro."
 
 ## 1 · Scoring level — strokes OVER scratch (lower is better, 0 = scratch)
-**Average +29.1/18** · Potential (better half ≈ handicap) **+19.8** · best +14.0 · Garmin handicap 23.6 · **Break-90 ≈ +22**.
-_Average − potential = ~9 strokes of volatility (your blow-up tax — fewer doubles closes it)._
+**Average +27.8/18** · Potential (better half ≈ handicap) **+17.6** · best +14.0 · Garmin handicap 23.6 · **Break-90 ≈ +22**.
+_Average − potential = ~10 strokes of volatility (your blow-up tax — fewer doubles closes it)._
 
 ## 2 · Review first (authoritative — count these before anything else)
 | Metric /18 | This round | Last 5 | All-time |
 |---|--:|--:|--:|
-| Score vs rating | +18.4 | +28.5 | +29.1 |
-| Penalties | 0.0 | 1.8 | 2.0 |
-| Doubles+ | 2.0 | 8.0 | 8.1 |
-| Putts | 42 | 40 | 39 |
-| 3-putts | 6.0 | 5.0 | 5.0 |
+| Score vs rating | +21.4 | +22.8 | +27.8 |
+| Penalties | 0.0 | 2.0 | 1.9 |
+| Doubles+ | 4.0 | 5.3 | 7.5 |
+| Putts | 42 | 39 | 39 |
+| 3-putts | 6.0 | 4.0 | 5.0 |
 
 ## 3 · Strokes Gained vs scratch — negative = strokes LOST (toward 0 is better)
-**SG 0–100, your leverage number:** This round -7.8 · Last 5 -10.6 · All-time -10.1  _(100yd-and-in, no putts — where scores move)_
+**SG 0–100, your leverage number:** This round -1.4 · Last 5 -6.9 · All-time -8.5  _(100yd-and-in, no putts — where scores move)_
 
 | Bucket | This round | Last 5 | All-time |
 |---|--:|--:|--:|
-| Off-the-Tee | -1.4 | -7.5 | -6.8 |
-| Long approach (150+) | -1.2 | -5.6 | -7.3 |
-| Mid approach (50–150) | -4.8 | -6.8 | -6.7 |
-| Inside 50 | -7.8 | -8.7 | -8.5 |
-| Putting | -7.5 | -4.6 | -6.2 |
-| **Total** | -22.7 | -33.2 | -35.5 |
+| Off-the-Tee | -2.7 | -4.8 | -6.0 |
+| Long approach (150+) | -6.0 | -3.7 | -6.5 |
+| Mid approach (50–150) | -5.0 | -6.6 | -6.5 |
+| Inside 50 | -1.4 | -5.3 | -7.0 |
+| Putting | -8.6 | -6.0 | -6.3 |
+| **Total** | -23.7 | -26.4 | -32.3 |
 
 _Read across: **This vs Last 5** = was this round above/below your form (signal vs noise). **Last 5 vs All-time** = are you trending up. Putting is count-based (authoritative putts); other buckets are GPS-based; the absolute total runs a few strokes hot — trust the ranking._
 
@@ -43,3 +43,5 @@ _vsRtg = score over rating per 18 (authoritative). SG per 18; ⚠ = over-recorde
 | 2026-05-30 | Harvey Penick Golf | 38 | 9 | +18.0 | -8.3 | -0.6 | -21.9 | -11.0 | -4.5 | ⚠ |
 | 2026-06-01 | The Golf Club at S | 99 | 18 | +31.6 | -8.7 | -5.6 | -8.5 | -9.0 | -4.4 | |
 | 2026-06-04 | Harvey Penick Golf | 39 | 9 | +18.4 | -1.4 | -1.2 | -4.8 | -7.8 | -7.5 | |
+| 2026-06-07 | Harvey Penick Golf | 37 | 9 | +16.0 | -2.3 | +0.0 | -6.0 | +1.1 | -5.1 | |
+| 2026-06-08 | Harvey Penick Golf | 41 | 9 | +21.4 | -2.7 | -6.0 | -5.0 | -1.4 | -8.6 | |
