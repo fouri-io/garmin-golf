@@ -25,7 +25,7 @@ PROFILE = Path("config/golfer_profile.md")
 PROGRESS = Path("data/processed/progress.json")
 ROUNDS_DIR = Path("data/processed/rounds")
 OUT_DIR = Path("data/processed/coach")
-DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-5"
+DEFAULT_ANTHROPIC_MODEL = "claude-opus-4-8"
 DEFAULT_OPENAI_MODEL = "gpt-4o"
 
 SG_LABELS = {"offTee": "Off-the-Tee", "longApproach": "Long approach (150+)",
@@ -60,7 +60,16 @@ SYSTEM = (
     "3-putt from 30+ ft is roughly expected and is NOT a fault; the real leak is weak "
     "conversion inside ~20 ft (high avg putts / low make%). Distance is GPS to green "
     "CENTER, so a ball on a green edge reads SHORTER than reality — do not over-penalize "
-    "long lag, and treat the 0–10 ft bucket as unreliable."
+    "long lag, and treat the 0–10 ft bucket as unreliable.\n"
+    "- WEDGES VARY BY DESIGN: the player hits his wedges (PW/GW/50/54/58) DIFFERENT "
+    "distances by shot demand on purpose. NEVER cite a spread of wedge/54° yardages (e.g. "
+    "'21y, 27y, 15y') as 'inconsistent' or 'unstable contact' — that is intentional "
+    "shot-making. Judge the short game on PROXIMITY / up-and-down / the Inside-50 & "
+    "scoring-zone SG, not on yardage uniformity.\n"
+    "- LEAD WITH WHAT HE CARES ABOUT: his #1 priority is the SCORING ZONE (SG 0–100, "
+    "100yd & in). You are given this round's SG 0–100 vs his average — if it beat his "
+    "average, SAY SO up front as real progress; if it lagged, that's the headline leak. "
+    "Tie 'Practice focus' to his stated 2026 Q-plan priorities in the profile, in order."
 )
 
 PROMPT = """Write a BRIEF round report for the player. Use these sections, short and tight:
@@ -169,6 +178,20 @@ def build_context(stem: str) -> dict:
         state += (f"\n\nTHIS ROUND vs your level: it was +{o}/18 over rating. Your average "
                   f"is +{scg['averageOverRating18']}, potential +{scg['potentialOverRating18']} "
                   f"(lower = better). So this was {verdict}. Use over-rating, NOT over-par.")
+    rj = ROUNDS_DIR / f"{stem}.json"
+    if rj.exists():
+        rd = json.loads(rj.read_text())
+        holes = rd["score"].get("holesCompleted") or 18
+        tr = rd["strokesGained"].get("sg0to100", 0) * 18 / holes
+        sgw = progress.get("sg") or {}
+        avg = (sgw.get("allTime") or {}).get("sg0to100")
+        l5 = (sgw.get("last5") or {}).get("sg0to100")
+        if avg is not None:
+            state += (f"\n\nSCORING ZONE (SG 0–100, 100yd & in, no putts — his #1 priority): "
+                      f"this round {tr:+.1f}/18 vs your average {avg:+.1f}"
+                      + (f" (last 5 {l5:+.1f})" if l5 is not None else "")
+                      + ". Toward 0 = better. A big beat here is exactly the progress he's "
+                      "chasing — lead with it.")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "context.md").write_text(state + "\n\n=== PUTTING BY DISTANCE ===\n" + putting)
     return {"profile": profile, "state": state, "putting": putting,

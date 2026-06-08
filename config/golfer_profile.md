@@ -35,9 +35,21 @@ progression (esp. driver, 5W, long clubs). Currently working to **fix over-the-t
 Shifted from *building a swing* to *building scoring ability*.
 - Strengths: course management, penalty reduction, decision making, iron play, PW
   bump-and-run, lag putting (improving), recovery golf, round resilience.
-- Priorities (in order): (1) short-game distance calibration (esp. a stock **54°** pitch),
-  (2) driver validation & dispersion control, (3) 5W reliability, (4) hybrid dispersion,
-  (5) long-putt speed control, (6) adapting to real-course lies/conditions.
+- Priorities — **2026 Q-plan** (in order, by trapped-stroke leverage; the coach should
+  tie practice focus to THIS list):
+  1. **Wedges / short game (inside ~100 yds)** — the #1 leak (Inside-50 SG ≈ −7/18; the
+     scoring zone, SG 0–100, ≈ −8.5/18) and the least-trained area, so the highest-ROI
+     lever. Goal: **stock carry numbers per wedge** (PW/GW/50/54/58) so proximity tightens.
+     Method: soccer-field carry-calibration sessions (started, already showing on course).
+  2. **Putting — surgical** — a real leak (≈ −6/18) but SPECIFIC: work **15–40 ft PACE**
+     (leave tap-ins, kill the mid-range 3-putt) and **6–15 ft CONVERSION**. Long lag
+     (30+ ft) is already ~expected — do NOT over-invest there, and the 0–10 ft data is
+     GPS-noisy. Better wedges shorten first putts, compounding this bucket for free.
+  3. **Driver distance — accuracy-gated** — median ~190 yd (max ~241); target **~225
+     median WITHOUT losing fairways**. Distance is a MULTIPLIER (shorter approaches feed
+     the wedge game), never a trade for accuracy. Keep the over-the-top fix as the
+     foundation. A penalty ≈ 2 strokes; yards ≈ 0.5–1 — **fairways gate everything.**
+  - Deferred (not this quarter): 5W reliability, hybrid dispersion, unfamiliar-green speed.
 
 ## Strategy & identity
 **Eliminate penalties. Eliminate doubles.** Cone-based targeting, middle-of-green bias,
@@ -45,8 +57,12 @@ no hero shots, play the percentages, accept bogeys, manage misses. Success metri
 **fewer doubles & penalties**, not chasing birdies. Short game: PW = primary
 bump-and-run (20–50 yd, rollout available); 54° = scoring wedge under development
 (30–60 yд calibration); 58° = specialty (bunkers, forced carries, high/soft). Belief: a
-reliable stock 54° pitch is the fastest path to lower scores. Putting: confident inside
-6–8 ft, fewer 3-putts, better lag; weakness = adapting speed on unfamiliar/fast/wet greens.
+reliable stock 54° pitch is the fastest path to lower scores. **Wedge yardages vary by
+shot demand BY DESIGN** — a spread of 54°/wedge carry distances across a round is
+intentional shot-making (calibrating to the number the shot needs), NOT a
+contact-consistency fault. Judge wedges on **proximity / up-and-down / Inside-50 SG**,
+never on yardage uniformity. Putting: confident inside 6–8 ft, fewer 3-putts, better
+lag; weakness = adapting speed on unfamiliar/fast/wet greens.
 
 ## Round-review philosophy
 Focus on: penalties, doubles, the first mistake that made bogey hard, conversion
