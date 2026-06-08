@@ -119,10 +119,13 @@ TEMPLATE = r"""<!doctype html>
     color:var(--muted);font-weight:600;cursor:pointer}
   .seg button.on{background:#fff;color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.1)}
   .hero{background:linear-gradient(135deg,#15497a,#1d6fb8);color:#fff;border-radius:18px;
-    padding:16px;margin:12px 0}
+    padding:16px;margin:12px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
   .hero .lab{font-size:11px;opacity:.85;text-transform:uppercase;letter-spacing:.05em}
   .hero .big{font-size:42px;font-weight:800;line-height:1;margin:4px 0}
   .hero .sub{font-size:12px;opacity:.92}
+  .herocol{min-width:0}
+  .herocol.hdcp{text-align:right;flex:none;border-left:1px solid rgba(255,255,255,.25);padding-left:12px}
+  .herocol.hdcp .big{font-size:34px}
   .pill{display:inline-block;background:rgba(255,255,255,.22);border-radius:20px;padding:1px 9px;
     font-size:11px;font-weight:700;margin-left:6px;vertical-align:middle}
   .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
@@ -249,8 +252,11 @@ TEMPLATE = r"""<!doctype html>
         <button data-w="thisRound">This round</button>
         <button class="on" data-w="last5">Last 5</button>
         <button data-w="allTime">All-time</button></div></div>
-    <div class="hero"><div class="lab">Scoring · over rating <span class="pill" id="winpill"></span></div>
-      <div class="big" id="score">—</div><div class="sub" id="scoresub"></div></div>
+    <div class="hero">
+      <div class="herocol"><div class="lab">Scoring · over rating <span class="pill" id="winpill"></span></div>
+        <div class="big" id="score">—</div><div class="sub" id="scoresub"></div></div>
+      <div class="herocol hdcp"><div class="lab">Handicap diff</div>
+        <div class="big" id="hdiff">—</div><div class="sub" id="hdiffsub"></div></div></div>
     <div class="card lever"><h2>SG 0–100 · leverage number
         <span class="mut" style="text-transform:none;font-weight:400;letter-spacing:0"> — 100yd &amp; in, no putts · where scores move</span></h2>
       <div class="lev3" id="lev3">
@@ -360,6 +366,9 @@ function renderProgress(){
   document.getElementById('score').textContent=sc.overRating18===null?"—":"+"+sc.overRating18;
   document.getElementById('scoresub').textContent=
     `potential +${P.scoring.potentialOverRating18} · Break 90 = +${P.scoring.break90OverRating} · authoritative`;
+  document.getElementById('hdiff').textContent=sc.handicapDiff==null?"—":sc.handicapDiff.toFixed(1);
+  document.getElementById('hdiffsub').textContent=
+    P.scoring.handicapIndexEst==null?"":`est. index ${P.scoring.handicapIndexEst}`;
   ['thisRound','last5','allTime'].forEach(w=>{
     const lv=lever(w,base),cell=document.querySelector(`#lev3 [data-w="${w}"]`),v=cell.querySelector('.wv');
     v.textContent=fmt(lv);v.className="wv "+(lv===null?"mut":lv>=0?"pos":"neg");

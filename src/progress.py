@@ -46,6 +46,29 @@ def _over_rating18(d: dict) -> float | None:
     return round((d["score"]["strokes"] - r) * 18 / _holes(d), 1) if r is not None else None
 
 
+def _diff18(d: dict) -> float | None:
+    """Handicap differential, normalized to 18 holes: (score - rating) * 113/slope.
+    Unlike over-rating, this credits course difficulty via slope (113 = neutral)."""
+    r, s = d["round"].get("teeBoxRating"), d["round"].get("teeBoxSlope")
+    if r is None or not s:
+        return None
+    return (d["score"]["strokes"] - r) * 113 / s * 18 / _holes(d)
+
+
+def _handicap_index(rounds: list[dict]) -> float | None:
+    """WHS-style index estimate: average of the lowest-N 18-hole differentials with the
+    small-sample adjustment (no 0.96 — current WHS). Labeled an estimate in the UI."""
+    diffs = sorted(v for v in (_diff18(d) for d in rounds) if v is not None)
+    n = len(diffs)
+    if n < 3:
+        return None
+    low = {3: 1, 4: 1, 5: 1, 6: 2, 7: 2, 8: 2, 9: 3, 10: 3, 11: 3, 12: 4, 13: 4,
+           14: 4, 15: 5, 16: 5, 17: 6, 18: 6, 19: 7, 20: 8}
+    adj = {3: -2.0, 4: -1.0, 6: -1.0}.get(n, 0.0)
+    k = low.get(min(n, 20), 8)
+    return round(sum(diffs[:k]) / k + adj, 1)
+
+
 def _sg_window(rounds: list[dict]) -> dict | None:
     """Per-18 SG by bucket over the CLEAN rounds in a window (None if none clean)."""
     clean = [d for d in rounds if _is_clean(d)]
@@ -65,9 +88,11 @@ def _auth_window(rounds: list[dict]) -> dict:
     rated = [d for d in rounds if d["round"].get("teeBoxRating")]
     rated_holes = sum(_holes(d) for d in rated)
     sgp = [d["strokesGained"]["putting"] for d in rounds]
+    diffs = [v for v in (_diff18(d) for d in rounds) if v is not None]
     return {
         "overRating18": round(sum(d["score"]["strokes"] - d["round"]["teeBoxRating"]
                                   for d in rated) / rated_holes * 18, 1) if rated_holes else None,
+        "handicapDiff": round(sum(diffs) / len(diffs), 1) if diffs else None,
         "putts18": round(sum(p["totalPutts"] for p in sgp) / holes * 18, 1),
         "threePutts18": round(sum(p["threePutts"] for p in sgp) / holes * 18, 1),
         "penalties18": round(sum(d["strokesGained"]["penaltyStrokes"] for d in rounds)
@@ -136,6 +161,7 @@ def build() -> dict:
             "bestOverRating18": over_vals[0] if over_vals else None,
             "garminHandicap": GARMIN_HANDICAP,
             "break90OverRating": BREAK_90_OVER_RATING,
+            "handicapIndexEst": _handicap_index(rounds),
         },
         "sg": sg,
         "authoritative": auth,
