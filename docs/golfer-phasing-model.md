@@ -43,6 +43,29 @@ striking for "when is it real golf."
 - **Strokes Gained earns its rent at Phase 3+.** In Phase 2 the dominant signal is just
   "stop the disasters" — penalties, doubles, three-putts — not subtle SG deltas.
 
+## Transitions are gates, not scores
+A phase boundary is **not a score — it's an expectation shift.** The cleanest statement:
+
+> **Phases advance when your floor rises, not your ceiling.**
+
+- "Break 90 *once*" is a **ceiling** event — a hot day, your best round. Ceilings are
+  volatile and prove little about your phase.
+- "Bogey is *normal*" is a **floor** event — your bad-day baseline moved up. Floors are
+  sticky, and that's what a phase actually *is*.
+
+So the **Phase 2 → 3 gate** is psychological, not numeric: bogey shifts from *feeling like
+success* to *feeling normal* (a double now reads as a mistake, not the baseline). Don't
+confuse the **gate** (the transition) with the **milestone** (break 90 — the flag you
+plant and celebrate). They're related but distinct; the gate is the real phase change.
+
+Two corollaries for *placing* a golfer:
+- **Process leads, scores lag.** A golfer adopts the *next* phase's habits — SG analysis,
+  wedge systems, penalty discipline, deliberate conversion practice — *before* the scores
+  catch up. Phase-3 behavior with Phase-2 scores = **late Phase 2**, not mid. Judge by the
+  floor and the process, not the single best round.
+- The gate is **directional and sticky** — you're through it when you'd be *surprised* to
+  shoot worse than your old ceiling, not when you first touch it.
+
 ## The core principle: track to the phase
 The highest-leverage metric *changes* by phase. Showing a Phase-1 beginner a strokes-
 gained-putting chart is noise; showing a Phase-4 player "you made a double" is useless.
@@ -74,7 +97,12 @@ This is a far smarter first-run than dumping strokes-gained on a beginner — an
 natural extension of the AI-coach + living-profile pattern this app already has.
 
 ## Where the author sits (snapshot, ~10 months in)
-Solidly **Phase 2** (bogey golf, est. index ~21), flirting with **Phase 3** (breaking 90).
-The app is well-matched: its headline metrics (penalties/18, doubles/18, #1 leak) are
-exactly the Phase-2 levers, while the SG machinery is pre-built for the Phase-3 transition.
-2026 goal = solid Phase-3 entry (break 90 regularly, index into the mid-teens).
+**Late Phase 2 (≈2.8)** — bogey golf, est. index ~21, approaching the Phase 2 → 3 gate.
+Placed by *process, not score*: penalties typically 0–2, a playable driver, active SG
+analysis, wedge systems under construction, deliberate conversion-shot practice — those
+are Phase-3 *habits* with Phase-2 *scores*, which is the signature of late Phase 2, not
+mid. The gate ahead is psychological (bogey becoming *normal*, not a *win*), not a single
+sub-90 round. The app is well-matched: its headline metrics (penalties/18, doubles/18,
+#1 leak) are exactly the late-Phase-2 levers, while the SG machinery is pre-built for the
+Phase-3 transition. 2026 goal = clear the gate — bogey-as-baseline, index into the
+mid-teens; breaking 90 regularly is the milestone that follows.
