@@ -16,6 +16,8 @@ import glob
 import json
 from pathlib import Path
 
+from .putting import putt_buckets
+
 PROCESSED = Path("data/processed")
 ROUNDS_DIR = PROCESSED / "rounds"
 OUT_DIR = Path("site")
@@ -56,6 +58,7 @@ def _compact_round(path: Path) -> dict:
         "sg": sg["byCategory"], "sgTotal": sg["totalRecordedVsScratch"],
         "sg0to100": sg.get("sg0to100", 0),
         "putting": sg["putting"],
+        "puttBuckets": putt_buckets(d["holes"]),
         "polluted": bool(d["reconciliation"]["suspectHoles"]),
         "holesDetail": holes_detail,
     }
@@ -191,6 +194,17 @@ TEMPLATE = r"""<!doctype html>
   #coachReport h4:first-child{margin-top:0}
   #coachReport p{margin:0 0 9px;font-size:14px;line-height:1.5}
   #coachReport ul{margin:0 0 9px;padding-left:18px}#coachReport li{margin:3px 0;font-size:14px}
+  /* putting */
+  table.putt{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  table.putt th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+    font-weight:600;text-align:right;padding:0 0 4px}
+  table.putt th:first-child{text-align:left}
+  table.putt td{text-align:right;padding:4px 0;border-top:1px solid var(--line)}
+  table.putt td:first-child{text-align:left;font-weight:600}
+  table.putt tr.pmt td{color:var(--muted);font-weight:400}
+  table.putt tr.pnoisy td{color:var(--muted)}
+  .pflag{font-size:9px;font-weight:600;color:#b98a00;background:#fdf4dd;border-radius:4px;
+    padding:1px 4px;vertical-align:1px;letter-spacing:0;text-transform:none}
   /* trend */
   .tpill{font-size:11px;font-weight:700;border-radius:20px;padding:2px 9px}
   .tpill.up{background:#e4f5ec;color:var(--good)}.tpill.down{background:#fbe7e5;color:var(--bad)}
@@ -255,6 +269,9 @@ TEMPLATE = r"""<!doctype html>
         <div class="seg" id="base"></div></div>
       <div class="bars" id="bars"><div class="zero"></div></div>
       <div class="foot" id="bf"></div></div>
+    <div class="card"><h2>Putting by distance<span id="putthd" style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)"></span></h2>
+      <div id="puttbox"></div>
+      <div class="foot" id="puttfoot" style="margin-top:6px"></div></div>
   </div>
 
   <div id="tab-trend" class="hide">
@@ -327,6 +344,16 @@ function bucket(w,b,key){return SG[w]?SG[w].byCategory[key]-off(b,key):null;}
 function lever(w,b){return SG[w]?SG[w].sg0to100-(BL[b].sg0to100||0):null;}
 function fmt(v){return v===null?"—":(v>0?"+":"")+v.toFixed(1);}
 
+function puttTable(buckets){
+  const rows=buckets.map(b=>{
+    const noisy=b.label==='0–10 ft';
+    const nm=b.label+(noisy?' <span class="pflag">GPS≈</span>':'');
+    if(!b.n)return `<tr class="pmt"><td>${nm}</td><td>0</td><td>—</td><td>—</td></tr>`;
+    return `<tr${noisy?' class="pnoisy"':''}><td>${nm}</td><td>${b.n}</td>`+
+      `<td>${b.avg.toFixed(2)}</td><td>${b.makePct}%</td></tr>`;
+  }).join("");
+  return `<table class="putt"><thead><tr><th>First putt</th><th>n</th><th>avg putts</th><th>make%</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
 function renderProgress(){
   document.getElementById('winpill').textContent=WLAB[win];
   const sc=AU[win];
@@ -354,6 +381,10 @@ function renderProgress(){
   if(vals.some(v=>v===null)){st.textContent='';}
   else{const tot=vals.reduce((a,b)=>a+b,0);
     st.innerHTML=`total <b class="${tot>=0?'pos':'neg'}">${tot>=0?'+':''}${tot.toFixed(1)}</b> /18`;}
+  const pb=P.putting?P.putting[win]:null;
+  if(pb){document.getElementById('puttbox').innerHTML=puttTable(pb);
+    document.getElementById('putthd').textContent=`${sc.putts18.toFixed(0)} putts/18 · ${sc.threePutts18.toFixed(1)} 3-putts/18`;
+    document.getElementById('puttfoot').textContent='First-putt distance is GPS-estimated (0–10 ft least reliable); putt counts are exact.';}
   drawBars(vals);
 }
 function drawBars(vals){
@@ -413,6 +444,9 @@ function renderRoundDetail(i){
     <div class="kchips">${chips.map(c=>`<div class="chip"><div class="l">${c[0]}</div><div class="v">${c[1]}</div></div>`).join("")}</div>
     <div class="card"><h2>Strokes Gained this round</h2><div style="font-size:13px">${sgrow}</div>
       <div class="foot" style="margin-top:6px">SG 0–100: <b>${r.sg0to100.toFixed(1)}</b></div></div>
+    <div class="card"><h2>Putting<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">${r.putts} putts · ${r.putting.threePutts} three-putt${r.putting.threePutts===1?'':'s'}</span></h2>
+      ${puttTable(r.puttBuckets)}
+      <div class="foot" style="margin-top:6px">First-putt distance is GPS-estimated (0–10 ft least reliable); putt counts are exact.</div></div>
     <h2 style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Hole by hole</h2>
     ${holes}`;
   document.getElementById('back').onclick=renderRoundsList;

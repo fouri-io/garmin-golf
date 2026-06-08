@@ -22,6 +22,7 @@ from pathlib import Path
 
 from .analyze import SG_CATS, SG_LABELS, SG_SHORT, load_rounds
 from .config import analysis_start_date, sg_target
+from .putting import putt_buckets
 
 OUT_JSON = Path("data/processed/progress.json")
 OUT_MD = Path("data/processed/progress.md")
@@ -106,6 +107,7 @@ def build() -> dict:
     }
     sg = {k: _sg_window(v) for k, v in horizons.items()}
     auth = {k: _auth_window(v) for k, v in horizons.items()}
+    putting = {k: putt_buckets([h for d in v for h in d["holes"]]) for k, v in horizons.items()}
 
     # Scoring "potential" = better half of rounds (≈ what a handicap measures).
     over_vals = sorted(v for v in (_over_rating18(d) for d in rounds) if v is not None)
@@ -137,6 +139,7 @@ def build() -> dict:
         },
         "sg": sg,
         "authoritative": auth,
+        "putting": putting,
         "timeSeries": series,
     }
     OUT_JSON.write_text(json.dumps(doc, indent=2))
