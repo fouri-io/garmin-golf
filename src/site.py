@@ -124,8 +124,12 @@ TEMPLATE = r"""<!doctype html>
   .hero .big{font-size:42px;font-weight:800;line-height:1;margin:4px 0}
   .hero .sub{font-size:12px;opacity:.92}
   .herocol{min-width:0}
-  .herocol.hdcp{text-align:right;flex:none;border-left:1px solid rgba(255,255,255,.25);padding-left:12px}
-  .herocol.hdcp .big{font-size:34px}
+  .herocol.hdcp{flex:none;align-self:stretch;text-align:center;display:flex;flex-direction:column;
+    justify-content:center;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);
+    border-radius:14px;padding:8px 16px}
+  .herocol.hdcp .lab{white-space:nowrap;opacity:.8}
+  .herocol.hdcp .big{font-size:30px;margin:3px 0}
+  .herocol.hdcp .sub{font-size:11px;opacity:.78}
   .pill{display:inline-block;background:rgba(255,255,255,.22);border-radius:20px;padding:1px 9px;
     font-size:11px;font-weight:700;margin-left:6px;vertical-align:middle}
   .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
