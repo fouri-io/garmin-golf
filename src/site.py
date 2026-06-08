@@ -421,10 +421,15 @@ function renderRoundDetail(i){
   const sgrow=CATS.map(([k,s])=>`${s} <b class="${r.sg[k]>=0?'pos':'neg'}">${r.sg[k]>=0?'+':''}${r.sg[k].toFixed(1)}</b>`).join(" · ");
   const holes=r.holesDetail.map(h=>{
     const shots=h.shots.map(s=>{
-      const yd=s.yards===null?"?":`${Math.round(s.yards)}y`;
-      const rem=s.rem===null?"":` →${Math.round(s.rem)}y`;
       const sg=s.sg===null?"":`<span class="sg ${s.sg>=0?'pos':'neg'}">${s.sg>=0?'+':''}${s.sg.toFixed(1)}</span>`;
       const club=s.club==="unknown"?"(?)":s.club;
+      if(s.from==="Green"){  // putts: show distance-to-hole in feet, not noisy GPS travel
+        const bf=s.before==null?"?":`${Math.round(s.before*3)} ft`;
+        const rf=s.rem==null?"":(Math.round(s.rem*3)===0?" → in":` → ${Math.round(s.rem*3)} ft`);
+        return `<div><span class="sn">${s.n}</span>${club} <span class="mut">${bf}${rf}</span>${sg}</div>`;
+      }
+      const yd=s.yards===null?"?":`${Math.round(s.yards)}y`;
+      const rem=s.rem===null?"":` →${Math.round(s.rem)}y`;
       return `<div><span class="sn">${s.n}</span>${club} ${yd} <span class="mut">${s.from}→${s.to}${rem}</span>${sg}</div>`;
     }).join("");
     const fw=h.fw?`FW:${h.fw}`:"";const gir=h.gir?"GIR":"";
