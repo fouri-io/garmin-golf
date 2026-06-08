@@ -109,8 +109,6 @@ TEMPLATE = r"""<!doctype html>
   .top{display:flex;align-items:center;justify-content:space-between;
     padding:calc(14px + env(safe-area-inset-top)) 4px 8px}
   .top h1{font-size:19px;margin:0}.top .date{font-size:12px;color:var(--muted)}
-  .refresh{width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;border:0;
-    font-size:18px;box-shadow:0 2px 6px rgba(21,73,122,.4);cursor:pointer}
   .ctl{margin:8px 0}.ctl .lab{font-size:10px;color:var(--muted);text-transform:uppercase;
     letter-spacing:.05em;margin:0 2px 4px;display:block}
   .seg{display:flex;background:#e2e7ec;border-radius:12px;padding:3px}
@@ -216,6 +214,7 @@ TEMPLATE = r"""<!doctype html>
   .tabbar .t{font-size:11px;color:var(--muted);text-align:center;cursor:pointer;border:0;background:none}
   .tabbar .t.on{color:var(--accent)}.tabbar .t svg{width:22px;height:22px;display:block;margin:0 auto 2px}
   .ic{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .top{justify-content:flex-start}
   .top h1{display:flex;align-items:center;gap:6px}.top h1 svg{width:19px;height:19px}
   .tagline{font-size:12px;color:var(--muted);font-style:italic;margin:2px 0 0}
   .refresh svg{width:18px;height:18px}
@@ -228,8 +227,7 @@ TEMPLATE = r"""<!doctype html>
   <div class="top">
     <div><h1><svg class="ic" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>The Turn</h1>
       <div class="tagline">round by round</div>
-      <div class="date" id="date"></div></div>
-    <button class="refresh" title="Rebuild from latest data"><svg class="ic" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button></div>
+      <div class="date" id="date"></div></div></div>
 
   <div id="tab-progress">
     <div class="ctl"><span class="lab">Window — which rounds you're viewing</span>
@@ -478,14 +476,14 @@ function showMap(){initMap();setTimeout(()=>{lmap.invalidateSize();drawHole();},
 const TS=P.timeSeries;
 const sumCats=r=>CATS.reduce((a,[k])=>a+(r.per18[k]||0),0);
 const TREND=[
-  {k:'total',label:'SG total (toward 0 = better)',clean:true,low:false,get:sumCats},
   {k:'over',label:'Score vs rating (lower = better)',clean:false,low:true,get:r=>r.overRating18},
+  {k:'total',label:'SG total per 18 (toward 0 = better)',clean:true,low:false,get:sumCats},
   {k:'offTee',label:'SG Off-the-Tee',clean:true,low:false,get:r=>r.per18.offTee},
   {k:'longApproach',label:'SG Long approach',clean:true,low:false,get:r=>r.per18.longApproach},
   {k:'midApproach',label:'SG Mid approach',clean:true,low:false,get:r=>r.per18.midApproach},
   {k:'inside50',label:'SG Inside 50',clean:true,low:false,get:r=>r.per18.inside50},
   {k:'putting',label:'SG Putting',clean:true,low:false,get:r=>r.per18.putting}];
-let trendMetric='total',lastPts=[];
+let trendMetric='over',lastPts=[];
 document.getElementById('trendMetric').innerHTML=TREND.map(m=>`<option value="${m.k}">${m.label}</option>`).join("");
 document.getElementById('trendMetric').onchange=e=>{trendMetric=e.target.value;renderTrend();};
 function slope(ys){const n=ys.length;if(n<2)return 0;const mx=(n-1)/2,my=ys.reduce((a,b)=>a+b,0)/n;
