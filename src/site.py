@@ -250,7 +250,7 @@ TEMPLATE = r"""<!doctype html>
       <div class="tile"><div class="lab">3-putts /18</div><div class="v" id="tp">—</div></div></div>
     <div class="leakcall">#1 leak: <b id="leak">—</b><br>
       <span class="foot">your highest-return practice target</span></div>
-    <div class="card"><h2>Strokes Gained</h2>
+    <div class="card"><h2>Strokes Gained<span id="sgtot" style="float:right;text-transform:none;font-weight:400;letter-spacing:0"></span></h2>
       <div class="ctl" style="margin:0 0 6px"><span class="lab">Compare vs</span>
         <div class="seg" id="base"></div></div>
       <div class="bars" id="bars"><div class="zero"></div></div>
@@ -350,6 +350,10 @@ function renderProgress(){
     base==="scratch"?"Bars vs <b>scratch</b> (fixed ruler) — negative is normal, toward 0 is better.":
     base==="myAverage"?"Bars vs <b>your season average</b> — green = better than your norm.":
     "Bars vs <b>"+BL[base].label+"</b> (modeled) — each red is a gap to reach that level.";
+  const st=document.getElementById('sgtot');
+  if(vals.some(v=>v===null)){st.textContent='';}
+  else{const tot=vals.reduce((a,b)=>a+b,0);
+    st.innerHTML=`total <b class="${tot>=0?'pos':'neg'}">${tot>=0?'+':''}${tot.toFixed(1)}</b> /18`;}
   drawBars(vals);
 }
 function drawBars(vals){
