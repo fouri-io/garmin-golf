@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Icon options — comparison</title>
+<style>
+  :root{--bg:#f4f6f8;--card:#fff;--ink:#1c2530;--muted:#7a8794;--line:#e6eaee;--accent:#15497a;--bad:#d6443c;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  .wrap{max-width:760px;margin:0 auto;padding:24px}
+  h1{font-size:21px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:26px 0 10px}
+  .navwrap{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:14px}
+  .navlab{font-size:12px;font-weight:700;color:var(--accent);padding:9px 14px;border-bottom:1px solid var(--line);background:#fafbfc}
+  .navlab span{color:var(--muted);font-weight:400}
+  .tabbar{display:flex;justify-content:space-around;padding:10px 0 12px}
+  .t{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:11px}
+  .t.on{color:var(--accent)}
+  .opts{display:flex;flex-wrap:wrap;gap:10px}
+  .opt{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+    display:flex;flex-direction:column;align-items:center;gap:6px;min-width:92px;color:var(--accent)}
+  .opt .nm{font-size:11px;color:var(--muted)}
+  .opt.bad{color:var(--bad)}
+  .leakcard{display:flex;align-items:center;gap:10px;background:#fbeceb;border-radius:12px;padding:12px;max-width:360px}
+  .leakcard.bar{border-left:4px solid var(--bad)}
+  .leakcard .tx b{color:var(--bad)} .leakcard .tx{font-size:13px}
+  .note{font-size:12px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Icon options — comparison</h1>
+  <div class="sub">Real inline SVGs. Active tab in accent blue, others muted. Same approach we'd ship (no emoji, self-contained).</div>
+
+  <h2>1 · Bottom-nav style — three directions</h2>
+  <div id="bars"></div>
+
+  <h2>2 · Coach icon — replace the brain</h2>
+  <div class="opts" id="coachopts"></div>
+  <div class="note">Recommended: <b>compass</b> (guidance) or <b>clipboard</b> (a report). “sparkles” is the AI cliché — included so you can reject it on sight.</div>
+
+  <h2>2b · Clubs tab icon — alternatives to the ruler</h2>
+  <div class="opts" id="clubopts"></div>
+  <div class="note">The Clubs tab is your distance/gapping chart. <b>signal</b> (a distance ladder) and <b>bar-chart</b> (the gapping) read most honestly; <b>gauge</b> = a distance dial; <b>club</b>/<b>bag</b> = literal. Ruler (current) shown last.</div>
+
+  <h2>3 · “#1 leak” marker — replace the dartboard</h2>
+  <div class="opts" id="leakopts" style="margin-bottom:12px"></div>
+  <div class="leakcard bar"><div class="tx">#1 leak: <b>Inside 50 (−8.7)</b><br><span style="color:var(--muted)">no icon — just a colored accent bar</span></div></div>
+  <div class="note">Cleanest option is often no icon at all + the red accent bar (bottom card).</div>
+</div>
+
+<script>
+// ---- icon geometry (Lucide-style line paths; solid variants authored) ----
+const L = {
+  overview:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+  trend:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+  rounds:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>',
+  clubs:'<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/>',
+  maps:'<polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>',
+  compass:'<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+  lightbulb:'<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+  clipboard:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>',
+  message:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  sparkles:'<path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9z"/><path d="M19 14v3"/><path d="M20.5 15.5h-3"/><path d="M5 5v2"/><path d="M6 6H4"/>',
+  target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  crosshair:'<circle cx="12" cy="12" r="9"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/>',
+  alert:'<path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  signal:'<path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/>',
+  barchart:'<line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/>',
+  gauge:'<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+  club:'<path d="M16 4 9 13"/><path d="M9 13c-1.3 1-2.3 1.3-3.3 2.3s-1 2.2.1 3.2 2.3.8 3.2-.2L11 16"/>',
+  bag:'<path d="M5 8h14l-1 12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M9 8V5a3 3 0 0 1 6 0v3"/><path d="M9 8h6"/>',
+};
+const SOLID = {
+  overview:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+  trend:'<rect x="4" y="13" width="3.4" height="7" rx="1"/><rect x="10.3" y="9" width="3.4" height="11" rx="1"/><rect x="16.6" y="5" width="3.4" height="15" rx="1"/>',
+  rounds:'<rect x="5" y="3" width="1.8" height="18" rx="0.9"/><path d="M7 4l11 3.4L7 10.8z"/>',
+  clubs:'<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z"/>',
+  maps:'<path d="M9 3 3 5.5v15.5l6-2.5 6 2.5 6-2.5V5l-6 2.5L9 3z"/>',
+  compass:'<circle cx="12" cy="12" r="9.5"/><path d="M12 6.5l2.4 5.1L12 17.5l-2.4-5.9z" fill="#fff"/><circle cx="12" cy="12" r="1.4" fill="#fff"/>',
+  target:'<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="5.6" fill="#fff"/><circle cx="12" cy="12" r="2.3"/>',
+};
+function svg(inner, style){
+  const a = style==='solid' ? 'fill="currentColor" stroke="none"'
+    : style==='duo' ? 'fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.9"'
+    : 'fill="none" stroke="currentColor" stroke-width="1.9"';
+  return `<svg viewBox="0 0 24 24" width="23" height="23" ${a} stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+}
+const NAV=[['overview','Overview'],['trend','Trend'],['rounds','Rounds'],['clubs','Clubs'],['maps','Maps'],['compass','Coach']];
+function bar(label, sublabel, style){
+  const tabs=NAV.map(([ic,nm],i)=>{
+    const inner = style==='solid' ? (SOLID[ic]||L[ic]) : L[ic];
+    return `<div class="t ${i===0?'on':''}">${svg(inner,style)}<span>${nm}</span></div>`;}).join("");
+  return `<div class="navwrap"><div class="navlab">${label} <span>· ${sublabel}</span></div>
+    <div class="tabbar">${tabs}</div></div>`;
+}
+document.getElementById('bars').innerHTML =
+  bar('A · Line','Lucide / Feather — clean, neutral (recommended)','line')+
+  bar('B · Duotone','Phosphor-style — softer, two-tone','duo')+
+  bar('C · Solid','Heroicons-style — bold, app-like','solid');
+
+const COACH=[['compass','compass'],['clipboard','clipboard'],['lightbulb','lightbulb'],['message','message'],['sparkles','sparkles (AI cliché)']];
+document.getElementById('coachopts').innerHTML=COACH.map(([ic,nm])=>
+  `<div class="opt ${ic==='sparkles'?'bad':''}">${svg(L[ic],'line')}<span class="nm">${nm}</span></div>`).join("");
+
+const CLUBO=[['signal','signal · ladder'],['barchart','bar-chart'],['gauge','gauge'],['club','club (custom)'],['bag','golf bag'],['clubs','ruler (current)']];
+document.getElementById('clubopts').innerHTML=CLUBO.map(([ic,nm])=>`<div class="opt">${svg(L[ic],'line')}<span class="nm">${nm}</span></div>`).join("");
+
+const LEAK=[['target','target'],['crosshair','crosshair'],['alert','alert']];
+document.getElementById('leakopts').innerHTML=LEAK.map(([ic,nm])=>
+  `<div class="opt bad">${svg(L[ic],'line')}<span class="nm">${nm}</span></div>`).join("");
+</script>
+</body>
+</html>

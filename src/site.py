@@ -44,8 +44,10 @@ def _compact_round(path: Path) -> dict:
             "start": _ll(s.get("start")), "end": _ll(s.get("end")),
         } for s in h["shots"]],
     } for h in d["holes"]]
+    md_path = path.with_suffix(".md")
     return {
-        "stem": path.stem, "date": rnd["date"][:10], "course": course["name"],
+        "stem": path.stem, "md": md_path.read_text() if md_path.exists() else "",
+        "date": rnd["date"][:10], "course": course["name"],
         "score": sc["strokes"], "toPar": sc.get("toPar"), "par": course["par"], "holes": holes,
         "overRating18": round((sc["strokes"] - rating) * 18 / holes, 1) if rating else None,
         "tees": rnd.get("teeBox"), "rating": rating, "slope": rnd.get("teeBoxSlope"),
@@ -159,6 +161,10 @@ TEMPLATE = r"""<!doctype html>
   /* round detail */
   .back{border:0;background:#e2e7ec;border-radius:10px;padding:7px 12px;font-weight:600;
     color:var(--accent);cursor:pointer;margin-bottom:10px;font-size:13px}
+  .exprow{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+  .expbtn{border:0;background:#eaf1f8;color:var(--accent);border-radius:10px;padding:8px 14px;
+    font-weight:600;font-size:13px;cursor:pointer}
+  .exprow .hint{font-size:11px;color:var(--muted)}
   .kchips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
   .chip{background:var(--card);border-radius:12px;padding:8px 12px;border:1px solid var(--line)}
   .chip .l{font-size:10px;color:var(--muted);text-transform:uppercase}
@@ -397,6 +403,9 @@ function renderRoundDetail(i){
       <div class="shots">${shots||'<span class="mut">no shots recorded</span>'}</div></div>`;
   }).join("");
   el.innerHTML=`<button class="back" id="back">← All rounds</button>
+    <div class="exprow"><button class="expbtn exp-copy">Copy for LLM</button>
+      ${navigator.share?'<button class="expbtn exp-share">Share</button>':''}
+      <span class="hint">round + coach + your trend</span></div>
     <h2 style="margin:0 0 2px">${r.course}</h2>
     <div class="foot" style="margin-bottom:10px">${r.date} · ${r.tees} tees (${r.rating}/${r.slope})${r.polluted?' · ⚠ over-recorded round':''}</div>
     <div class="kchips">${chips.map(c=>`<div class="chip"><div class="l">${c[0]}</div><div class="v">${c[1]}</div></div>`).join("")}</div>
@@ -553,8 +562,39 @@ function gotoMap(ri,hn){
   initMap();mRound=ri;document.getElementById('mapRound').value=ri;
   const idx=mappable(DATA.rounds[ri]).findIndex(h=>h.n===hn);mHole=idx<0?0:idx;
   setTab('maps');}
+function buildPack(r){
+  const L=[`# ${r.course} — ${r.date}`,'_exported from The Turn for LLM coaching_','',
+    '## Round','',r.md||'(round detail unavailable)'];
+  const cr=(DATA.coach.reports||[]).find(x=>x.stem===r.stem);
+  L.push('','## AI coach report','',cr?cr.text:'_(no coach report for this round yet)_');
+  L.push('','## Current form & trend (per 18, vs scratch — toward 0 is better)','');
+  const sc=P.scoring,l5=SG.last5,all=SG.allTime,au=AU.last5;
+  L.push(`Scoring level: +${sc.averageOverRating18}/18 over course rating `+
+    `(potential +${sc.potentialOverRating18} ≈ handicap ${sc.garminHandicap}; break-90 ≈ +${sc.break90OverRating}). Lower over-rating = better.`);
+  if(l5&&all){
+    L.push('','Strokes Gained by bucket — Last 5 (current form) vs all-time:');
+    CATS.forEach(([k])=>L.push(`- ${FULL[k]}: ${l5.byCategory[k].toFixed(1)} (all-time ${all.byCategory[k].toFixed(1)})`));
+    L.push(`- SG 0–100 (leverage, 100yd & in, no putts): ${l5.sg0to100.toFixed(1)} (all-time ${all.sg0to100.toFixed(1)})`);
+  }
+  if(au)L.push('',`Authoritative (last 5): penalties ${au.penalties18}/18 · doubles+ ${au.doubles18}/18 · putts ${au.putts18.toFixed(0)}/18 · 3-putts ${au.threePutts18}/18.`);
+  L.push('','_Data note: putting & inside-50 (short-game) SG are GPS-approximate (directional); off-the-tee & full-approach are reliable; trust the bucket ranking over the absolute total. Putt counts/penalties/score are authoritative._');
+  return L.join('\n');
+}
+function copyText(t){
+  if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t);
+  return new Promise((res,rej)=>{const ta=document.createElement('textarea');ta.value=t;
+    ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');res();}catch(err){rej(err);}document.body.removeChild(ta);});
+}
+function copyPack(r,btn){copyText(buildPack(r)).then(()=>{const o=btn.textContent;btn.textContent='Copied ✓';
+  setTimeout(()=>btn.textContent=o,1600);}).catch(()=>{btn.textContent='Copy failed';});}
+function sharePack(r){const t=buildPack(r);
+  if(navigator.share)navigator.share({title:`${r.course} ${r.date}`,text:t}).catch(()=>{});
+  else copyText(t);}
 document.getElementById('roundDetail').addEventListener('click',e=>{
-  const b=e.target.closest('.maplink');if(b)gotoMap(detailRound,+b.dataset.h);});
+  const b=e.target.closest('.maplink');if(b){gotoMap(detailRound,+b.dataset.h);return;}
+  const c=e.target.closest('.exp-copy');if(c){copyPack(DATA.rounds[detailRound],c);return;}
+  const s=e.target.closest('.exp-share');if(s){sharePack(DATA.rounds[detailRound]);return;}});
 
 renderProgress();renderRoundsList();renderClubs();
 </script>
