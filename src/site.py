@@ -606,6 +606,11 @@ function gotoMap(ri,hn){
 function buildPack(r){
   const L=[`# ${r.course} — ${r.date}`,'_exported from The Turn for LLM coaching_','',
     '## Round','',r.md||'(round detail unavailable)'];
+  const pf=b=>b.n?`- ${b.label}: ${b.n} first putts, avg ${b.avg.toFixed(2)} putts, make ${b.makePct}%`:`- ${b.label}: none`;
+  L.push('','## Putting by first-putt distance (authoritative counts)','','This round:');
+  r.puttBuckets.forEach(b=>L.push(pf(b)));
+  if(P.putting&&P.putting.allTime){L.push('','All-time (context):');P.putting.allTime.forEach(b=>L.push(pf(b)));}
+  L.push('','_Distance is GPS to green center (edge putts read short); 0–10 ft least reliable; putt counts exact. By band: 3-putts from 30+ ft are ~expected — the real leak is conversion inside ~20 ft._');
   const cr=(DATA.coach.reports||[]).find(x=>x.stem===r.stem);
   L.push('','## AI coach report','',cr?cr.text:'_(no coach report for this round yet)_');
   L.push('','## Current form & trend (per 18, vs scratch — toward 0 is better)','');

@@ -19,6 +19,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from .putting import putt_buckets
+
 PROFILE = Path("config/golfer_profile.md")
 PROGRESS = Path("data/processed/progress.json")
 ROUNDS_DIR = Path("data/processed/rounds")
@@ -52,23 +54,33 @@ SYSTEM = (
     "- SG reliability: off-the-tee and full-approach SG are reliable; putting and "
     "inside-50 (short-game) SG are GPS-approximate (directional, not exact); the absolute "
     "SG total runs a few strokes hot — trust the RANKING of buckets over absolute numbers. "
-    "Negative SG vs scratch is normal."
+    "Negative SG vs scratch is normal.\n"
+    "- PUTTING BY DISTANCE: you are given putting bucketed by first-putt distance "
+    "(authoritative counts). Judge putting by DISTANCE BAND, not by raw 3-putt count: a "
+    "3-putt from 30+ ft is roughly expected and is NOT a fault; the real leak is weak "
+    "conversion inside ~20 ft (high avg putts / low make%). Distance is GPS to green "
+    "CENTER, so a ball on a green edge reads SHORTER than reality — do not over-penalize "
+    "long lag, and treat the 0–10 ft bucket as unreliable."
 )
 
 PROMPT = """Write a BRIEF round report for the player. Use these sections, short and tight:
 
 **Overall** — 2-3 sentences: how the round went vs their level/trend.
 **What cost strokes** — the 1-2 biggest leaks this round (worst SG bucket(s) + penalties/doubles), with the "why".
+**Putting by distance** — using the first-putt-distance buckets, say whether putting is genuinely a leak and WHERE: long-lag 3-putts (≈ expected, not a fault) vs weak short/mid-range conversion (the fixable part). Be specific with the distance bands; don't judge on raw 3-putt count.
 **Trend read** — improving / flat / slipping vs their recent form, in the categories that matter.
 **Practice focus** — 1-2 concrete things, tied to their stated priorities (short-game/54° calibration, driver dispersion, etc.).
 
-Keep it under ~250 words. No fluff. Speak to them directly.
+Keep it under ~280 words. No fluff. Speak to them directly.
 
 === PLAYER PROFILE ===
 {profile}
 
 === CURRENT FORM & TREND (auto-generated) ===
 {state}
+
+=== PUTTING BY FIRST-PUTT DISTANCE (authoritative counts) ===
+{putting}
 
 === THE ROUND JUST PLAYED ===
 {round_md}
@@ -113,10 +125,38 @@ def state_summary(progress: dict) -> str:
     return "\n".join(lines)
 
 
+def _fmt_buckets(buckets: list[dict]) -> str:
+    out = []
+    for b in buckets:
+        if b["n"]:
+            out.append(f"  - {b['label']}: {b['n']} first putts, avg {b['avg']:.2f} putts, "
+                       f"make {b['makePct']}%")
+        else:
+            out.append(f"  - {b['label']}: none")
+    return "\n".join(out)
+
+
+def putting_summary(stem: str, progress: dict) -> str:
+    """This round's putting bucketed by first-putt distance, plus all-time for context."""
+    lines = ["Authoritative putt counts bucketed by first-putt distance. Distance is GPS to "
+             "green CENTER (edge-of-green putts read short); 0–10 ft bucket is unreliable.", ""]
+    rjson = ROUNDS_DIR / f"{stem}.json"
+    if rjson.exists():
+        doc = json.loads(rjson.read_text())
+        lines += ["This round:", _fmt_buckets(putt_buckets(doc["holes"])), ""]
+    allt = (progress.get("putting") or {}).get("allTime")
+    if allt:
+        lines += ["All-time (context):", _fmt_buckets(allt), ""]
+    lines.append("Read this by band: 3-putts from 30+ ft are ~expected; a real putting leak "
+                 "shows as high avg putts or low make% inside ~20 ft.")
+    return "\n".join(lines)
+
+
 def build_context(stem: str) -> dict:
     profile = PROFILE.read_text() if PROFILE.exists() else "(no profile on file)"
     progress = json.loads(PROGRESS.read_text())
     state = state_summary(progress)
+    putting = putting_summary(stem, progress)
     ts = progress.get("timeSeries") or []
     rdate = stem[:10].replace("_", "-")
     rentry = next((r for r in ts if r["date"] == rdate), ts[-1] if ts else None)
@@ -130,8 +170,9 @@ def build_context(stem: str) -> dict:
                   f"is +{scg['averageOverRating18']}, potential +{scg['potentialOverRating18']} "
                   f"(lower = better). So this was {verdict}. Use over-rating, NOT over-par.")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    (OUT_DIR / "context.md").write_text(state)
-    return {"profile": profile, "state": state, "stem": stem, "round_md": _round_md(stem) or ""}
+    (OUT_DIR / "context.md").write_text(state + "\n\n=== PUTTING BY DISTANCE ===\n" + putting)
+    return {"profile": profile, "state": state, "putting": putting,
+            "stem": stem, "round_md": _round_md(stem) or ""}
 
 
 def _pick_provider() -> tuple[str, str] | None:
