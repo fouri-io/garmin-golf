@@ -26,6 +26,10 @@ analysis answer "why did a score happen," not just "what was the score."**
 diagnostic-coach concept for home-sim owners (commercial pivot brief; not part of this
 repo's roadmap — start a fresh project from it when the time comes).
 
+**Concept brief:** [golfer-phasing-model.md](golfer-phasing-model.md) — a developmental
+map of the golfer journey (Survival → Mastery): what to track / chase / compete in at each
+phase, and the idea of phase-aware coaching that meets a player where they are.
+
 ## One-paragraph mental model
 `pull` fetches raw JSON from Garmin (saved verbatim — the asset). `parse` turns one
 round's raw into a self-contained **round document** (score + shots + Strokes Gained,
