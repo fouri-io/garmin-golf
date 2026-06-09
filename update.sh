@@ -42,3 +42,4 @@ else
 fi
 
 echo "$summary" | tee -a data/update.log   # final line -> stdout (and log)
+exit "$rc"                                 # surface the real status to the caller/bot

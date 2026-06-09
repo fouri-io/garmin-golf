@@ -46,20 +46,38 @@ def _publish(push: bool) -> None:
         return
     target.mkdir(parents=True, exist_ok=True)
     dst = target / "index.html"
-    shutil.copy(SITE_FILE, dst)
-    print(f"  published -> {dst}")
+
     if not push:
+        shutil.copy(SITE_FILE, dst)
+        print(f"  published -> {dst}")
         return
+
     root = subprocess.run(["git", "-C", str(target), "rev-parse", "--show-toplevel"],
                           capture_output=True, text=True, check=True).stdout.strip()
+    branch = subprocess.run(["git", "-C", root, "rev-parse", "--abbrev-ref", "HEAD"],
+                            capture_output=True, text=True, check=True).stdout.strip()
     rel = str(dst.resolve().relative_to(root))
-    subprocess.run(["git", "-C", root, "add", rel], check=True)
-    if subprocess.run(["git", "-C", root, "diff", "--cached", "--quiet"]).returncode == 0:
-        print("  nothing changed — skipping push")
-        return
-    subprocess.run(["git", "-C", root, "commit", "-m", "update golf dashboard"], check=True)
-    subprocess.run(["git", "-C", root, "push"], check=True)
-    print(f"  pushed {root} — deploying")
+
+    # The published file is regenerated every run, and another machine (e.g. the
+    # server) may have pushed newer builds since this clone last synced. Sync to the
+    # remote tip first, lay our fresh build on top, and retry if a push races us — so
+    # a stale local clone can never wedge the deploy. NOTE: reset --hard discards any
+    # uncommitted local changes in the publish repo; it is meant as a deploy target.
+    for attempt in range(3):
+        subprocess.run(["git", "-C", root, "fetch", "origin", branch], check=True)
+        subprocess.run(["git", "-C", root, "reset", "--hard", f"origin/{branch}"], check=True)
+        shutil.copy(SITE_FILE, dst)
+        print(f"  published -> {dst}")
+        subprocess.run(["git", "-C", root, "add", rel], check=True)
+        if subprocess.run(["git", "-C", root, "diff", "--cached", "--quiet"]).returncode == 0:
+            print("  nothing changed vs remote — skipping push")
+            return
+        subprocess.run(["git", "-C", root, "commit", "-m", "update golf dashboard"], check=True)
+        if subprocess.run(["git", "-C", root, "push"]).returncode == 0:
+            print(f"  pushed {root} — deploying")
+            return
+        print(f"  push rejected (attempt {attempt + 1}/3) — re-syncing with remote")
+    raise RuntimeError(f"git push to {root} failed after 3 attempts")
 
 
 def main() -> None:
