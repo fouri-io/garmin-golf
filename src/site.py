@@ -44,7 +44,7 @@ def _compact_round(path: Path) -> dict:
             "before": s["distanceToPinBeforeYds"], "rem": s["distanceRemainingYds"],
             "cat": s["sgCategory"], "src": s["source"],
             "start": _ll(s.get("start")), "end": _ll(s.get("end")),
-        } for s in h["shots"]],
+        } for s in h["shots"] if not s.get("phantom")],   # transit artifacts: not strokes
     } for h in d["holes"]]
     md_path = path.with_suffix(".md")
     return {
@@ -188,6 +188,37 @@ TEMPLATE = r"""<!doctype html>
   .shots{margin:8px 0 0;font-size:12.5px;color:#41505e}
   .shots div{padding:2px 0;display:flex;gap:6px}
   .shots .sn{color:var(--muted);min-width:16px}.shots .sg{margin-left:auto;font-variant-numeric:tabular-nums}
+  /* round scorecard — Garmin-style shape markers; nines stack for phone width */
+  table.sc{width:100%;border-collapse:collapse;table-layout:fixed;
+    font-variant-numeric:tabular-nums}
+  table.sc+table.sc{margin-top:12px}
+  .sc th,.sc td{text-align:center;padding:4px 0;font-size:12px;border:0}
+  .sc th:first-child,.sc td:first-child{text-align:left;width:30px;font-size:9px;
+    text-transform:uppercase;letter-spacing:.03em;color:var(--muted);font-weight:600}
+  .sc th:last-child,.sc td:last-child{width:32px;font-weight:700;font-size:11px;
+    border-left:1px solid var(--line)}
+  .sc thead th{font-size:10px;color:var(--muted);font-weight:600;
+    border-bottom:1px solid var(--line);padding-bottom:4px}
+  .sc tbody tr+tr td{border-top:1px solid var(--line)}
+  .sc tr.scpar td{color:var(--muted);font-size:11px}
+  .sc .mk{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;
+    font-weight:700;font-size:12px}
+  .sc .scbir{border:1.5px solid var(--accent);border-radius:50%;color:var(--accent)}
+  .sc .sceag{border:1.5px solid var(--accent);border-radius:50%;color:var(--accent);
+    box-shadow:0 0 0 1.5px var(--card),0 0 0 3px var(--accent)}
+  .sc .scbog{border:1.5px solid var(--warn);border-radius:4px;color:#a2690a}
+  .sc .scdbl{border:1.5px solid var(--bad);border-radius:4px;color:var(--bad);
+    box-shadow:0 0 0 1.5px var(--card),0 0 0 3px var(--bad)}
+  .sc .pen{color:var(--bad);font-size:10px;line-height:1;vertical-align:top}
+  .sc .hit{color:var(--good)}.sc .na{color:#c2ccd5}
+  .sctot{display:flex;justify-content:space-between;align-items:baseline;
+    margin-top:10px;padding-top:8px;border-top:1px solid var(--line);font-size:12px;
+    color:var(--muted)}
+  .sctot b{font-size:17px;color:var(--ink)}
+  .sclg{display:flex;gap:11px;flex-wrap:wrap;align-items:center;margin-top:9px;
+    font-size:10px;color:var(--muted)}
+  .sclg span{display:inline-flex;align-items:center;gap:4px}
+  .sclg i{width:12px;height:12px;border:1.5px solid currentColor;display:inline-block}
   table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:13px}
   th,td{text-align:right;padding:7px 6px;border-bottom:1px solid var(--line)}
   th:first-child,td:first-child{text-align:left}thead th{font-size:11px;color:var(--muted);font-weight:600}
@@ -253,8 +284,8 @@ TEMPLATE = r"""<!doctype html>
   <div id="tab-progress">
     <div class="ctl"><span class="lab">Window — which rounds you're viewing</span>
       <div class="seg" id="win">
-        <button data-w="thisRound">This round</button>
-        <button class="on" data-w="last5">Last 5</button>
+        <button class="on" data-w="thisRound">This round</button>
+        <button data-w="last5">Last 5</button>
         <button data-w="allTime">All-time</button></div></div>
     <div class="hero">
       <div class="herocol"><div class="lab">Scoring · over rating <span class="pill" id="winpill"></span></div>
@@ -341,7 +372,7 @@ const CATS=[["offTee","Off-Tee"],["longApproach","Long"],["midApproach","Mid"],
 const FULL={offTee:"Off-the-Tee",longApproach:"Long approach 150+",midApproach:"Mid approach 50–150",
   inside50:"Inside 50",putting:"Putting"};
 const WLAB={thisRound:"This round",last5:"Last 5",allTime:"All-time"};
-let win="last5", base="scratch", detailRound=0;
+let win="thisRound", base="scratch", detailRound=0;
 
 document.getElementById('date').textContent="Updated "+(P.thisRoundDate||"")+" · "+P.generatedFromRounds+" rounds";
 
@@ -425,6 +456,46 @@ function renderRoundsList(){
         <div class="sg">${ovr}<br>SG ${r.sgTotal.toFixed(1)}</div></div>`;}).join("");
 }
 function box(toPar){return toPar===null?"":toPar<0?"birdie":toPar===0?"par":toPar===1?"bogey":"dbl";}
+
+/* ---- scorecard (Garmin-style: circle = under par, square = over) ---- */
+const FWMARK={HIT:'<span class="hit">&check;</span>',LEFT:'&#8598;',RIGHT:'&#8599;'};
+function scoreCell(h){
+  if(h.strokes==null)return '<span class="na">–</span>';
+  const t=h.toPar;
+  const cls=t==null?'':t<=-2?'sceag':t===-1?'scbir':t===1?'scbog':t>=2?'scdbl':'';
+  return `<span class="mk ${cls}">${h.strokes}</span>${h.pen?'<span class="pen">&bull;</span>':''}`;
+}
+function nineTable(hs,label){
+  const sum=k=>hs.reduce((a,h)=>a+(h[k]||0),0);
+  const cells=(fn)=>hs.map(h=>`<td>${fn(h)}</td>`).join("");
+  // Fairways only count where one is recorded (par 4/5); GIR counts every hole played.
+  const fwHoles=hs.filter(h=>h.fw!==null).length, fwHit=hs.filter(h=>h.fw==='HIT').length;
+  return `<table class="sc">
+    <thead><tr><th>Hole</th>${hs.map(h=>`<th>${h.n}</th>`).join("")}<th>${label}</th></tr></thead>
+    <tbody>
+      <tr class="scpar"><td>Par</td>${cells(h=>h.par)}<td>${sum('par')}</td></tr>
+      <tr><td>Scr</td>${cells(scoreCell)}<td>${sum('strokes')}</td></tr>
+      <tr><td>FW</td>${cells(h=>h.fw===null?'<span class="na">&middot;</span>'
+        :(FWMARK[h.fw]||'<span class="na">&ndash;</span>'))}<td>${fwHit}/${fwHoles}</td></tr>
+      <tr><td>GIR</td>${cells(h=>h.gir?'<span class="hit">&check;</span>'
+        :'<span class="na">&times;</span>')}<td>${hs.filter(h=>h.gir).length}/${hs.length}</td></tr>
+      <tr><td>Putt</td>${cells(h=>h.putts==null?'<span class="na">–</span>':h.putts)}<td>${sum('putts')}</td></tr>
+    </tbody></table>`;
+}
+function scorecard(r){
+  const front=r.holesDetail.filter(h=>h.n<=9), back=r.holesDetail.filter(h=>h.n>9);
+  const both=front.length&&back.length;
+  return `<div class="card"><h2>Scorecard</h2>
+    ${front.length?nineTable(front,both?'Out':'Tot'):''}
+    ${back.length?nineTable(back,both?'In':'Tot'):''}
+    ${both?`<div class="sctot"><span>Total</span><span><b>${r.score}</b> &nbsp;${r.toPar>=0?'+':''}${r.toPar}</span></div>`:''}
+    <div class="sclg">
+      <span><i style="border-radius:50%;color:var(--accent)"></i>Birdie+</span>
+      <span><i style="border-radius:3px;color:var(--warn)"></i>Bogey</span>
+      <span><i style="border-radius:3px;color:var(--bad);box-shadow:0 0 0 1px var(--card),0 0 0 2px var(--bad)"></i>Dbl+</span>
+      <span><b class="pen">&bull;</b>penalty</span>
+    </div></div>`;
+}
 function renderRoundDetail(i){
   const r=DATA.rounds[i];detailRound=i;
   document.getElementById('roundsList').classList.add('hide');
@@ -460,6 +531,7 @@ function renderRoundDetail(i){
     <h2 style="margin:0 0 2px">${r.course}</h2>
     <div class="foot" style="margin-bottom:10px">${r.date} · ${r.tees} tees (${r.rating}/${r.slope})${r.polluted?' · ⚠ over-recorded round':''}</div>
     <div class="kchips">${chips.map(c=>`<div class="chip"><div class="l">${c[0]}</div><div class="v">${c[1]}</div></div>`).join("")}</div>
+    ${scorecard(r)}
     <div class="card"><h2>Strokes Gained this round</h2><div style="font-size:13px">${sgrow}</div>
       <div class="foot" style="margin-top:6px">SG 0–100: <b>${r.sg0to100.toFixed(1)}</b></div></div>
     <div class="card"><h2>Putting<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">${r.putts} putts · ${r.putting.threePutts} three-putt${r.putting.threePutts===1?'':'s'}</span></h2>
