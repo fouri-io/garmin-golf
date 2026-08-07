@@ -177,6 +177,27 @@ def _enrich_shots_with_pin(shots: list[dict], pin: dict | None) -> None:
         shot["resultCategory"] = _result_category(shot, geom)
 
 
+# The watch sometimes logs a stroke while you're walking or riding between holes: a small
+# "shot" near the last green, then the transit itself as one enormous "shot". These aren't
+# strokes. Left in, they poison club distances (a 972-yard "5 Wood"), the derived hole
+# length, and Strokes Gained — the transit often gets snapped onto the pin, which reads as
+# holing out from 424 yards and *gains* 2 strokes. Flag them so every consumer can drop them.
+MAX_PLAUSIBLE_SHOT_YDS = 400   # no golf shot travels this far
+MAX_PLAUSIBLE_HOLE_YDS = 700   # a start point further than this from the pin isn't on the hole
+
+
+def _flag_phantom_shots(shots: list[dict]) -> None:
+    """Mark between-hole transit artifacts in place (`phantom` + `phantomReason`)."""
+    for shot in shots:
+        reason = None
+        if (shot.get("yards") or 0) > MAX_PLAUSIBLE_SHOT_YDS:
+            reason = "implausible-distance"
+        elif (shot.get("distanceToPinBeforeYds") or 0) > MAX_PLAUSIBLE_HOLE_YDS:
+            reason = "off-hole-start"
+        shot["phantom"] = reason is not None
+        shot["phantomReason"] = reason
+
+
 def _tee_stroke_index(course: dict, tee_name: str | None) -> list[int] | None:
     """Per-hole handicap/stroke index for the played tee, parsed from holeHandicaps."""
     if not tee_name:
@@ -219,13 +240,17 @@ def build_round_document(detail_raw: dict, shots_raw: dict, club_cfg: dict) -> d
         hole_shots = shots_by_hole.get(n, [])
         pin = _loc({"lat": h.get("pinPositionLat"), "lon": h.get("pinPositionLon")})
         _enrich_shots_with_pin(hole_shots, pin)
+        _flag_phantom_shots(hole_shots)
+        # Everything derived below uses only real strokes; phantoms stay in `shots` (flagged)
+        # so the raw layer is never silently discarded.
+        real_shots = [s for s in hole_shots if not s["phantom"]]
 
         # Derived helpers from the (now enriched) shots:
-        green_reach = next((s for s in hole_shots if s["to"] == "Green"), None)
+        green_reach = next((s for s in real_shots if s["to"] == "Green"), None)
         # First putt distance = how far the ball was from the cup when it reached the green.
         # Only reliable when a real putt was recorded: on holes with no putt shots, Garmin
         # snaps the approach's end onto the pin (→ a false 0 ft), so we report None there.
-        has_recorded_putt = any(s["type"] == "PUTT" for s in hole_shots)
+        has_recorded_putt = any(s["type"] == "PUTT" for s in real_shots)
         first_putt_ft = None
         if green_reach and green_reach["distanceRemainingYds"] is not None and has_recorded_putt:
             first_putt_ft = round(green_reach["distanceRemainingYds"] * 3.0, 1)  # 1 yd = 3 ft
@@ -234,7 +259,7 @@ def build_round_document(detail_raw: dict, shots_raw: dict, club_cfg: dict) -> d
         scramble_opportunity = gir is False
         scramble_save = bool(gir is False and to_par is not None and to_par <= 0)
         # Played length proxy: tee shot start -> pin (straight line; NOT architect yardage).
-        played_len = hole_shots[0]["distanceToPinBeforeYds"] if hole_shots else None
+        played_len = real_shots[0]["distanceToPinBeforeYds"] if real_shots else None
 
         holes.append({
             "number": n,
@@ -251,12 +276,16 @@ def build_round_document(detail_raw: dict, shots_raw: dict, club_cfg: dict) -> d
             "firstPuttDistanceFt": first_putt_ft,    # DERIVED (GPS-based, noisy at short range)
             "scrambleOpportunity": scramble_opportunity,  # DERIVED (missed GIR)
             "scrambleSave": scramble_save,                # DERIVED (missed GIR, par or better)
-            "shotCountDelta": (len(hole_shots) - strokes) if strokes is not None else None,
+            "shotCountDelta": (len(real_shots) - strokes) if strokes is not None else None,
             "handicapScore": h.get("handicapScore"),
             "pin": pin,
-            "shotsRecorded": len(hole_shots),
+            "shotsRecorded": len(real_shots),
+            "phantomShots": len(hole_shots) - len(real_shots),  # transit artifacts, dropped
             "shots": hole_shots,
         })
+
+    phantom_count = sum(h["phantomShots"] for h in holes)
+    real_shot_count = recorded_shots - phantom_count
 
     # Strokes Gained annotates each shot (sgCategory, strokesGained) in place.
     strokes_gained_summary = strokes_gained.compute(holes)
@@ -310,13 +339,19 @@ def build_round_document(detail_raw: dict, shots_raw: dict, club_cfg: dict) -> d
         "garminRatings": det.get("statsComparison"),                 # preserved verbatim
         "garminLongestShotMeters": det.get("longestShotInMeters"),
         "reconciliation": {
-            "recordedShots": recorded_shots,
+            "recordedShots": real_shot_count,
+            "rawRecordedShots": recorded_shots,   # before phantom removal
             "strokes": total_strokes,
             "penalties": total_penalties,
             # + = sensor over-recorded (phantom/practice strokes); - = under-recorded.
-            "shotCountDelta": recorded_shots - total_strokes,
+            "shotCountDelta": real_shot_count - total_strokes,
+            # Between-hole transit artifacts dropped from every derived stat. These used to
+            # hide inside a net-negative round delta, so nothing flagged them.
+            "phantomShots": phantom_count,
+            "phantomShotHoles": [h["number"] for h in holes if h["phantomShots"]],
             # Holes where the sensor logged many more shots than the score — suspect for
             # shot-level (club/distance/first-putt) analysis; the score is still trusted.
+            # (phantoms are removed surgically, so their holes keep their real shots here)
             "suspectHoles": [h["number"] for h in holes
                              if h["strokes"] and (h["shotsRecorded"] - h["strokes"]) > 2],
             # Holes with a real score but zero recorded shots (a shot-data gap).
@@ -326,7 +361,9 @@ def build_round_document(detail_raw: dict, shots_raw: dict, club_cfg: dict) -> d
                 "Score is authoritative. The sensor shot layer is imperfect: it can "
                 "under-record (un-sensed short shots; penalties carry no position) or "
                 "over-record (phantom/practice strokes). Treat shot counts as spatial "
-                "detail, not stroke truth; discount suspectHoles for club/distance stats."
+                "detail, not stroke truth; discount suspectHoles for club/distance stats. "
+                "Counts here EXCLUDE phantomShots (between-hole transit logged as strokes); "
+                "those shots stay in `holes[].shots` flagged with phantom=true."
             ),
         },
         "holes": holes,
@@ -339,7 +376,7 @@ def _coach_summary(holes: list[dict], strokes: int, putts: int, penalties: int,
     provides it (fairways/GIR/ups-and-downs); derived (and labeled) otherwise."""
     first_putts = [h["firstPuttDistanceFt"] for h in holes if h["firstPuttDistanceFt"] is not None]
     drives = [s["yards"] for h in holes for s in h["shots"]
-              if s["type"] == "TEE" and s["yards"] is not None]
+              if s["type"] == "TEE" and s["yards"] is not None and not s["phantom"]]
     return {
         "score": strokes,
         "putts": putts,
@@ -372,6 +409,9 @@ def _recon_line(r: dict) -> str:
                  else f"{delta:+d} vs score "
                       + ("(sensor over-recorded)" if delta > 0 else "(some shots un-sensed)"))
     line = f"Shots recorded: {r['recordedShots']}/{r['strokes']} — {direction}"
+    if r.get("phantomShots"):
+        line += (f" · {r['phantomShots']} phantom shot(s) dropped "
+                 f"on holes {r['phantomShotHoles']}")
     if r["suspectHoles"]:
         line += f" · suspect holes {r['suspectHoles']}"
     if r["emptyShotHoles"]:

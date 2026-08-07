@@ -7,6 +7,8 @@ summed per round.
 Honest limits (surfaced in the output):
   - Baseline is SCRATCH (PGA Tour), so an amateur's SG is negative across the board;
     the signal is the RELATIVE split — which category bleeds the most.
+  - An `Unknown` (off-map) endpoint is graded as FAIRWAY, not recovery — it's a gap in the
+    course map, not evidence of a bad lie. See _LIE_MAP.
   - Putting SG is GPS-noisy (green-scale distances), so it's the least reliable bucket.
   - The shot layer under/over-records, and penalties have no shot position, so the
     per-shot category sums don't fully reconcile to the hole total; the gap is reported
@@ -22,10 +24,17 @@ from .config import sg_distance_cuts
 
 BASELINE_PATH = Path("config/sg_baseline.json")
 
-# Garmin lie -> baseline through-green lie
+# Garmin lie -> baseline through-green lie.
+# "Unknown" is NOT a lie assessment: it means the endpoint fell outside the course
+# cartography polygon (always paired with offMap=true, lieSource=CARTOGRAPHY). Mapping it
+# to `recovery` — a stymied, punch-out-sideways lie whose curve is flat at ~3.5-4.0
+# strokes regardless of distance — charged the shot that got there and refunded the next
+# one, systematically draining offTee into the approach buckets. In practice these are
+# mostly drives running past the end of the mapped corridor, so `fairway` is the fairer
+# read; `recovery` needs evidence the shot layer never gives us.
 _LIE_MAP = {
     "TeeBox": "tee", "Fairway": "fairway", "Rough": "rough",
-    "Bunker": "sand", "Unknown": "recovery",
+    "Bunker": "sand", "Unknown": "fairway",
 }
 
 
@@ -110,6 +119,12 @@ def compute(holes: list[dict], base: Baseline | None = None) -> dict:
 
         # Tee-to-green: per-shot SG. Putts are handled below from counts, not here.
         for s in shots:
+            # Transit artifacts (see parse._flag_phantom_shots) aren't strokes — a 972-yard
+            # "5 Wood" between holes must not be graded.
+            if s.get("phantom"):
+                s["sgCategory"] = None
+                s["strokesGained"] = None
+                continue
             cat = categorize(s, par, cuts)
             s["sgCategory"] = cat
             if cat == "putting":

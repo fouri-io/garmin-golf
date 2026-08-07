@@ -7,7 +7,8 @@ range, max, dispersion) across the clean, current-bag rounds.
 Cleaning rules (so the numbers are trustworthy):
   - Only rounds on/after config/analysis.json:analysisStartDate (current sensor/bag).
   - Drop unknown-club shots (clubId 0 — auto-detected, no CT10 tag).
-  - Drop shots on reconciliation.suspectHoles (sensor over-recorded — phantom shots).
+  - Drop shots on reconciliation.suspectHoles (sensor over-recorded).
+  - Drop phantom shots (between-hole transit logged as a stroke — see parse.py).
   - For distance, use full-ish shots only: exclude putts and chips (partials deflate
     a club's full-swing distance). The Putter therefore shows a shot count, no distance.
 
@@ -62,11 +63,15 @@ def build_club_stats() -> dict:
     per_club: dict[int, dict] = defaultdict(
         lambda: {"all": 0, "dist": [], "clubTypeId": None, "name": None})
     suspect_excluded = 0
+    phantom_excluded = 0
     for d in rounds:
         suspect = set(d["reconciliation"]["suspectHoles"])
         for h in d["holes"]:
             for s in h["shots"]:
                 if s["club"].startswith("unknown") or s["clubId"] == 0 or s.get("clubRetired"):
+                    continue
+                if s.get("phantom"):     # between-hole transit, not a stroke
+                    phantom_excluded += 1
                     continue
                 if h["number"] in suspect:
                     suspect_excluded += 1
@@ -105,6 +110,7 @@ def build_club_stats() -> dict:
             "analysisStartDate": since,
             "courses": sorted({d["course"]["name"] for d in rounds}),
             "suspectHoleShotsExcluded": suspect_excluded,
+            "phantomShotsExcluded": phantom_excluded,
         },
         "clubs": clubs,
         "note": (
@@ -124,7 +130,8 @@ def render_markdown(doc: dict) -> str:
         f"# Club distances — {g['rounds']} rounds since {g['analysisStartDate']}",
         f"Courses: {', '.join(g['courses'])}",
         f"_Full-swing shots only (putts & chips excluded); unknown-club and "
-        f"suspect-hole shots dropped ({g['suspectHoleShotsExcluded']} suspect shots)._",
+        f"suspect-hole shots dropped ({g['suspectHoleShotsExcluded']} suspect, "
+        f"{g['phantomShotsExcluded']} phantom)._",
         "",
         "| Club | n | Median | Typical (p25–p75) | Max |",
         "|---|--:|--:|:-:|--:|",
@@ -160,7 +167,8 @@ def main() -> None:
     g = doc["generatedFrom"]
     print(f"Wrote {OUT_JSON} and {OUT_MD}")
     print(f"  {g['rounds']} rounds, {len(doc['clubs'])} clubs, "
-          f"{g['suspectHoleShotsExcluded']} suspect-hole shots excluded")
+          f"{g['suspectHoleShotsExcluded']} suspect-hole + "
+          f"{g['phantomShotsExcluded']} phantom shots excluded")
 
 
 if __name__ == "__main__":
