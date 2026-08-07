@@ -1,7 +1,7 @@
 {
-  "generatedFromRounds": 11,
+  "generatedFromRounds": 29,
   "since": "2026-05-01",
-  "thisRoundDate": "2026-06-08",
+  "thisRoundDate": "2026-08-06",
   "thisRoundClean": true,
   "baselines": {
     "scratch": {
@@ -18,13 +18,13 @@
     "myAverage": {
       "label": "My average",
       "byCategory": {
-        "offTee": -6.0,
-        "longApproach": -6.5,
-        "midApproach": -6.5,
+        "offTee": -4.4,
+        "longApproach": -6.7,
+        "midApproach": -7.5,
         "inside50": -7.0,
-        "putting": -6.3
+        "putting": -3.7
       },
-      "sg0to100": -8.5
+      "sg0to100": -9.6
     },
     "target15": {
       "label": "Target 15",
@@ -40,75 +40,75 @@
     }
   },
   "scoring": {
-    "averageOverRating18": 27.8,
-    "potentialOverRating18": 17.6,
-    "bestOverRating18": 14.0,
+    "averageOverRating18": 26.2,
+    "potentialOverRating18": 16.9,
+    "bestOverRating18": 6.4,
     "garminHandicap": 23.6,
     "break90OverRating": 22,
-    "handicapIndexEst": 21.2
+    "handicapIndexEst": 17.2
   },
   "sg": {
     "thisRound": {
       "byCategory": {
-        "offTee": -2.7,
-        "longApproach": -6.0,
-        "midApproach": -5.0,
-        "inside50": -1.4,
-        "putting": -8.6
+        "offTee": -2.9,
+        "longApproach": -5.4,
+        "midApproach": -7.8,
+        "inside50": -10.8,
+        "putting": -3.4
       },
-      "total": -23.7,
-      "sg0to100": -1.4,
+      "total": -30.3,
+      "sg0to100": -15.0,
       "cleanRounds": 1
     },
     "last5": {
       "byCategory": {
-        "offTee": -4.8,
-        "longApproach": -3.7,
-        "midApproach": -6.6,
-        "inside50": -5.3,
-        "putting": -6.0
+        "offTee": -4.6,
+        "longApproach": -7.4,
+        "midApproach": -7.0,
+        "inside50": -7.5,
+        "putting": -3.1
       },
-      "total": -26.4,
-      "sg0to100": -6.9,
-      "cleanRounds": 4
+      "total": -29.6,
+      "sg0to100": -11.0,
+      "cleanRounds": 5
     },
     "allTime": {
       "byCategory": {
-        "offTee": -6.0,
-        "longApproach": -6.5,
-        "midApproach": -6.5,
+        "offTee": -4.4,
+        "longApproach": -6.7,
+        "midApproach": -7.5,
         "inside50": -7.0,
-        "putting": -6.3
+        "putting": -3.7
       },
-      "total": -32.3,
-      "sg0to100": -8.5,
-      "cleanRounds": 7
+      "total": -29.3,
+      "sg0to100": -9.6,
+      "cleanRounds": 24
     }
   },
   "authoritative": {
     "thisRound": {
-      "overRating18": 21.4,
-      "handicapDiff": 25.5,
-      "putts18": 42.0,
-      "threePutts18": 6.0,
-      "penalties18": 0.0,
-      "doubles18": 4.0
+      "overRating18": 24.8,
+      "handicapDiff": 24.8,
+      "putts18": 36.0,
+      "threePutts18": 1.0,
+      "penalties18": 2.0,
+      "doubles18": 5.0
     },
     "last5": {
-      "overRating18": 22.8,
-      "handicapDiff": 25.3,
-      "putts18": 39.3,
-      "threePutts18": 4.0,
-      "penalties18": 2.0,
-      "doubles18": 5.3
+      "overRating18": 27.4,
+      "handicapDiff": 26.3,
+      "putts18": 36.9,
+      "threePutts18": 2.4,
+      "penalties18": 4.0,
+      "doubles18": 7.3
     },
     "allTime": {
-      "overRating18": 27.8,
-      "handicapDiff": 28.0,
-      "putts18": 39.0,
-      "threePutts18": 5.0,
-      "penalties18": 1.9,
-      "doubles18": 7.5
+      "overRating18": 26.2,
+      "handicapDiff": 25.8,
+      "putts18": 36.9,
+      "threePutts18": 3.3,
+      "penalties18": 2.8,
+      "doubles18": 7.2
     }
   },
   "putting": {
@@ -121,20 +121,20 @@
       },
       {
         "label": "10\u201320 ft",
-        "n": 0,
-        "avg": null,
-        "makePct": null
-      },
-      {
-        "label": "20\u201330 ft",
-        "n": 1,
-        "avg": 2.0,
+        "n": 6,
+        "avg": 2.17,
         "makePct": 0
       },
       {
+        "label": "20\u201330 ft",
+        "n": 9,
+        "avg": 1.89,
+        "makePct": 11
+      },
+      {
         "label": "30\u201350 ft",
-        "n": 6,
-        "avg": 2.5,
+        "n": 1,
+        "avg": 2.0,
         "makePct": 0
       },
       {
@@ -148,63 +148,63 @@
       {
         "label": "0\u201310 ft",
         "n": 7,
-        "avg": 2.14,
-        "makePct": 0
-      },
-      {
-        "label": "10\u201320 ft",
-        "n": 7,
         "avg": 2.0,
         "makePct": 14
       },
       {
-        "label": "20\u201330 ft",
-        "n": 13,
-        "avg": 2.23,
+        "label": "10\u201320 ft",
+        "n": 19,
+        "avg": 2.26,
         "makePct": 0
       },
       {
+        "label": "20\u201330 ft",
+        "n": 25,
+        "avg": 1.92,
+        "makePct": 12
+      },
+      {
         "label": "30\u201350 ft",
-        "n": 21,
-        "avg": 2.33,
-        "makePct": 10
+        "n": 18,
+        "avg": 2.06,
+        "makePct": 11
       },
       {
         "label": "50+ ft",
         "n": 2,
-        "avg": 2.0,
+        "avg": 2.5,
         "makePct": 0
       }
     ],
     "allTime": [
       {
         "label": "0\u201310 ft",
-        "n": 18,
-        "avg": 2.33,
-        "makePct": 0
-      },
-      {
-        "label": "10\u201320 ft",
-        "n": 25,
-        "avg": 2.0,
+        "n": 44,
+        "avg": 2.02,
         "makePct": 16
       },
       {
+        "label": "10\u201320 ft",
+        "n": 81,
+        "avg": 2.05,
+        "makePct": 14
+      },
+      {
         "label": "20\u201330 ft",
-        "n": 43,
-        "avg": 2.21,
-        "makePct": 12
+        "n": 102,
+        "avg": 2.08,
+        "makePct": 11
       },
       {
         "label": "30\u201350 ft",
-        "n": 40,
-        "avg": 2.23,
+        "n": 104,
+        "avg": 2.13,
         "makePct": 12
       },
       {
         "label": "50+ ft",
-        "n": 5,
-        "avg": 2.4,
+        "n": 10,
+        "avg": 2.3,
         "makePct": 0
       }
     ]
@@ -232,9 +232,9 @@
       "holes": 18,
       "overRating18": 36.9,
       "per18": {
-        "offTee": -7.6,
-        "longApproach": -10.2,
-        "midApproach": -8.2,
+        "offTee": -5.8,
+        "longApproach": -10.0,
+        "midApproach": -10.2,
         "inside50": -9.3,
         "putting": -8.2
       },
@@ -277,8 +277,8 @@
       "holes": 18,
       "overRating18": 32.3,
       "per18": {
-        "offTee": -8.1,
-        "longApproach": -8.2,
+        "offTee": -6.7,
+        "longApproach": -9.6,
         "midApproach": -8.4,
         "inside50": -8.8,
         "putting": -8.7
@@ -292,8 +292,8 @@
       "holes": 18,
       "overRating18": 31.8,
       "per18": {
-        "offTee": -9.3,
-        "longApproach": -7.8,
+        "offTee": -6.5,
+        "longApproach": -10.7,
         "midApproach": -6.0,
         "inside50": -8.7,
         "putting": -3.3
@@ -310,7 +310,7 @@
         "offTee": -8.3,
         "longApproach": -0.6,
         "midApproach": -21.9,
-        "inside50": -11.0,
+        "inside50": -13.0,
         "putting": -4.5
       },
       "clean": false
@@ -322,10 +322,10 @@
       "holes": 18,
       "overRating18": 31.6,
       "per18": {
-        "offTee": -8.7,
-        "longApproach": -5.6,
-        "midApproach": -8.5,
-        "inside50": -9.0,
+        "offTee": -5.8,
+        "longApproach": -4.7,
+        "midApproach": -10.4,
+        "inside50": -11.0,
         "putting": -4.4
       },
       "clean": true
@@ -372,6 +372,276 @@
         "midApproach": -5.0,
         "inside50": -1.4,
         "putting": -8.6
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-06-10",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 42,
+      "holes": 9,
+      "overRating18": 24.4,
+      "per18": {
+        "offTee": -2.9,
+        "longApproach": -4.5,
+        "midApproach": -6.9,
+        "inside50": -7.4,
+        "putting": -5.0
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-06-12",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 37,
+      "holes": 9,
+      "overRating18": 14.4,
+      "per18": {
+        "offTee": -1.4,
+        "longApproach": -2.7,
+        "midApproach": -8.3,
+        "inside50": -4.6,
+        "putting": -1.8
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-06-19",
+      "course": "Avery Ranch Golf Club",
+      "score": 97,
+      "holes": 18,
+      "overRating18": 29.2,
+      "per18": {
+        "offTee": -6.0,
+        "longApproach": -7.8,
+        "midApproach": -6.3,
+        "inside50": -4.5,
+        "putting": -3.8
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-06-22",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 42,
+      "holes": 9,
+      "overRating18": 24.4,
+      "per18": {
+        "offTee": -3.5,
+        "longApproach": -2.6,
+        "midApproach": -10.0,
+        "inside50": -7.6,
+        "putting": -6.2
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-06-24",
+      "course": "Teravista Golf Club",
+      "score": 103,
+      "holes": 18,
+      "overRating18": 32.5,
+      "per18": {
+        "offTee": -6.2,
+        "longApproach": -9.3,
+        "midApproach": -7.9,
+        "inside50": -7.6,
+        "putting": -4.1
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-06-29",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 37,
+      "holes": 9,
+      "overRating18": 14.4,
+      "per18": {
+        "offTee": -2.0,
+        "longApproach": -1.5,
+        "midApproach": -5.2,
+        "inside50": -0.0,
+        "putting": 0.4
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-07-03",
+      "course": "Avery Ranch Golf Club",
+      "score": 98,
+      "holes": 18,
+      "overRating18": 30.2,
+      "per18": {
+        "offTee": -5.5,
+        "longApproach": -12.4,
+        "midApproach": -6.5,
+        "inside50": -4.5,
+        "putting": -2.9
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-07-05",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 36,
+      "holes": 9,
+      "overRating18": 12.4,
+      "per18": {
+        "offTee": -5.2,
+        "longApproach": -3.7,
+        "midApproach": -17.9,
+        "inside50": -9.1,
+        "putting": 2.5
+      },
+      "clean": false
+    },
+    {
+      "date": "2026-07-06",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 41,
+      "holes": 9,
+      "overRating18": 22.4,
+      "per18": {
+        "offTee": -3.2,
+        "longApproach": -1.3,
+        "midApproach": -11.5,
+        "inside50": -6.1,
+        "putting": -3.8
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-07-08",
+      "course": "Riverside Golf Course",
+      "score": 97,
+      "holes": 18,
+      "overRating18": 29.8,
+      "per18": {
+        "offTee": -3.9,
+        "longApproach": -8.5,
+        "midApproach": -9.4,
+        "inside50": -13.0,
+        "putting": 0.8
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-07-10",
+      "course": "Riverside Golf Course",
+      "score": 98,
+      "holes": 18,
+      "overRating18": 30.8,
+      "per18": {
+        "offTee": -4.0,
+        "longApproach": -7.9,
+        "midApproach": -9.5,
+        "inside50": -11.1,
+        "putting": -2.5
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-07-13",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 33,
+      "holes": 9,
+      "overRating18": 6.4,
+      "per18": {
+        "offTee": -5.0,
+        "longApproach": 0.0,
+        "midApproach": -7.8,
+        "inside50": -3.8,
+        "putting": 6.2
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-07-22",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 35,
+      "holes": 9,
+      "overRating18": 10.4,
+      "per18": {
+        "offTee": -2.1,
+        "longApproach": -1.6,
+        "midApproach": -6.2,
+        "inside50": -0.9,
+        "putting": -3.8
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-07-24",
+      "course": "Crystal Falls Golf Course",
+      "score": 105,
+      "holes": 18,
+      "overRating18": 33.2,
+      "per18": {
+        "offTee": -4.4,
+        "longApproach": -12.4,
+        "midApproach": -9.0,
+        "inside50": -11.0,
+        "putting": -4.5
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-07-29",
+      "course": "Jimmy Clay Golf Course ~ Jimmy Clay",
+      "score": 96,
+      "holes": 18,
+      "overRating18": 26.9,
+      "per18": {
+        "offTee": -5.3,
+        "longApproach": -6.7,
+        "midApproach": -6.6,
+        "inside50": -3.3,
+        "putting": -5.7
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-07-31",
+      "course": "The Golf Club at Star Ranch",
+      "score": 96,
+      "holes": 18,
+      "overRating18": 28.6,
+      "per18": {
+        "offTee": -7.1,
+        "longApproach": -6.6,
+        "midApproach": -5.2,
+        "inside50": -7.2,
+        "putting": 1.8
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-08-03",
+      "course": "Harvey Penick Golf Campus ~ Nine Hole",
+      "score": 40,
+      "holes": 9,
+      "overRating18": 19.4,
+      "per18": {
+        "offTee": -1.8,
+        "longApproach": -4.8,
+        "midApproach": -5.6,
+        "inside50": -3.0,
+        "putting": -4.6
+      },
+      "clean": true
+    },
+    {
+      "date": "2026-08-06",
+      "course": "Riverside Golf Course",
+      "score": 92,
+      "holes": 18,
+      "overRating18": 24.8,
+      "per18": {
+        "offTee": -2.9,
+        "longApproach": -5.4,
+        "midApproach": -7.8,
+        "inside50": -10.8,
+        "putting": -3.4
       },
       "clean": true
     }
