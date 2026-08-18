@@ -20,23 +20,38 @@ cd "$(dirname "$0")" || { echo "SUMMARY: ⚠️ The Turn update FAILED — bad w
 out="$(./.venv/bin/python -m src.update --push 2>&1)"; rc=$?
 printf '%s\n' "$out" | tee -a data/update.log >/dev/null   # full log (not to stdout)
 
-if [ "$rc" -ne 0 ]; then
+if [ "$rc" -eq 2 ]; then
+  # Pipeline ran, but the archive commit and/or the S3 deploy didn't land. Name which,
+  # so a stale dashboard never hides behind a ✅ again.
+  bad=""
+  printf '%s' "$out" | grep -q 'DEPLOY NOT VERIFIED' && bad="site did NOT deploy"
+  printf '%s' "$out" | grep -q 'archive FAILED' && \
+    bad="${bad:+$bad · }round archive not committed"
+  summary="❌ The Turn · ${bad:-something did not land} — see data/update.log"
+elif [ "$rc" -ne 0 ]; then
   summary="⚠️ The Turn update FAILED (exit $rc) — see data/update.log"
 else
   pulled="$(printf '%s' "$out" | grep -oE 'pulled=[0-9]+' | tail -1 | grep -oE '[0-9]+')"
   failed="$(printf '%s' "$out" | grep -oE 'failed=[0-9]+' | tail -1 | grep -oE '[0-9]+')"
   pulled="${pulled:-0}"; failed="${failed:-0}"
   coached="$(printf '%s' "$out" | grep -c 'coach report' || true)"
-  deployed="$(printf '%s' "$out" | grep -c 'deploying' || true)"
+  # "deployed" now means VERIFIED live, not merely pushed — exit 0 with --push implies
+  # _verify_deploy confirmed the bytes, so this can no longer overstate the outcome.
+  deployed="$(printf '%s' "$out" | grep -c 'deploy verified' || true)"
+  archived="$(printf '%s' "$out" | grep -c 'archived —' || true)"
   if [ "$pulled" -gt 0 ]; then
     rd="$(printf '%s' "$out" | grep -oE '[0-9]{4}_[0-9]{2}_[0-9]{2}' | tail -1 | tr '_' '-')"
     word="round"; [ "$pulled" -gt 1 ] && word="rounds"
     msg="$pulled new $word"; [ -n "$rd" ] && msg="$msg ($rd)"
     [ "$coached" -gt 0 ] && msg="$msg · coached"
+    [ "$archived" -gt 0 ] && msg="$msg · archived"
     [ "$deployed" -gt 0 ] && msg="$msg · deployed"
     summary="✅ The Turn · $msg → colbyward.io/golf"
   else
-    summary="✅ The Turn · no new rounds · rebuilt + deployed → colbyward.io/golf"
+    msg="no new rounds · rebuilt"
+    [ "$archived" -gt 0 ] && msg="$msg · archived"
+    [ "$deployed" -gt 0 ] && msg="$msg · deployed"
+    summary="✅ The Turn · $msg → colbyward.io/golf"
   fi
   [ "$failed" -gt 0 ] && summary="$summary  ⚠ $failed failed"
 fi

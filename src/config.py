@@ -25,6 +25,13 @@ def publish_target() -> Path | None:
     return Path(p).expanduser() if p else None
 
 
+def publish_verify_url() -> str | None:
+    """Public URL of the deployed dashboard. `update --push` fetches it after pushing to
+    confirm the deploy Action actually landed the build (a successful git push only means
+    the Action was *triggered*). None disables verification."""
+    return (_analysis_config().get("publish") or {}).get("verifyUrl")
+
+
 def sg_distance_cuts() -> dict:
     """Distance cuts (yards) for the SG approach buckets and the 0-100 headline metric.
     Player-tunable in config/analysis.json."""
