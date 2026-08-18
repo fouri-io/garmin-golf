@@ -123,8 +123,21 @@ def _baselines(all_time: dict | None) -> dict:
     }
 
 
-def build() -> dict:
+def build(through_scorecard_id: int | None = None, write: bool = True) -> dict:
+    """Aggregate every window over the analysis set.
+
+    `through_scorecard_id` truncates the round list at that round, so a backfilled coach
+    report sees the game AS IT STOOD THEN instead of being told about averages drawn from
+    rounds that hadn't been played yet. `write=False` keeps that what-if view out of the
+    real progress.json.
+    """
     rounds = sorted(load_rounds(analysis_start_date()), key=lambda d: d["round"]["date"])
+    if through_scorecard_id is not None:
+        idx = next((i for i, d in enumerate(rounds)
+                    if d["scorecardId"] == through_scorecard_id), None)
+        if idx is None:
+            raise ValueError(f"round {through_scorecard_id} is not in the analysis set")
+        rounds = rounds[:idx + 1]
     horizons = {
         "thisRound": [rounds[-1]] if rounds else [],
         "last5": rounds[-RECENT_N:],
@@ -168,8 +181,9 @@ def build() -> dict:
         "putting": putting,
         "timeSeries": series,
     }
-    OUT_JSON.write_text(json.dumps(doc, indent=2))
-    OUT_MD.write_text(render_markdown(doc))
+    if write:
+        OUT_JSON.write_text(json.dumps(doc, indent=2))
+        OUT_MD.write_text(render_markdown(doc))
     return doc
 
 

@@ -25,6 +25,7 @@ PROFILE = Path("config/golfer_profile.md")
 PROGRESS = Path("data/processed/progress.json")
 ROUNDS_DIR = Path("data/processed/rounds")
 OUT_DIR = Path("data/processed/coach")
+POLLUTION_DELTA = 3          # shotCountDelta above this = the shot layer is not trustworthy
 DEFAULT_ANTHROPIC_MODEL = "claude-opus-4-8"
 DEFAULT_OPENAI_MODEL = "gpt-4o"
 
@@ -47,6 +48,13 @@ SYSTEM = (
     "out). Use ONLY the hole's `putts` field and the round putt total. If the shot list "
     "shows more putts than the hole's `putts`, the extras are NOT real — ignore them and "
     "do not mention a 'six-putt' etc. that the scorecard doesn't support.\n"
+    "- PHANTOM FULL SWINGS: the sensor also over-records full shots (practice swings, "
+    "range balls, a club re-gripped). If you are told the round is OVER-RECORDED, the "
+    "shot list contains strokes that never happened, so the per-shot SG buckets for "
+    "that round are UNRELIABLE — do not name a worst bucket from them, never say a "
+    "hole 'needed extra swings' because the list shows them, and do not build practice "
+    "advice on them. Lean on the authoritative stats instead: score, putts, penalties, "
+    "fairways, GIR, up-and-downs.\n"
     "- LEVELING: judge how the round compares to the player using SCORE OVER COURSE "
     "RATING per 18 (provided), NOT over par. Par != rating, and he plays easier-rated "
     "tees. A round whose over-rating/18 is BELOW his average is a GOOD round; near his "
@@ -161,9 +169,11 @@ def putting_summary(stem: str, progress: dict) -> str:
     return "\n".join(lines)
 
 
-def build_context(stem: str) -> dict:
+def build_context(stem: str, progress: dict | None = None) -> dict:
+    """Assemble the coach prompt. `progress` overrides the on-disk file — used by the
+    backfill to hand each old round the state of the game as of that round."""
     profile = PROFILE.read_text() if PROFILE.exists() else "(no profile on file)"
-    progress = json.loads(PROGRESS.read_text())
+    progress = progress if progress is not None else json.loads(PROGRESS.read_text())
     state = state_summary(progress)
     putting = putting_summary(stem, progress)
     ts = progress.get("timeSeries") or []
@@ -181,6 +191,17 @@ def build_context(stem: str) -> dict:
     rj = ROUNDS_DIR / f"{stem}.json"
     if rj.exists():
         rd = json.loads(rj.read_text())
+        rec = rd.get("reconciliation") or {}
+        if (rec.get("shotCountDelta") or 0) > POLLUTION_DELTA:
+            state += (
+                f"\n\n!! DATA QUALITY — THIS ROUND IS OVER-RECORDED: the sensor logged "
+                f"{rec['recordedShots']} shots against a scorecard of {rd['score']['strokes']} "
+                f"strokes (+{rec['shotCountDelta']}), worst on holes {rec.get('suspectHoles')}. "
+                f"Those extra strokes DID NOT HAPPEN, so this round's per-shot SG buckets are "
+                f"junk — do NOT name a worst bucket or build practice advice from them, and do "
+                f"not describe holes as needing extra swings. Judge the round from the "
+                f"authoritative stats (score, putts, penalties, fairways, GIR) and say plainly "
+                f"that the shot-level detail was unreliable.")
         holes = rd["score"].get("holesCompleted") or 18
         tr = rd["strokesGained"].get("sg0to100", 0) * 18 / holes
         sgw = progress.get("sg") or {}
@@ -236,7 +257,8 @@ def _openai(key: str, model: str | None) -> "callable":  # noqa: F821
     return call
 
 
-def coach_round(stem: str | None = None, model: str | None = None) -> Path | None:
+def coach_round(stem: str | None = None, model: str | None = None,
+                as_of: bool = False) -> Path | None:
     prov = _pick_provider()
     if not prov:
         print("  coach skipped — set ANTHROPIC_API_KEY=sk-ant-… or OPENAI_API_KEY=sk-… in .env")
@@ -246,7 +268,14 @@ def coach_round(stem: str | None = None, model: str | None = None) -> Path | Non
     if not stem:
         print("  coach skipped — no round to review")
         return None
-    ctx = build_context(stem)
+    # as_of: judge the round against the game as it stood THEN. Without this a
+    # regenerated May report quotes August averages and reads as if the coach could
+    # see the future.
+    view = None
+    if as_of:
+        from . import progress as _progress
+        view = _progress.build(through_scorecard_id=int(stem.split("_")[-1]), write=False)
+    ctx = build_context(stem, view)
     try:
         call = (_anthropic if provider == "anthropic" else _openai)(key, model)
         report = call(SYSTEM, PROMPT.format(**ctx))
@@ -275,8 +304,50 @@ def coach_recent(n: int = 5, model: str | None = None) -> list[Path]:
     return done
 
 
+def backfill(stems: list[str] | None = None, model: str | None = None) -> list[Path]:
+    """Regenerate reports oldest->newest, each with as-of-that-round context.
+
+    Needed after any change to the SG model: an old report keeps whatever the numbers
+    said when it was written, so its practice advice can point at a bucket the corrected
+    data no longer blames.
+    """
+    every = [f.stem for f in sorted(ROUNDS_DIR.glob("*.json"))]
+    todo = sorted(stems) if stems else every
+    done = []
+    for i, stem in enumerate(todo, 1):
+        print(f"[{i}/{len(todo)}] {stem}", flush=True)
+        r = coach_round(stem, model, as_of=True)
+        if r:
+            done.append(r)
+    # latest.md is the dashboard's "current" report — restore it to the newest round,
+    # whatever subset we just regenerated.
+    newest = OUT_DIR / f"{every[-1]}.md"
+    if every and newest.exists():
+        (OUT_DIR / "latest.md").write_text(newest.read_text())
+    print(f"backfilled {len(done)}/{len(todo)} reports")
+    return done
+
+
+def missing_stems() -> list[str]:
+    """Rounds with no coach report yet."""
+    return [f.stem for f in sorted(ROUNDS_DIR.glob("*.json"))
+            if not (OUT_DIR / f"{f.stem}.md").exists()]
+
+
 def main() -> None:
-    coach_round()
+    import argparse
+    ap = argparse.ArgumentParser(prog="python -m src.coach")
+    ap.add_argument("--backfill", action="store_true",
+                    help="regenerate ALL round reports with as-of-that-round context")
+    ap.add_argument("--missing", action="store_true",
+                    help="generate reports only for rounds that have none")
+    ap.add_argument("--stems", nargs="*", help="specific round stems to (re)generate")
+    ap.add_argument("--model", help="override the coach model")
+    a = ap.parse_args()
+    if a.backfill or a.missing or a.stems:
+        backfill(a.stems or (missing_stems() if a.missing else None), a.model)
+    else:
+        coach_round(model=a.model)
 
 
 if __name__ == "__main__":
