@@ -67,7 +67,7 @@
     "scramble_pct": 0.0,
     "first_putt_distance_avg_ft": 30.6,
     "first_putt_distance_basis": "9 holes that reached the green (GPS-based)",
-    "longest_drive_yds": 311.1,
+    "longest_drive_yds": 222.8,
     "garmin_ratings": {
       "driveRating": "POOR",
       "approachRating": "POOR",
@@ -77,16 +77,16 @@
   },
   "strokesGained": {
     "baseline": "PGA Tour (scratch), approximate",
-    "totalRecordedVsScratch": -11.35,
+    "totalRecordedVsScratch": -12.21,
     "byCategory": {
-      "offTee": -0.74,
+      "offTee": -1.6,
       "longApproach": 0.01,
       "midApproach": -2.53,
       "inside50": -2.9,
       "putting": -5.19
     },
     "sg0to100": -2.88,
-    "categorizedShots": 17,
+    "categorizedShots": 18,
     "penaltyStrokes": 0,
     "doublesOrWorse": 2,
     "putting": {
@@ -128,13 +128,13 @@
     "chipRating": "POOR",
     "puttRating": "POOR"
   },
-  "garminLongestShotMeters": 284.425,
+  "garminLongestShotMeters": 203.754,
   "reconciliation": {
-    "recordedShots": 31,
-    "rawRecordedShots": 31,
+    "recordedShots": 32,
+    "rawRecordedShots": 32,
     "strokes": 40,
     "penalties": 0,
-    "shotCountDelta": -9,
+    "shotCountDelta": -8,
     "phantomShots": 0,
     "phantomShotHoles": [],
     "suspectHoles": [],
@@ -146,7 +146,7 @@
       "number": 1,
       "par": 4,
       "strokeIndex": 8,
-      "playedLengthYds": 366.6,
+      "playedLengthYds": 401.6,
       "strokes": 5,
       "putts": 3,
       "penalties": 0,
@@ -157,7 +157,7 @@
       "firstPuttDistanceFt": 29.4,
       "scrambleOpportunity": false,
       "scrambleSave": false,
-      "shotCountDelta": -2,
+      "shotCountDelta": -1,
       "handicapScore": 4,
       "pin": {
         "lat": 30.291537987068295,
@@ -165,16 +165,57 @@
         "lie": null,
         "lieSource": null
       },
-      "shotsRecorded": 3,
+      "shotsRecorded": 4,
       "phantomShots": 0,
       "shots": [
         {
           "shotNumber": 1,
+          "club": "unknown",
+          "clubTypeId": 0,
+          "clubId": 0,
+          "clubRetired": false,
+          "type": "TEE",
+          "autoShotType": "USED",
+          "source": "DEVICE_AUTO",
+          "yards": 35.1,
+          "meters": 32.0757,
+          "from": "TeeBox",
+          "to": "TeeBox",
+          "start": {
+            "lat": 30.292853694409132,
+            "lon": -97.6611059345305,
+            "lie": "TeeBox",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "end": {
+            "lat": 30.292740454897285,
+            "lon": -97.66079907305539,
+            "lie": "TeeBox",
+            "lieSource": "CARTOGRAPHY"
+          },
+          "shotTime": "2026-08-09T10:27:47-05:00",
+          "excludeFromStats": false,
+          "offMap": false,
+          "distanceToPinBeforeYds": 401.6,
+          "distanceRemainingYds": 366.6,
+          "miss": {
+            "range": "short",
+            "side": "straight",
+            "lateralYds": 0.2
+          },
+          "resultCategory": "short",
+          "phantom": false,
+          "phantomReason": null,
+          "sgCategory": "offTee",
+          "strokesGained": -0.853
+        },
+        {
+          "shotNumber": 2,
           "club": "Driver",
           "clubTypeId": 1,
           "clubId": 924171171,
           "clubRetired": false,
-          "type": "TEE",
+          "type": "UNKNOWN",
           "autoShotType": "USED",
           "source": "SENSOR",
           "yards": 311.1,
@@ -193,7 +234,7 @@
             "lie": "Rough",
             "lieSource": "CARTOGRAPHY"
           },
-          "shotTime": "2026-08-09T10:27:47-05:00",
+          "shotTime": "2026-08-09T10:27:48-05:00",
           "excludeFromStats": false,
           "offMap": false,
           "distanceToPinBeforeYds": 366.6,
@@ -210,7 +251,7 @@
           "strokesGained": -0.141
         },
         {
-          "shotNumber": 2,
+          "shotNumber": 3,
           "club": "50\u00b0 GW",
           "clubTypeId": 20,
           "clubId": 921562502,
@@ -234,7 +275,7 @@
             "lie": "Green",
             "lieSource": "CARTOGRAPHY"
           },
-          "shotTime": "2026-08-09T10:27:48-05:00",
+          "shotTime": "2026-08-09T10:27:49-05:00",
           "excludeFromStats": false,
           "offMap": false,
           "distanceToPinBeforeYds": 93.5,
@@ -251,7 +292,7 @@
           "strokesGained": 0.025
         },
         {
-          "shotNumber": 3,
+          "shotNumber": 4,
           "club": "Putter",
           "clubTypeId": 23,
           "clubId": 892530988,
@@ -275,7 +316,7 @@
             "lie": "Green",
             "lieSource": "CARTOGRAPHY"
           },
-          "shotTime": "2026-08-09T10:27:49-05:00",
+          "shotTime": "2026-08-09T10:27:50-05:00",
           "excludeFromStats": false,
           "offMap": false,
           "distanceToPinBeforeYds": 9.8,
