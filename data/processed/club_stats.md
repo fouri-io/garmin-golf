@@ -1,20 +1,20 @@
-# Club distances — 37 rounds since 2026-05-01
+# Club distances — 38 rounds since 2026-05-01
 Courses: Avery Ranch Golf Club, Crystal Falls Golf Course, Falconhead Golf Club, Hancock Golf Course, Harvey Penick Golf Campus ~ Nine Hole, Harvey Penick Golf Campus ~ Nine Hole/Nine Hole, Jimmy Clay Golf Course ~ Jimmy Clay, Riverside Golf Course, Teravista Golf Club, The Golf Club at Star Ranch
 _Full-swing shots only (putts & chips excluded); unknown-club and suspect-hole shots dropped (138 suspect, 3 phantom)._
 
 | Club | n | Median | Typical (p25–p75) | Max |
 |---|--:|--:|:-:|--:|
-| Driver | 213 | 204 | 174–230 | 311 |
-| 5 Wood | 96 | 179 | 149–201 | 244 |
+| Driver | 214 | 204 | 174–229 | 311 |
+| 5 Wood | 99 | 178 | 149–201 | 244 |
 | 4 Hybrid | 43 | 164 | 138–171 | 214 |
 | 7 Iron | 155 | 140 | 123–154 | 203 |
-| 8 Iron | 79 | 134 | 116–148 | 170 |
-| 9 Iron | 86 | 116 | 89–132 | 162 |
+| 8 Iron | 82 | 130 | 117–148 | 170 |
+| 9 Iron | 87 | 116 | 90–133 | 162 |
 | 6 Iron | 30 | 104 | 69–155 | 188 |
-| PW | 128 | 96 | 71–111 | 136 |
+| PW | 129 | 96 | 71–111 | 136 |
 | 50° GW | 47 | 65 | 41–77 | 112 |
-| 54° SW | 36 | 23 | 13–39 | 75 |
-| Putter | 786 | — | — | — |
+| 54° SW | 37 | 24 | 13–39 | 75 |
+| Putter | 798 | — | — | — |
 
 ⚠︎ = fewer than 4 full-swing shots; low-confidence.
 _Median is the reliable 'stock' yardage. The wide p25–p75 spread reflects strike consistency — partial/mishit shots share each club and pull the low end down._
