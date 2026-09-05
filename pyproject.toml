@@ -8,6 +8,7 @@ dependencies = [
     "garminconnect",
     "curl_cffi",      # required by recent garminconnect versions
     "ua-generator",   # required by recent garminconnect versions
+    "duckdb",         # analytics spine: canon/annot/derived layers in data/turn.duckdb
     "pandas",
     "python-dotenv",
     "matplotlib",
@@ -18,7 +19,12 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "ruff",
+    "pytest",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["slow: full parity checks against real committed data"]
 
 [build-system]
 requires = ["setuptools>=68"]

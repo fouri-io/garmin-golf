@@ -1,0 +1,123 @@
+{
+  "scorecardDetails": [
+    {
+      "scorecard": {
+        "id": 999000111,
+        "customerId": "",
+        "playerProfileId": 141870905,
+        "roundPlayerName": "Test Golfer",
+        "courseGlobalId": 99999,
+        "courseSnapshotId": 88888,
+        "scoreType": "STROKE_PLAY",
+        "useHandicapScoring": true,
+        "useStrokeCounting": true,
+        "distanceWalked": 2400,
+        "stepsTaken": 3100,
+        "startTime": "2026-06-15T13:00:00.000Z",
+        "formattedStartTime": "2026-06-15T08:00:00-05:00",
+        "endTime": "2026-06-15T13:40:00.000Z",
+        "formattedEndTime": "2026-06-15T08:40:00-05:00",
+        "unitId": "3601108669",
+        "roundType": "ALL",
+        "inProgress": false,
+        "excludeFromStats": false,
+        "holesCompleted": 2,
+        "publicRound": false,
+        "score": 3,
+        "playerHandicap": 19,
+        "courseHandicapStr": "0102",
+        "teeBox": "Test Tees",
+        "handicapType": "MEN",
+        "teeBoxRating": 68.5,
+        "teeBoxSlope": 115,
+        "sensorOnPutter": true,
+        "handicappedStrokes": 2,
+        "strokes": 9,
+        "holes": [
+          {
+            "number": 1,
+            "strokes": 5,
+            "penalties": 0,
+            "handicapScore": 4,
+            "lastModifiedDt": "2026-06-15T13:20:00.000Z",
+            "putts": 2,
+            "fairwayShotOutcome": "HIT",
+            "pinPositionLat": 363976784,
+            "pinPositionLon": -1164223328
+          },
+          {
+            "number": 2,
+            "strokes": 4,
+            "penalties": 1,
+            "handicapScore": 4,
+            "lastModifiedDt": "2026-06-15T13:40:00.000Z",
+            "putts": 2,
+            "fairwayShotOutcome": null,
+            "pinPositionLat": 363990000,
+            "pinPositionLon": -1164240000
+          }
+        ]
+      },
+      "scorecardStats": {
+        "round": {
+          "holesPlayed": 2,
+          "fairwaysRecorded": 1,
+          "fairwaysHit": 1,
+          "fairwaysLeft": 0,
+          "fairwaysRight": 0,
+          "greensInRegulation": 1,
+          "greensRecorded": 2,
+          "putts": 4,
+          "strokes": 9,
+          "handicappedStrokes": 2,
+          "meanPuttsPerHole": 2.0,
+          "holesUnderPar": 0,
+          "holesPar": 0,
+          "holesBogey": 2,
+          "holesOverBogey": 0,
+          "holesBirdie": 0,
+          "holesEagle": 0,
+          "upsAndDowns": 0,
+          "chips": 1
+        }
+      },
+      "shotCounts": [4, 3],
+      "statsComparison": {
+        "driveRating": "GOOD",
+        "approachRating": "FAIR",
+        "chipRating": "FAIR",
+        "puttRating": "GOOD"
+      },
+      "longestShotInMeters": 174.0
+    }
+  ],
+  "courseSnapshots": [
+    {
+      "courseGlobalId": 99999,
+      "courseSnapshotId": 88888,
+      "name": "Fixture National",
+      "holePars": "43",
+      "continent": "North America",
+      "country": "United States",
+      "street": "1 Test Way",
+      "city": "Austin",
+      "state": "TX",
+      "zip": "78701",
+      "frontNinePar": 7,
+      "backNinePar": 0,
+      "roundPar": 7,
+      "releaseDate": "01/01/2026",
+      "lat": 363970000,
+      "lon": -1164200000,
+      "tees": [
+        {
+          "name": "Test Tees",
+          "handicapType": "MEN",
+          "rating": 68.5,
+          "slope": 115,
+          "holeHandicaps": "0102"
+        }
+      ]
+    }
+  ]
+}

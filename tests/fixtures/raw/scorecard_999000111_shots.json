@@ -1,0 +1,142 @@
+{
+  "scorecardId": 999000111,
+  "perHole": [
+    {
+      "hole": 1,
+      "response": {
+        "holeShots": [
+          {
+            "holeNumber": 1,
+            "pinPosition": { "lat": 363976784, "lon": -1164223328 },
+            "shots": [
+              {
+                "id": 90000000001,
+                "scorecardId": 999000111,
+                "playerProfileId": 141870905,
+                "shotTime": 1781528400000,
+                "shotOrder": 1,
+                "shotTimeZoneOffset": -18000000,
+                "clubId": 924171171,
+                "holeNumber": 1,
+                "autoShotType": "USED",
+                "startLoc": { "lat": 363965013, "lon": -1164190525, "lie": "TeeBox", "lieSource": "CARTOGRAPHY" },
+                "endLoc": { "lat": 363969836, "lon": -1164211416, "lie": "Fairway", "lieSource": "CARTOGRAPHY" },
+                "meters": 173.863,
+                "shotSource": "SENSOR",
+                "shotType": "TEE",
+                "excludeFromStats": false
+              },
+              {
+                "id": 90000000002,
+                "scorecardId": 999000111,
+                "playerProfileId": 141870905,
+                "shotTime": 1781528600000,
+                "shotOrder": 2,
+                "shotTimeZoneOffset": -18000000,
+                "clubId": 924171175,
+                "holeNumber": 1,
+                "autoShotType": "USED",
+                "startLoc": { "lat": 363969836, "lon": -1164211416, "lie": "Fairway", "lieSource": "CARTOGRAPHY" },
+                "endLoc": { "lat": 363976300, "lon": -1164222800, "lie": "Green", "lieSource": "CARTOGRAPHY" },
+                "meters": 110.5,
+                "shotSource": "SENSOR",
+                "shotType": "APPROACH",
+                "excludeFromStats": false
+              },
+              {
+                "id": 90000000003,
+                "scorecardId": 999000111,
+                "playerProfileId": 141870905,
+                "shotTime": 1781528900000,
+                "shotOrder": 3,
+                "shotTimeZoneOffset": -18000000,
+                "clubId": 924171180,
+                "holeNumber": 1,
+                "autoShotType": "USED",
+                "startLoc": { "lat": 363976300, "lon": -1164222800, "lie": "Green", "lieSource": "CARTOGRAPHY" },
+                "endLoc": { "lat": 363976784, "lon": -1164223328, "lie": "Green", "lieSource": "CARTOGRAPHY" },
+                "meters": 6.2,
+                "shotSource": "SENSOR",
+                "shotType": "PUTT",
+                "excludeFromStats": false
+              },
+              {
+                "id": 90000000004,
+                "scorecardId": 999000111,
+                "playerProfileId": 141870905,
+                "shotTime": 1781529100000,
+                "shotOrder": 4,
+                "shotTimeZoneOffset": -18000000,
+                "clubId": 924171171,
+                "holeNumber": 1,
+                "autoShotType": "USED",
+                "startLoc": { "lat": 363976784, "lon": -1164223328, "lie": "Green", "lieSource": "CARTOGRAPHY" },
+                "endLoc": { "lat": 363990000, "lon": -1164340000, "lie": "Unknown", "lieSource": "CARTOGRAPHY" },
+                "meters": 890.0,
+                "shotSource": "DEVICE_AUTO",
+                "shotType": "TEE",
+                "excludeFromStats": false
+              }
+            ]
+          }
+        ],
+        "clubDetails": [
+          { "id": 924171171, "clubTypeId": 1, "shaftLength": 45.75, "flexTypeId": "SENIOR", "averageDistance": 0, "adviceDistance": 0, "retired": false, "deleted": false, "lastModifiedTime": "2026-06-04T12:54:42.000Z", "model": "Callaway Paradym" },
+          { "id": 924171175, "clubTypeId": 12, "shaftLength": 36.0, "flexTypeId": "REGULAR", "averageDistance": 0, "adviceDistance": 0, "retired": false, "deleted": false, "lastModifiedTime": "2026-06-04T12:54:42.000Z", "model": "Test 9 Iron" },
+          { "id": 924171180, "clubTypeId": 23, "shaftLength": 34.0, "flexTypeId": "REGULAR", "averageDistance": 0, "adviceDistance": 0, "retired": false, "deleted": false, "lastModifiedTime": "2026-06-04T12:54:42.000Z", "model": "Test Putter" }
+        ]
+      }
+    },
+    {
+      "hole": 2,
+      "response": {
+        "holeShots": [
+          {
+            "holeNumber": 2,
+            "pinPosition": { "lat": 363990000, "lon": -1164240000 },
+            "shots": [
+              {
+                "id": 90000000005,
+                "scorecardId": 999000111,
+                "playerProfileId": 141870905,
+                "shotTime": 1781529400000,
+                "shotOrder": 1,
+                "shotTimeZoneOffset": -18000000,
+                "clubId": 924171175,
+                "holeNumber": 2,
+                "autoShotType": "USED",
+                "startLoc": { "lat": 363985000, "lon": -1164228000, "lie": "TeeBox", "lieSource": "CARTOGRAPHY" },
+                "endLoc": { "lat": 363989500, "lon": -1164239200, "lie": "Green", "lieSource": "CARTOGRAPHY" },
+                "meters": 120.0,
+                "shotSource": "SENSOR",
+                "shotType": "TEE",
+                "excludeFromStats": false
+              },
+              {
+                "id": 90000000006,
+                "scorecardId": 999000111,
+                "playerProfileId": 141870905,
+                "shotTime": 1781529700000,
+                "shotOrder": 2,
+                "shotTimeZoneOffset": -18000000,
+                "clubId": 924171180,
+                "holeNumber": 2,
+                "autoShotType": "USED",
+                "startLoc": { "lat": 363989500, "lon": -1164239200, "lie": "Green", "lieSource": "CARTOGRAPHY" },
+                "endLoc": { "lat": 363990000, "lon": -1164240000, "lie": "Green", "lieSource": "CARTOGRAPHY" },
+                "meters": 7.1,
+                "shotSource": "SENSOR",
+                "shotType": "PUTT",
+                "excludeFromStats": false
+              }
+            ]
+          }
+        ],
+        "clubDetails": [
+          { "id": 924171175, "clubTypeId": 12, "shaftLength": 36.0, "flexTypeId": "REGULAR", "averageDistance": 0, "adviceDistance": 0, "retired": false, "deleted": false, "lastModifiedTime": "2026-06-04T12:54:42.000Z", "model": "Test 9 Iron" },
+          { "id": 924171180, "clubTypeId": 23, "shaftLength": 34.0, "flexTypeId": "REGULAR", "averageDistance": 0, "adviceDistance": 0, "retired": false, "deleted": false, "lastModifiedTime": "2026-06-04T12:54:42.000Z", "model": "Test Putter" }
+          ]
+      }
+    }
+  ]
+}

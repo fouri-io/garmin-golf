@@ -4,11 +4,15 @@ Per shot:  SG = E(before) - E(after) - 1   (a holed shot has E(after)=0).
 Each shot is categorized Off-the-Tee / Approach / Around-the-Green / Putting, and
 summed per round.
 
+The pure math (baseline interpolation, categorization, per-shot SG) lives in
+sg_core.py; this module applies it to parsed round-document holes and produces the
+round-level summary embedded in the round doc.
+
 Honest limits (surfaced in the output):
   - Baseline is SCRATCH (PGA Tour), so an amateur's SG is negative across the board;
     the signal is the RELATIVE split — which category bleeds the most.
   - An `Unknown` (off-map) endpoint is graded as FAIRWAY, not recovery — it's a gap in the
-    course map, not evidence of a bad lie. See _LIE_MAP.
+    course map, not evidence of a bad lie. See sg_core.LIE_MAP.
   - Putting SG is GPS-noisy (green-scale distances), so it's the least reliable bucket.
   - The shot layer under/over-records, and penalties have no shot position, so the
     per-shot category sums don't fully reconcile to the hole total; the gap is reported
@@ -17,80 +21,8 @@ Honest limits (surfaced in the output):
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 from .config import sg_distance_cuts
-
-BASELINE_PATH = Path("config/sg_baseline.json")
-
-# Garmin lie -> baseline through-green lie.
-# "Unknown" is NOT a lie assessment: it means the endpoint fell outside the course
-# cartography polygon (always paired with offMap=true, lieSource=CARTOGRAPHY). Mapping it
-# to `recovery` — a stymied, punch-out-sideways lie whose curve is flat at ~3.5-4.0
-# strokes regardless of distance — charged the shot that got there and refunded the next
-# one, systematically draining offTee into the approach buckets. In practice these are
-# mostly drives running past the end of the mapped corridor, so `fairway` is the fairer
-# read; `recovery` needs evidence the shot layer never gives us.
-_LIE_MAP = {
-    "TeeBox": "tee", "Fairway": "fairway", "Rough": "rough",
-    "Bunker": "sand", "Unknown": "fairway",
-}
-
-
-def _interp(table: dict[float, float], x: float) -> float:
-    keys = sorted(table)
-    if x <= keys[0]:
-        return table[keys[0]]
-    if x >= keys[-1]:
-        return table[keys[-1]]
-    lo = max(k for k in keys if k <= x)
-    hi = min(k for k in keys if k >= x)
-    if lo == hi:
-        return table[lo]
-    frac = (x - lo) / (hi - lo)
-    return table[lo] + (table[hi] - table[lo]) * frac
-
-
-class Baseline:
-    def __init__(self, path: Path = BASELINE_PATH):
-        raw = json.loads(path.read_text())
-        self.tg = {lie: {float(k): v for k, v in tbl.items()}
-                   for lie, tbl in raw["throughGreen"].items()}
-        self.putt = {float(k): v for k, v in raw["putting"].items()}
-
-    def expected(self, *, lie: str, dist_yds: float | None) -> float | None:
-        """Expected strokes to hole out from a lie at a distance (yards; feet if green)."""
-        if dist_yds is None:
-            return None
-        if lie == "Green":
-            return _interp(self.putt, dist_yds * 3.0)  # yards -> feet on the green
-        tg_lie = _LIE_MAP.get(lie, "fairway")
-        return _interp(self.tg[tg_lie], dist_yds)
-
-    def expected_putts(self, dist_ft: float) -> float:
-        """Expected putts to hole out from a distance on the green (feet)."""
-        return _interp(self.putt, dist_ft)
-
-
-def categorize(shot: dict, par: int | None, cuts: dict) -> str:
-    """Bucket by task: putting / offTee / longApproach / midApproach / inside50.
-
-    Off-tee = par 4/5 tee shots (any club). Everything else through the green is
-    bucketed by distance to the pin. Par-3 tee shots fall into the distance buckets.
-    """
-    if shot["from"] == "Green":
-        return "putting"
-    if shot["from"] == "TeeBox" and par and par >= 4:
-        return "offTee"
-    d = shot.get("distanceToPinBeforeYds")
-    if d is None:
-        return "midApproach"
-    if d >= cuts["longApproachMinYds"]:
-        return "longApproach"
-    if d > cuts["insideMaxYds"]:
-        return "midApproach"
-    return "inside50"
+from .sg_core import Baseline, categorize, shot_sg
 
 
 def compute(holes: list[dict], base: Baseline | None = None) -> dict:
@@ -130,13 +62,13 @@ def compute(holes: list[dict], base: Baseline | None = None) -> dict:
             if cat == "putting":
                 s["strokesGained"] = None  # measured at hole level from putt counts
                 continue
-            e_before = base.expected(lie=s["from"], dist_yds=s.get("distanceToPinBeforeYds"))
             # End on the green -> expected PUTTS from there (no bogus holing credit).
-            e_after = base.expected(lie=s["to"], dist_yds=s.get("distanceRemainingYds"))
-            if e_before is None or e_after is None:
+            sg = shot_sg(base, from_lie=s["from"], to_lie=s["to"],
+                         dist_before_yds=s.get("distanceToPinBeforeYds"),
+                         dist_after_yds=s.get("distanceRemainingYds"))
+            if sg is None:
                 s["strokesGained"] = None
                 continue
-            sg = e_before - e_after - 1.0
             s["strokesGained"] = round(sg, 3)
             by_cat[cat] += sg
             categorized += 1

@@ -25,6 +25,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from .config import analysis_start_date
+from .constants import SG_CATS, SG_LABELS, SG_SHORT  # noqa: F401 — re-exported for consumers
 
 ROUNDS_DIR = Path("data/processed/rounds")
 OUT_JSON = Path("data/processed/club_stats.json")
@@ -152,14 +153,6 @@ def render_markdown(doc: dict) -> str:
         "consistency — partial/mishit shots share each club and pull the low end down._",
     ]
     return "\n".join(lines)
-
-
-SG_CATS = ["offTee", "longApproach", "midApproach", "inside50", "putting"]
-SG_LABELS = {"offTee": "Off-the-Tee", "longApproach": "Long approach (150+)",
-             "midApproach": "Mid approach (50–150)", "inside50": "Inside 50",
-             "putting": "Putting"}
-SG_SHORT = {"offTee": "OTT", "longApproach": "Long", "midApproach": "Mid",
-            "inside50": "In50", "putting": "Putt"}
 
 
 def main() -> None:

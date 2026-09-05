@@ -15,6 +15,7 @@ import json
 import os
 import sys
 import time
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -38,8 +39,8 @@ EXCLUDE_ROUND_TYPES = {"SIMULATION"}
 
 def dump(obj: Any, name: str) -> Path:
     """Persist a raw API response to data/raw/<name>.json and return the path."""
-    os.makedirs(RAW_DIR, exist_ok=True)
     path = RAW_DIR / f"{name}.json"
+    os.makedirs(path.parent, exist_ok=True)
     with open(path, "w") as f:
         json.dump(obj, f, indent=2)
     size = path.stat().st_size
@@ -53,9 +54,14 @@ def _raw_exists(scorecard_id: int | str) -> bool:
 
 
 def pull_summary(api) -> list[dict]:
-    """Pull and persist the recent-rounds summary list."""
+    """Pull and persist the recent-rounds summary list.
+
+    Writes a dated snapshot (append-only ingest history — the summary list is the one
+    raw asset that changes between pulls) plus golf_summary.json as the latest pointer.
+    """
     print("golf summary (recent rounds)...")
     summaries = garmin_client.get_scorecard_summaries(api)
+    dump(summaries, f"summaries/golf_summary_{date.today().isoformat()}")
     dump(summaries, "golf_summary")
     return summaries
 

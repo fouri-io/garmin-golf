@@ -26,17 +26,15 @@ from pathlib import Path
 from typing import Any
 
 from . import strokes_gained
+from .constants import MAX_PLAUSIBLE_HOLE_YDS, MAX_PLAUSIBLE_SHOT_YDS, METERS_TO_YARDS
 from .geo import semicircles_to_degrees as s2d
 from .geo import shot_geometry
-
-GREENSIDE_YDS = 50.0  # within this of the pin counts as a greenside up-and-down chance
 
 RAW_DIR = Path("data/raw")
 OUT_DIR = Path("data/processed/rounds")
 CLUBS_CONFIG = Path("config/clubs.json")
 
 SCHEMA_VERSION = 1
-METERS_TO_YARDS = 1.09361
 DEFAULT_SCORECARD = 364945310
 
 SCORE_NAMES = {-3: "Albatross", -2: "Eagle", -1: "Birdie", 0: "Par", 1: "Bogey",
@@ -182,8 +180,6 @@ def _enrich_shots_with_pin(shots: list[dict], pin: dict | None) -> None:
 # strokes. Left in, they poison club distances (a 972-yard "5 Wood"), the derived hole
 # length, and Strokes Gained — the transit often gets snapped onto the pin, which reads as
 # holing out from 424 yards and *gains* 2 strokes. Flag them so every consumer can drop them.
-MAX_PLAUSIBLE_SHOT_YDS = 400   # no golf shot travels this far
-MAX_PLAUSIBLE_HOLE_YDS = 700   # a start point further than this from the pin isn't on the hole
 
 
 def _flag_phantom_shots(shots: list[dict]) -> None:

@@ -19,19 +19,15 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from .constants import POLLUTION_DELTA, SG_LABELS
 from .putting import putt_buckets
 
 PROFILE = Path("config/golfer_profile.md")
 PROGRESS = Path("data/processed/progress.json")
 ROUNDS_DIR = Path("data/processed/rounds")
 OUT_DIR = Path("data/processed/coach")
-POLLUTION_DELTA = 3          # shotCountDelta above this = the shot layer is not trustworthy
 DEFAULT_ANTHROPIC_MODEL = "claude-opus-4-8"
 DEFAULT_OPENAI_MODEL = "gpt-4o"
-
-SG_LABELS = {"offTee": "Off-the-Tee", "longApproach": "Long approach (150+)",
-             "midApproach": "Mid approach (50-150)", "inside50": "Inside 50",
-             "putting": "Putting"}
 
 SYSTEM = (
     "You are this golfer's personal coach AND a master golf data analyst. You know "

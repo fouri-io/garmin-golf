@@ -20,14 +20,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .analyze import SG_CATS, SG_LABELS, SG_SHORT, load_rounds
+from .analyze import load_rounds
 from .config import analysis_start_date, sg_target
+from .constants import POLLUTION_DELTA, RECENT_N, SG_CATS, SG_LABELS, SG_SHORT
 from .putting import putt_buckets
 
 OUT_JSON = Path("data/processed/progress.json")
 OUT_MD = Path("data/processed/progress.md")
-RECENT_N = 5                 # "current form" window (rounds)
-POLLUTION_DELTA = 3          # shotCountDelta above this = over-recorded -> excluded from SG
 SCRATCH_PUTTS_18 = 30
 GARMIN_HANDICAP = 23.6
 BREAK_90_OVER_RATING = 22    # ~ shooting 89 on the player's ~67-rated tees
