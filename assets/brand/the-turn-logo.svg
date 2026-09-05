@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">The Turn logo</title>
+  <desc id="desc">A golf flag framed by a sweeping arc with The Turn and round by round wordmark.</desc>
+
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="70%">
+      <stop offset="0%" stop-color="#0f6544"/>
+      <stop offset="100%" stop-color="#064a35"/>
+    </radialGradient>
+
+    <linearGradient id="arcGrad" x1="0%" y1="80%" x2="75%" y2="0%">
+      <stop offset="0%" stop-color="#7df2a8"/>
+      <stop offset="75%" stop-color="#f3f1e8"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+
+    <linearGradient id="flagGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7eea9b"/>
+      <stop offset="48%" stop-color="#56d47f"/>
+      <stop offset="100%" stop-color="#17ad67"/>
+    </linearGradient>
+
+    <linearGradient id="poleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f7f5ec"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity=".18"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="1200" fill="url(#bg)"/>
+
+  <!-- sweeping arc -->
+  <path d="M 285 890
+           C 120 705, 125 360, 330 195
+           C 515 45, 800 70, 995 245
+           C 1065 308, 1110 382, 1135 455"
+        fill="none"
+        stroke="url(#arcGrad)"
+        stroke-width="30"
+        stroke-linecap="round"/>
+
+  <!-- flag pole -->
+  <rect x="505" y="335" width="34" height="315" rx="17"
+        fill="url(#poleGrad)" filter="url(#softShadow)"/>
+
+  <!-- flag -->
+  <path d="M539 362
+           C586 345, 621 349, 661 370
+           C706 394, 739 410, 780 402
+           C808 397, 831 386, 849 372
+           L847 472
+           C817 494, 782 507, 749 508
+           C709 509, 680 494, 645 480
+           C604 463, 571 460, 539 478
+           Z"
+        fill="url(#flagGrad)"/>
+
+  <!-- main title -->
+  <text x="600" y="835"
+        text-anchor="middle"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="148"
+        font-weight="700"
+        letter-spacing="-6"
+        fill="#f8f6ef"
+        filter="url(#softShadow)">The Turn</text>
+
+  <!-- tagline -->
+  <text x="600" y="940"
+        text-anchor="middle"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="58"
+        font-weight="400"
+        letter-spacing="14"
+        fill="#7fe49c">round by round</text>
+</svg>

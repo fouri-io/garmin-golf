@@ -368,6 +368,10 @@ def build(through_scorecard_id: int | None = None, write: bool = True) -> dict:
         "overRating18": _over_rating18(d),
         "per18": {cat: round(d["strokesGained"]["byCategory"][cat] * 18 / _holes(d), 1)
                   for cat in SG_CATS},
+        "pen18": round(d["strokesGained"]["penaltyStrokes"] * 18 / _holes(d), 1),
+        "dbl18": round(d["strokesGained"]["doublesOrWorse"] * 18 / _holes(d), 1),
+        "tp18": round(d["strokesGained"]["putting"]["threePutts"] * 18 / _holes(d), 1),
+        "putts18": round(d["strokesGained"]["putting"]["totalPutts"] * 18 / _holes(d), 1),
         "clean": _is_clean(d),
     } for d in rounds]
 
