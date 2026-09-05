@@ -29,7 +29,7 @@ PROGRESS = Path("data/processed/progress.json")
 CLUB_STATS = Path("data/processed/club_stats.json")
 
 CONE_WINDOW = 16          # rolling rounds per cone point
-CONE_MIN = 8              # need at least this many rounds before the cone speaks
+CONE_MIN = CONE_WINDOW    # full windows only — partial windows understate the tails
 RECENT_N = 10             # "last N vs previous N" trend windows
 MID_IRON_TYPE_IDS = {15, 16, 17, 18}   # 6i-9i: the mid-iron miss-pattern family
 

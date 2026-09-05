@@ -1063,10 +1063,12 @@ function drawCone(I){
   const cw=(svg.parentNode&&svg.parentNode.clientWidth)||880,K=cw&&cw<560?2.0:1;
   const W=880,H=320+(K>1?24:0),L=46,Rm=16,T=24,B=40;
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  const i0=pts[0].i,iN=pts[pts.length-1].i;
+  // time axis from the FIRST tracked round — sparse early history spreads out
+  // honestly instead of being crushed into the left edge by a round-index axis
+  const T0=Date.parse(rds[0].date),TN=Date.parse(rds[rds.length-1].date);
   const allv=rds.map(r=>r.v).concat(pts.flatMap(p=>[p.p20,p.p80]));
   let mn=Math.min(...allv)-2,mx=Math.max(...allv)+2;
-  const X=i=>L+(W-L-Rm)*((i-i0)/Math.max(1,iN-i0));
+  const Xd=d=>L+(W-L-Rm)*((Date.parse(d)-T0)/Math.max(1,TN-T0));
   // natural score axis: worse (higher over-rating) plots higher, so improving = cone descends
   const Yv=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
   let g='';
@@ -1075,12 +1077,12 @@ function drawCone(I){
     g+=`<line x1="${L}" y1="${Yv(t)}" x2="${W-Rm}" y2="${Yv(t)}" stroke="#e4e6e2"/>`
       +`<text x="${L-6}" y="${Yv(t)+4}" font-size="${11*K}" fill="#6d7269" text-anchor="end">+${t}</text>`;
   // individual rounds (light dots, honesty layer)
-  rds.forEach((r,i)=>{if(i>=i0&&i<=iN)g+=`<circle cx="${X(i)}" cy="${Yv(r.v)}" r="3" fill="#c9cfc9" data-d="${r.date}" data-v="${r.v}" style="cursor:pointer"/>`;});
+  rds.forEach(r=>{g+=`<circle cx="${Xd(r.date)}" cy="${Yv(r.v)}" r="3" fill="#c9cfc9" data-d="${r.date}" data-v="${r.v}" style="cursor:pointer"/>`;});
   // band p20..p80
-  const band=pts.map(p=>`${X(p.i)},${Yv(p.p20)}`).join(' ')+' '+
-    [...pts].reverse().map(p=>`${X(p.i)},${Yv(p.p80)}`).join(' ');
+  const band=pts.map(p=>`${Xd(p.date)},${Yv(p.p20)}`).join(' ')+' '+
+    [...pts].reverse().map(p=>`${Xd(p.date)},${Yv(p.p80)}`).join(' ');
   g+=`<polygon points="${band}" fill="#1f4a36" opacity="0.10" style="pointer-events:none"/>`;
-  const line=(key,color,wd)=>`<polyline points="${pts.map(p=>X(p.i)+','+Yv(p[key])).join(' ')}" fill="none" stroke="${color}" stroke-width="${wd}" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"/>`;
+  const line=(key,color,wd)=>`<polyline points="${pts.map(p=>Xd(p.date)+','+Yv(p[key])).join(' ')}" fill="none" stroke="${color}" stroke-width="${wd}" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"/>`;
   g+=line('p20','#218a54',2.5)+line('p80','#b3312d',2.5)+line('p50','#1f4a36',3);
   const last=pts[pts.length-1];
   {const lbl=[['p20','#218a54'],['p50','#1a1c19'],['p80','#b3312d']]
@@ -1089,10 +1091,15 @@ function drawCone(I){
   for(let j=1;j<lbl.length;j++)if(lbl[j].y-lbl[j-1].y<gap)lbl[j].y=lbl[j-1].y+gap;
   lbl.forEach(o=>{g+=`<text x="${W-Rm}" y="${o.y}" font-size="${11.5*K}" font-weight="800" fill="${o.col}" text-anchor="end">+${o.v.toFixed(0)}</text>`;});}
   // x date ticks
-  const tick=Math.max(1,Math.ceil(pts.length/(K>1?4:6)));
-  pts.forEach((p,j)=>{if(j%tick===0||j===pts.length-1){
-    const anc=j===0?'start':j===pts.length-1?'end':'middle';
-    g+=`<text x="${X(p.i)}" y="${H-14}" font-size="${10*K}" fill="#6d7269" text-anchor="${anc}">${p.date.slice(5).replace('-','/')}</text>`;}});
+  const nt=K>1?4:6;
+  for(let j=0;j<=nt;j++){const t=T0+(TN-T0)*j/nt,d=new Date(t);
+    const lab=String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getFullYear()).slice(2);
+    const anc=j===0?'start':j===nt?'end':'middle';
+    g+=`<text x="${L+(W-L-Rm)*j/nt}" y="${H-14}" font-size="${10*K}" fill="#6d7269" text-anchor="${anc}">${lab}</text>`;}
+  // mark where the cone begins (first full 16-round window)
+  if(rds.length&&pts.length&&pts[0].date!==rds[0].date){
+    g+=`<line x1="${Xd(pts[0].date)}" y1="${T}" x2="${Xd(pts[0].date)}" y2="${H-B}" stroke="#c3c9c3" stroke-dasharray="2 4"/>`
+      +`<text x="${Xd(pts[0].date)+5}" y="${T+12*K}" font-size="${9.5*K}" fill="#6d7269">cone starts after 16 rounds</text>`;}
   svg.innerHTML=g;
   const tip=document.getElementById('conetip');
   svg.querySelectorAll('circle').forEach(el=>{

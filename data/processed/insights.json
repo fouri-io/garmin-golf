@@ -2,7 +2,7 @@
   "generatedFromRounds": 53,
   "basis": "score vs course rating, per 18 (all rated rounds, every source)",
   "window": 16,
-  "summary": "Your scoring has improved primarily by moving your whole game down together: bad rounds are 13 strokes better than when tracking began, your best golf is 14 strokes better, and your round-to-round range is steady near 13 strokes.",
+  "summary": "Your scoring has improved primarily by raising your floor: bad rounds are 10 strokes better than when tracking began, your best golf is 7 strokes better, and your round-to-round range has narrowed from 16 to 13 strokes.",
   "current": {
     "ceiling": 14.4,
     "median": 25.3,
@@ -11,11 +11,11 @@
     "date": "2026-09-04"
   },
   "start": {
-    "ceiling": 28.0,
-    "median": 34.0,
-    "floor": 40.8,
-    "gap": 12.8,
-    "date": "2026-03-26"
+    "ceiling": 21.4,
+    "median": 30.9,
+    "floor": 37.8,
+    "gap": 16.4,
+    "date": "2026-05-15"
   },
   "cone": {
     "rounds": [
@@ -287,62 +287,6 @@
     ],
     "points": [
       {
-        "date": "2026-03-26",
-        "i": 7,
-        "p20": 28.0,
-        "p50": 34.0,
-        "p80": 40.8
-      },
-      {
-        "date": "2026-04-03",
-        "i": 8,
-        "p20": 28.2,
-        "p50": 37.5,
-        "p80": 40.4
-      },
-      {
-        "date": "2026-04-06",
-        "i": 9,
-        "p20": 25.8,
-        "p50": 34.0,
-        "p80": 39.9
-      },
-      {
-        "date": "2026-04-08",
-        "i": 10,
-        "p20": 27.4,
-        "p50": 31.8,
-        "p80": 39.4
-      },
-      {
-        "date": "2026-04-16",
-        "i": 11,
-        "p20": 22.6,
-        "p50": 31.1,
-        "p80": 39.1
-      },
-      {
-        "date": "2026-04-17",
-        "i": 12,
-        "p20": 23.6,
-        "p50": 30.4,
-        "p80": 38.8
-      },
-      {
-        "date": "2026-05-03",
-        "i": 13,
-        "p20": 20.6,
-        "p50": 29.6,
-        "p80": 38.4
-      },
-      {
-        "date": "2026-05-06",
-        "i": 14,
-        "p20": 21.0,
-        "p50": 30.4,
-        "p80": 38.1
-      },
-      {
         "date": "2026-05-15",
         "i": 15,
         "p20": 21.4,
@@ -613,15 +557,9 @@
   "insights": [
     {
       "cat": "Development",
-      "text": "Your scoring floor (bad-but-normal golf) has improved 13 strokes \u2014 blow-up rounds now land near +28 instead of +41.",
+      "text": "Your scoring floor (bad-but-normal golf) has improved 10 strokes \u2014 blow-up rounds now land near +28 instead of +38.",
       "confidence": "High confidence",
       "score": 120
-    },
-    {
-      "cat": "Development",
-      "text": "Your ceiling has improved 14 strokes \u2014 your best golf now runs about +14 vs rating.",
-      "confidence": "High confidence",
-      "score": 110
     },
     {
       "cat": "Miss pattern",
@@ -631,9 +569,9 @@
     },
     {
       "cat": "Development",
-      "text": "Your typical scoring level has improved 9 strokes per 18 since tracking began (34 over rating \u2192 25).",
+      "text": "Your ceiling has improved 7 strokes \u2014 your best golf now runs about +14 vs rating.",
       "confidence": "High confidence",
-      "score": 75
+      "score": 77
     },
     {
       "cat": "Scoring structure",
@@ -646,6 +584,12 @@
       "text": "Bogey-or-better holes have risen from 67% to 73% over your last 10 rounds.",
       "confidence": "High confidence",
       "score": 51
+    },
+    {
+      "cat": "Development",
+      "text": "Your typical scoring level has improved 6 strokes per 18 since tracking began (31 over rating \u2192 25).",
+      "confidence": "High confidence",
+      "score": 49
     }
   ],
   "floorDrivers": [
