@@ -470,7 +470,8 @@ def export_all(con, round_ids: list[int] | None = None) -> int:
     """Export the given rounds (None = every round in the analysis window)."""
     if round_ids is None:
         round_ids = [r[0] for r in con.execute(
-            "SELECT round_id FROM canon.round WHERE round_date >= ? ORDER BY round_date",
+            "SELECT round_id FROM canon.round WHERE round_date >= ? "
+            "AND source = 'garminconnect' ORDER BY round_date",
             [analysis_start_date()]).fetchall()]
     else:
         since = analysis_start_date()

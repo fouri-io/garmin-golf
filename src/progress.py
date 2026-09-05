@@ -59,7 +59,7 @@ def _load_rounds_from_db(con) -> list[dict]:
         JOIN derived.round_recon rr USING (round_id)
         JOIN derived.round_sg sg USING (round_id)
         JOIN derived.round_metrics m USING (round_id)
-        WHERE r.round_date >= ?
+        WHERE r.round_date >= ? AND r.source = 'garminconnect'
         ORDER BY r.start_time
         """, [since]).fetchall()
     bands = {}
@@ -264,14 +264,20 @@ def _outcome_section(con) -> dict:
                          FILTER (WHERE r.tee_rating IS NOT NULL), 1)
             FROM canon.round r WHERE {s["where"]}
             GROUP BY q""", [key]).fetchall()}
+        # Ratios normalize over RECORDED holes for nullable stats (penalties, putts,
+        # GIR, fairways) — backfilled rounds can have '-' cells, and a partial column
+        # must not deflate a rate. Score-based stats are always complete.
         holes = {r[0]: r for r in con.execute(f"""
             SELECT strftime(hf.round_date, '%Y') || '-Q' ||
                    CAST((month(hf.round_date) + 2) // 3 AS VARCHAR) AS q,
                    count(*),
-                   round(18.0 * sum(hf.penalties) / count(*), 1),
+                   round(18.0 * sum(hf.penalties)
+                         / nullif(count(hf.penalties), 0), 1),
                    round(18.0 * count(*) FILTER (WHERE hf.double_plus) / count(*), 1),
-                   round(18.0 * count(*) FILTER (WHERE hf.putts >= 3) / count(*), 1),
-                   round(100.0 * count(*) FILTER (WHERE hf.gir) / count(*)),
+                   round(18.0 * count(*) FILTER (WHERE hf.putts >= 3)
+                         / nullif(count(hf.putts), 0), 1),
+                   round(100.0 * count(*) FILTER (WHERE hf.gir)
+                         / nullif(count(*) FILTER (WHERE hf.gir IS NOT NULL), 0)),
                    round(100.0 * count(*) FILTER (WHERE hf.fairway_outcome = 'HIT')
                          / nullif(count(*) FILTER (WHERE hf.fairway_outcome IS NOT NULL), 0)),
                    round(100.0 * count(*) FILTER (WHERE hf.score_to_par < 0) / count(*), 1),

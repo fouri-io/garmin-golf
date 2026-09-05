@@ -115,9 +115,9 @@ SELECT h.round_id, h.hole_number, h.par, h.stroke_index, h.strokes, h.putts,
        h.penalties, h.fairway_outcome, h.handicap_score,
        r.round_date, r.holes_completed,
        h.strokes - h.par                                             AS score_to_par,
-       CASE WHEN h.strokes IS NOT NULL AND h.putts IS NOT NULL AND h.par IS NOT NULL
-            THEN (h.strokes - h.putts) <= (h.par - 2)
-       END                                                           AS gir,
+       coalesce(CASE WHEN h.strokes IS NOT NULL AND h.putts IS NOT NULL AND h.par IS NOT NULL
+                     THEN (h.strokes - h.putts) <= (h.par - 2)
+                END, h.gir_observed)                                 AS gir,
        CASE WHEN h.strokes IS NOT NULL AND h.putts IS NOT NULL AND h.par IS NOT NULL
             THEN (h.strokes - h.putts) > (h.par - 2)
        END                                                           AS scramble_opportunity,

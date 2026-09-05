@@ -587,40 +587,59 @@
       "goal": 90,
       "quarters": [
         {
-          "q": "2026-Q1",
-          "rounds": 1,
-          "holes": 18,
-          "avgScore": 101.0,
-          "overRating18": 30.4,
-          "pen18": 4.0,
-          "dbl18": 10.0,
-          "tp18": 10.0,
-          "girPct": 28.0,
-          "fwPct": 79.0,
+          "q": "2025-Q4",
+          "rounds": 4,
+          "holes": 72,
+          "avgScore": 107.0,
+          "overRating18": 38.0,
+          "pen18": 6.5,
+          "dbl18": 11.3,
+          "tp18": 7.9,
+          "girPct": 14.0,
+          "fwPct": 83.0,
           "mix": {
-            "birdie": 5.6,
-            "par": 5.6,
-            "bogey": 33.3,
-            "double": 55.6
+            "birdie": 0.0,
+            "par": 11.1,
+            "bogey": 26.4,
+            "double": 62.5
           },
-          "thin": true
+          "thin": false
+        },
+        {
+          "q": "2026-Q1",
+          "rounds": 3,
+          "holes": 54,
+          "avgScore": 104.3,
+          "overRating18": 34.0,
+          "pen18": 6.9,
+          "dbl18": 11.0,
+          "tp18": 8.3,
+          "girPct": 19.0,
+          "fwPct": 72.0,
+          "mix": {
+            "birdie": 1.9,
+            "par": 9.3,
+            "bogey": 27.8,
+            "double": 61.1
+          },
+          "thin": false
         },
         {
           "q": "2026-Q2",
-          "rounds": 10,
-          "holes": 180,
-          "avgScore": 99.5,
+          "rounds": 11,
+          "holes": 198,
+          "avgScore": 99.2,
           "overRating18": 32.2,
-          "pen18": 2.8,
-          "dbl18": 9.7,
-          "tp18": 4.1,
-          "girPct": 12.0,
+          "pen18": 2.7,
+          "dbl18": 9.6,
+          "tp18": 4.0,
+          "girPct": 11.0,
           "fwPct": 53.0,
           "mix": {
-            "birdie": 0.6,
-            "par": 11.7,
-            "bogey": 33.9,
-            "double": 53.9
+            "birdie": 0.5,
+            "par": 12.6,
+            "bogey": 33.3,
+            "double": 53.5
           },
           "thin": false
         },
@@ -650,6 +669,25 @@
       "scoreBasis": "per round (9)",
       "goal": 45,
       "quarters": [
+        {
+          "q": "2025-Q4",
+          "rounds": 1,
+          "holes": 9,
+          "avgScore": 49.0,
+          "overRating18": 39.4,
+          "pen18": null,
+          "dbl18": 14.0,
+          "tp18": 14.0,
+          "girPct": 22.0,
+          "fwPct": 0.0,
+          "mix": {
+            "birdie": 0.0,
+            "par": 11.1,
+            "bogey": 11.1,
+            "double": 77.8
+          },
+          "thin": true
+        },
         {
           "q": "2026-Q1",
           "rounds": 2,
@@ -715,40 +753,59 @@
       "goal": 90,
       "quarters": [
         {
-          "q": "2026-Q1",
-          "rounds": 3,
-          "holes": 36,
-          "avgScore": 89.7,
-          "overRating18": 25.7,
-          "pen18": 2.0,
-          "dbl18": 9.0,
-          "tp18": 8.0,
-          "girPct": 22.0,
-          "fwPct": 65.0,
+          "q": "2025-Q4",
+          "rounds": 5,
+          "holes": 81,
+          "avgScore": 105.2,
+          "overRating18": 38.4,
+          "pen18": 6.5,
+          "dbl18": 11.6,
+          "tp18": 8.6,
+          "girPct": 15.0,
+          "fwPct": 76.0,
           "mix": {
-            "birdie": 2.8,
+            "birdie": 0.0,
             "par": 11.1,
-            "bogey": 36.1,
-            "double": 50.0
+            "bogey": 24.7,
+            "double": 64.2
+          },
+          "thin": false
+        },
+        {
+          "q": "2026-Q1",
+          "rounds": 5,
+          "holes": 72,
+          "avgScore": 96.2,
+          "overRating18": 28.7,
+          "pen18": 5.7,
+          "dbl18": 10.3,
+          "tp18": 7.7,
+          "girPct": 19.0,
+          "fwPct": 67.0,
+          "mix": {
+            "birdie": 1.4,
+            "par": 11.1,
+            "bogey": 30.6,
+            "double": 56.9
           },
           "thin": false
         },
         {
           "q": "2026-Q2",
-          "rounds": 22,
-          "holes": 288,
-          "avgScore": 88.5,
+          "rounds": 23,
+          "holes": 306,
+          "avgScore": 88.8,
           "overRating18": 25.2,
           "pen18": 2.2,
           "dbl18": 7.8,
           "tp18": 3.9,
-          "girPct": 18.0,
+          "girPct": 17.0,
           "fwPct": 54.0,
           "mix": {
             "birdie": 1.0,
-            "par": 15.6,
-            "bogey": 40.3,
-            "double": 43.1
+            "par": 16.0,
+            "bogey": 39.5,
+            "double": 43.5
           },
           "thin": false
         },

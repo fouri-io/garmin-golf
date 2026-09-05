@@ -48,11 +48,12 @@ CREATE TABLE IF NOT EXISTS canon.round (
   back_nine_par INTEGER,
   hole_pars TEXT,                       -- verbatim holePars digit string, e.g. "433334433"
   total_strokes INTEGER,                -- AUTHORITATIVE (summed from scorecard holes)
-  total_putts INTEGER,                  -- AUTHORITATIVE
-  total_penalties INTEGER,              -- AUTHORITATIVE
+  total_putts INTEGER,                  -- AUTHORITATIVE; NULL when per-hole putts are partial
+  total_penalties INTEGER,              -- AUTHORITATIVE; NULL when per-hole penalties are partial
   longest_shot_m DOUBLE,
   garmin_stats JSON,                    -- scorecardStats.round, preserved verbatim
-  garmin_ratings JSON                   -- statsComparison, preserved verbatim
+  garmin_ratings JSON,                  -- statsComparison, preserved verbatim
+  source TEXT NOT NULL DEFAULT 'garminconnect'  -- garminconnect | 18birdies
 );
 
 CREATE TABLE IF NOT EXISTS canon.hole (
@@ -63,10 +64,11 @@ CREATE TABLE IF NOT EXISTS canon.hole (
   strokes INTEGER,                      -- AUTHORITATIVE
   putts INTEGER,                        -- AUTHORITATIVE
   penalties INTEGER,                    -- AUTHORITATIVE
-  fairway_outcome TEXT,                 -- HIT / LEFT / RIGHT / NULL (par 3)
+  fairway_outcome TEXT,                 -- HIT / LEFT / RIGHT (Garmin) or HIT / MISS (18birdies)
   handicap_score INTEGER,
   pin_lat DOUBLE,                       -- decimal degrees (converted from semicircles)
   pin_lon DOUBLE,
+  gir_observed BOOLEAN,                 -- app-reported GIR (18birdies); Garmin rounds derive it
   PRIMARY KEY (round_id, hole_number)
 );
 

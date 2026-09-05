@@ -29,13 +29,14 @@ import duckdb
 from .geo import semicircles_to_degrees as s2d
 
 RAW_DIR = Path("data/raw")
+BIRDIES_DIR = Path("data/raw/18birdies")
 ANN_DIR = Path("data/annotations")
 CLUBS_CONFIG = Path("config/clubs.json")
 SG_BASELINE_CONFIG = Path("config/sg_baseline.json")
 
 # Bump when the normalization below changes meaning; `python -m src.db rebuild`
 # then re-ingests every round under the new logic.
-LOADER_VERSION = 2   # v2: + course street/zip, per-endpoint lie sources
+LOADER_VERSION = 3   # v3: + round source, observed GIR, 18birdies backfill loader
 
 
 def _sha256(path: Path) -> str:
@@ -169,7 +170,7 @@ def ingest_round(con: duckdb.DuckDBPyConnection, scorecard_id: int,
 
     con.execute("""
         INSERT INTO canon.round VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
-                                        ?,?,?,?,?,?,?,?,?,?,?,?,?)
+                                        ?,?,?,?,?,?,?,?,?,?,?,?,?, 'garminconnect')
     """, [
         sc["id"], (sc.get("startTime") or "")[:10] or None,
         sc.get("startTime"), sc.get("endTime"),
@@ -195,7 +196,7 @@ def ingest_round(con: duckdb.DuckDBPyConnection, scorecard_id: int,
         # Wrap with modulo so a 9-hole layout played as 18 (two loops) reuses holes 1-9.
         par = pars[(n - 1) % len(pars)] if pars else None
         si = stroke_index[(n - 1) % len(stroke_index)] if stroke_index else None
-        con.execute("INSERT INTO canon.hole VALUES (?,?,?,?,?,?,?,?,?,?,?)", [
+        con.execute("INSERT INTO canon.hole VALUES (?,?,?,?,?,?,?,?,?,?,?,NULL)", [
             scorecard_id, n, par, si,
             h.get("strokes"), h.get("putts"), h.get("penalties"),
             h.get("fairwayShotOutcome"), h.get("handicapScore"),
@@ -235,6 +236,84 @@ def ingest_round(con: duckdb.DuckDBPyConnection, scorecard_id: int,
     return "ingested"
 
 
+def _birdies_round_id(date_str: str, seq: int) -> int:
+    """Synthetic, deterministic round id for a backfill round: 18<YYYYMMDD><seq>.
+    Far outside Garmin's id space, stable across rebuilds."""
+    return int(f"18{date_str.replace('-', '')}{seq:02d}")
+
+
+def ingest_18birdies_round(con: duckdb.DuckDBPyConnection, path: Path, seq: int,
+                           force: bool = False) -> str:
+    """Load one transcribed 18Birdies round into canon (source='18birdies').
+
+    No shot layer exists for these rounds, so they feed the Outcome layer only —
+    the SG/process pipeline filters on source. '-' cells were transcribed as null;
+    a partially-recorded column yields a NULL round total, never a misleading sum.
+    """
+    sha = _sha256(path)
+    d = json.loads(path.read_text())
+    rid = _birdies_round_id(d["date"], seq)
+    if not force:
+        row = con.execute(
+            "SELECT raw_detail_sha256, loader_version FROM canon.ingest_meta "
+            "WHERE round_id = ?", [rid]).fetchone()
+        if row == (sha, LOADER_VERSION):
+            return "skipped"
+
+    holes = d["holes"]
+    tee = d.get("tee") or {}
+
+    def total(key):
+        vals = [h[key] for h in holes]
+        return None if any(v is None for v in vals) else sum(vals)
+
+    con.execute("BEGIN")
+    for table in ("canon.shot", "canon.hole", "canon.round", "canon.ingest_meta"):
+        con.execute(f"DELETE FROM {table} WHERE round_id = ?", [rid])
+    con.execute("""
+        INSERT INTO canon.round VALUES (?,?,?,NULL,'STROKE_PLAY','ALL',?,?,?,?,
+                                        NULL,NULL,NULL,NULL,NULL,NULL,NULL,?,NULL,NULL,
+                                        NULL,NULL,NULL,NULL,NULL,?,NULL,NULL,?,?,?,?,
+                                        NULL,NULL,NULL,'18birdies')
+    """, [
+        rid, d["date"], f"{d['date']}T00:00:00.0",
+        d["holesPlayed"], tee.get("name"), tee.get("rating"), tee.get("slope"),
+        d["course"],
+        sum(h["par"] for h in holes),
+        "".join(str(h["par"]) for h in holes),
+        d["totals"]["score"], total("putts"), total("penalties"),
+    ])
+    for h in holes:
+        gir = h.get("gir")
+        con.execute("INSERT INTO canon.hole VALUES (?,?,?,?,?,?,?,?,NULL,NULL,NULL,?)", [
+            rid, h["hole"], h["par"], h.get("strokeIndex"),
+            h["score"], h.get("putts"), h.get("penalties"),
+            h.get("fairway"), gir,
+        ])
+    con.execute("""
+        INSERT INTO canon.ingest_meta
+        VALUES (?, ?, ?, ?, ?, ?, current_localtimestamp())
+    """, [rid, str(path), str(path), sha, sha, LOADER_VERSION])
+    con.execute("COMMIT")
+    return "ingested"
+
+
+def ingest_all_18birdies(con: duckdb.DuckDBPyConnection, birdies_dir: Path = BIRDIES_DIR,
+                         force: bool = False) -> dict:
+    ingested = skipped = 0
+    if birdies_dir.exists():
+        by_date: dict[str, int] = {}
+        for f in sorted(birdies_dir.glob("*.json")):
+            date = json.loads(f.read_text())["date"]
+            seq = by_date.get(date, 0) + 1
+            by_date[date] = seq
+            if ingest_18birdies_round(con, f, seq, force=force) == "ingested":
+                ingested += 1
+            else:
+                skipped += 1
+    return {"ingested": ingested, "skipped": skipped}
+
+
 def ingest_all(con: duckdb.DuckDBPyConnection, raw_dir: Path = RAW_DIR,
                force: bool = False) -> dict:
     """Ingest reference config + every complete raw pair. Returns counts + the list of
@@ -248,8 +327,9 @@ def ingest_all(con: duckdb.DuckDBPyConnection, raw_dir: Path = RAW_DIR,
             ingested_ids.append(rid)
         else:
             skipped += 1
+    birdies = ingest_all_18birdies(con, force=force)
     return {"ingested": len(ingested_ids), "skipped": skipped,
-            "ingestedIds": ingested_ids}
+            "ingestedIds": ingested_ids, "backfill": birdies}
 
 
 def main() -> None:

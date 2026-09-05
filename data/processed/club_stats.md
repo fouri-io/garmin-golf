@@ -1,5 +1,5 @@
-# Club distances — 39 rounds since 2026-05-01
-Courses: Avery Ranch Golf Club, Crystal Falls Golf Course, Falconhead Golf Club, Hancock Golf Course, Harvey Penick Golf Campus ~ Nine Hole, Harvey Penick Golf Campus ~ Nine Hole/Nine Hole, Jimmy Clay Golf Course ~ Jimmy Clay, Riverside Golf Course, Teravista Golf Club, The Golf Club at Star Ranch
+# Club distances — 40 rounds since 2026-05-01
+Courses: Avery Ranch Golf Club, Crystal Falls Golf Course, Falconhead Golf Club, Hancock Golf Course, Harvey Penick Golf Campus ~ Nine Hole, Harvey Penick Golf Campus ~ Nine Hole/Nine Hole, Jimmy Clay Golf Course ~ Jimmy Clay, Riverside Golf Course, Riverside Golf Course Austin, Teravista Golf Club, The Golf Club at Star Ranch
 _Full-swing shots only (putts & chips excluded); unknown-club and suspect-hole shots dropped (138 suspect, 3 phantom)._
 
 | Club | n | Median | Typical (p25–p75) | Max |
