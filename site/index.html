@@ -222,7 +222,14 @@
   .m-bog{background:var(--warn)}
   .m-dbl{background:var(--bad)}
   .mixlegend{display:flex;gap:16px;margin-top:8px;font-size:11.5px;color:var(--muted);flex-wrap:wrap}
-  .dwrap{min-width:118px}
+  table.ctab{width:auto;min-width:100%;border-collapse:collapse}
+  table.ctab th,table.ctab td{white-space:nowrap;padding:6px 0 6px 18px;text-align:right}
+  table.ctab th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+  table.ctab td{border-top:1px solid var(--line)}
+  table.ctab th:first-child,table.ctab td:first-child{text-align:left;padding-left:0;position:sticky;left:0;
+    background:var(--card);z-index:2;box-shadow:2px 0 0 var(--line);font-weight:600}
+  table.ctab th:last-child,table.ctab td:last-child{text-align:left;padding-left:22px}
+  .dwrap{min-width:150px}
   .dbar{display:flex;height:9px;border-radius:2px;overflow:hidden;gap:1px;margin-bottom:2px}
   .dbar span{display:block}
   .dl{background:#b97e39}.ds{background:#218a54}.dr{background:#46626e}
@@ -360,7 +367,7 @@
   <div id="tab-clubs" class="hide">
     <div class="legend" id="clublegend">Full-swing shots only; median is your stock yardage. ⚠ = low sample.
       Miss bias covers approach shots only (pin = target line); tagged punches/layups/recoveries are excluded from all club stats.</div>
-    <div class="card" style="overflow-x:auto"><table><thead><tr><th>Club</th><th>n</th><th>Median</th><th>p25–p75</th><th>Max</th><th>Miss bias · L/str/R</th></tr></thead>
+    <div class="card" style="overflow-x:auto"><table class="ctab"><thead><tr><th>Club</th><th>n</th><th>Median</th><th>p25–p75</th><th>Max</th><th>Miss bias · L/str/R</th></tr></thead>
       <tbody id="clubsbody"></tbody></table></div>
     <div class="foot" style="padding:0 4px"><s class="sw dl"></s>left &nbsp;<s class="sw ds"></s>straight (±5y)
       &nbsp;<s class="sw dr"></s>right — share of approach shots vs the pin line (GPS-based).
