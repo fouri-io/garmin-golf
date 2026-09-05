@@ -67,6 +67,12 @@ def _load_rounds_from_db(con) -> list[dict]:
         SELECT round_id, band, putts FROM derived.putting_bands
         """).fetchall():
         bands.setdefault(rid, []).append((band, putts))
+    ctx_cols = ["tee_states", "tee_clean", "tee_compromised", "tee_recovery",
+                "recovery_attempts", "recovery_successes",
+                "normal_approaches", "normal_approach_greens"]
+    ctx = {r[0]: dict(zip(ctx_cols, r[1:])) for r in con.execute(
+        f"SELECT round_id, {', '.join(ctx_cols)} FROM derived.round_context_metrics"
+    ).fetchall()}
 
     records = []
     for (rid, start, course, rating, slope, strokes, putts, pens, holes, delta,
@@ -93,6 +99,7 @@ def _load_rounds_from_db(con) -> list[dict]:
                          "putts610": p610, "makes610": m610,
                          "longFirstPutts": plong, "longThreePutts": plong3},
             "_bands": bands.get(rid, []),
+            "_ctx": ctx.get(rid),   # None = round not annotated yet
         })
     return records
 
@@ -186,9 +193,9 @@ def _cell(value, n_rounds: int, n_obs: int) -> dict:
 
 
 def _priority_window(rounds: list[dict]) -> dict:
-    """The vNext priority metrics over a window. Annotation-dependent metrics are
-    placeholders (null cells) until annotation loading lands — the dashboard renders
-    them as '—' with zero coverage rather than pretending."""
+    """The vNext priority metrics over a window. Annotation-dependent metrics compute
+    only over the ANNOTATED rounds in the window (nRounds shows that coverage); with
+    zero coverage the dashboard renders '—' rather than pretending."""
     n = len(rounds)
     holes = sum(_holes(d) for d in rounds)
     m = [d["_metrics"] for d in rounds]
@@ -200,15 +207,26 @@ def _priority_window(rounds: list[dict]) -> dict:
     p610, m610 = sum(x["putts610"] for x in m), sum(x["makes610"] for x in m)
     plong, plong3 = sum(x["longFirstPutts"] for x in m), sum(x["longThreePutts"] for x in m)
 
+    ann = [d["_ctx"] for d in rounds if d["_ctx"]]
+    n_ann = len(ann)
+
+    def asum(key):
+        return sum(x[key] for x in ann)
+
     def pct(num, den):
         return round(100 * num / den) if den else None
 
     return {
         "penalties18": _cell(round(pens / holes * 18, 1) if holes else None, n, holes),
         "doubles18": _cell(round(dbls / holes * 18, 1) if holes else None, n, holes),
-        "cleanSecondShotPct": _cell(None, 0, 0),        # needs annotations (Phase 4)
-        "recoveryOneShotPct": _cell(None, 0, 0),        # needs annotations (Phase 4)
-        "normalApproachGirPct": _cell(None, 0, 0),      # needs annotations (Phase 4)
+        "cleanSecondShotPct": _cell(pct(asum("tee_clean"), asum("tee_states")) if ann else None,
+                                    n_ann, asum("tee_states") if ann else 0),
+        "recoveryOneShotPct": _cell(
+            pct(asum("recovery_successes"), asum("recovery_attempts")) if ann else None,
+            n_ann, asum("recovery_attempts") if ann else 0),
+        "normalApproachGirPct": _cell(
+            pct(asum("normal_approach_greens"), asum("normal_approaches")) if ann else None,
+            n_ann, asum("normal_approaches") if ann else 0),
         "upDownPct": _cell(pct(saves, opps), n, opps),
         "make3to6Pct": _cell(pct(m36, p36), n, p36),
         "make6to10Pct": _cell(pct(m610, p610), n, p610),

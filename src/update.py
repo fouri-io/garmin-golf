@@ -46,7 +46,7 @@ SITE_FILE = Path("site/index.html")
 # Paths this repo auto-commits as the round archive. Deliberately NOT src/ or config/:
 # update.sh runs unattended, and a blanket `git add -A` would sweep half-finished code
 # edits into a robot commit. Code stays a human decision.
-ARCHIVE_PATHS = ["data/processed", "site/index.html"]
+ARCHIVE_PATHS = ["data/processed", "data/raw", "data/annotations", "site/index.html"]
 
 DEPLOY_POLL_SECONDS = 480   # Action + S3 sync + CloudFront invalidation, generously
 DEPLOY_POLL_INTERVAL = 20

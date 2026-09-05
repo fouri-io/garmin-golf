@@ -56,7 +56,7 @@ def build_club_stats() -> dict:
         SELECT s.club_id, s.club_type_id, s.shot_type, g.yards,
                coalesce(c.name, ct.name, 'unknown') AS club_name,
                coalesce(c.retired, FALSE)           AS retired,
-               f.phantom, hr.suspect
+               f.phantom, hr.suspect, ec.exclude_from_stock
         FROM canon.shot s
         JOIN canon.round r USING (round_id)
         LEFT JOIN canon.club c ON c.club_id = s.club_id
@@ -65,6 +65,7 @@ def build_club_stats() -> dict:
         JOIN derived.shot_flags f ON f.shot_id = s.shot_id
         JOIN derived.hole_recon hr
           ON hr.round_id = s.round_id AND hr.hole_number = s.hole_number
+        JOIN derived.shot_effective_context ec ON ec.shot_id = s.shot_id
         WHERE r.round_date >= ?
         ORDER BY s.round_id, s.hole_number, s.shot_order
         """, [since]).fetchall()
@@ -74,7 +75,9 @@ def build_club_stats() -> dict:
         lambda: {"all": 0, "dist": [], "clubTypeId": None, "name": None})
     suspect_excluded = 0
     phantom_excluded = 0
-    for club_id, club_type_id, shot_type, yards, name, retired, phantom, suspect in shots:
+    stock_excluded = 0
+    for (club_id, club_type_id, shot_type, yards, name, retired,
+         phantom, suspect, non_stock) in shots:
         if name.startswith("unknown") or club_id == 0 or retired:
             continue
         if phantom:              # between-hole transit, not a stroke
@@ -87,6 +90,9 @@ def build_club_stats() -> dict:
         info["clubTypeId"] = club_type_id
         info["name"] = name
         info["all"] += 1
+        if non_stock:            # annotated punch/layup/recovery — not a stock swing
+            stock_excluded += 1
+            continue
         if (shot_type not in DISTANCE_EXCLUDE_TYPES and yards is not None
                 and club_type_id != PUTTER_CLUBTYPE_ID):
             info["dist"].append(yards)
@@ -118,6 +124,7 @@ def build_club_stats() -> dict:
             "courses": courses or [],
             "suspectHoleShotsExcluded": suspect_excluded,
             "phantomShotsExcluded": phantom_excluded,
+            "annotatedShotsExcluded": stock_excluded,   # non-stock swings (punch/layup/...)
         },
         "clubs": clubs,
         "note": (

@@ -21,6 +21,7 @@ import hashlib
 import json
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import duckdb
@@ -28,6 +29,7 @@ import duckdb
 from .geo import semicircles_to_degrees as s2d
 
 RAW_DIR = Path("data/raw")
+ANN_DIR = Path("data/annotations")
 CLUBS_CONFIG = Path("config/clubs.json")
 SG_BASELINE_CONFIG = Path("config/sg_baseline.json")
 
@@ -90,6 +92,53 @@ def load_reference(con: duckdb.DuckDBPyConnection,
         con.execute("INSERT INTO canon.sg_baseline VALUES ('putt', ?, ?)",
                     [float(dist_ft), expected])
     con.execute("COMMIT")
+
+
+def _round_id_from_name(name: str) -> int:
+    """data/annotations names are <YYYY_MM_DD_roundId>[.tags].json/.md."""
+    return int(name.split(".")[0].rsplit("_", 1)[1])
+
+
+def _ts(iso: str | None) -> datetime | None:
+    return datetime.fromisoformat(iso).replace(tzinfo=None) if iso else None
+
+
+def load_annotations(con: duckdb.DuckDBPyConnection, ann_dir: Path = ANN_DIR) -> dict:
+    """Fully reload annot.* from data/annotations/ — the files are truth. Narratives
+    load from *.md; confirmed tags from *.tags.json (proposed drafts are ignored)."""
+    con.execute("BEGIN")
+    for t in ("annot.shot_context", "annot.hole_context",
+              "annot.round_narrative", "annot.annotation_meta"):
+        con.execute(f"DELETE FROM {t}")
+    narratives = tagged = 0
+    if ann_dir.exists():
+        for md in sorted(ann_dir.glob("*.md")):
+            con.execute("INSERT OR REPLACE INTO annot.round_narrative VALUES (?,?,?,?)", [
+                _round_id_from_name(md.name), md.read_text(), str(md),
+                datetime.fromtimestamp(md.stat().st_mtime)])
+            narratives += 1
+        for tf in sorted(ann_dir.glob("*.tags.json")):
+            rid = _round_id_from_name(tf.name)
+            tags = json.loads(tf.read_text())
+            for t in tags.get("shots", []):
+                con.execute("INSERT INTO annot.shot_context VALUES (?,?,?,?,?,?,?,?,?)", [
+                    rid, t.get("shotId"), t.get("hole"), t.get("intent") or "other",
+                    t.get("lieQuality"), t.get("evaluation"),
+                    bool(t.get("excludeFromStock", (t.get("intent") or "other") != "normal")),
+                    "confirmed", t.get("note")])
+            for t in tags.get("unmatched", []):
+                con.execute("INSERT INTO annot.shot_context VALUES (?,?,?,?,?,?,?,?,?)", [
+                    rid, None, t.get("hole"), t.get("intent") or "other",
+                    None, None, False, "unmatched", t.get("text")])
+            for t in tags.get("holes", []):
+                con.execute("INSERT OR REPLACE INTO annot.hole_context VALUES (?,?,?,?,?,?)", [
+                    rid, t["hole"], t.get("postTeeState"), t.get("doubleClass"),
+                    t.get("preventableEscalation"), t.get("note")])
+            con.execute("INSERT OR REPLACE INTO annot.annotation_meta VALUES (?,?,?,?)", [
+                rid, str(tf), tags.get("tagSchemaVersion"), _ts(tags.get("confirmedAt"))])
+            tagged += 1
+    con.execute("COMMIT")
+    return {"narratives": narratives, "taggedRounds": tagged}
 
 
 def ingest_round(con: duckdb.DuckDBPyConnection, scorecard_id: int,
@@ -187,6 +236,7 @@ def ingest_all(con: duckdb.DuckDBPyConnection, raw_dir: Path = RAW_DIR,
     """Ingest reference config + every complete raw pair. Returns counts + the list of
     (re)ingested round ids so derive can recompute just those."""
     load_reference(con)
+    load_annotations(con)
     ingested_ids: list[int] = []
     skipped = 0
     for rid in raw_round_ids(raw_dir):

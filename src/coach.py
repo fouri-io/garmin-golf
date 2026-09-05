@@ -97,6 +97,14 @@ Keep it under ~280 words. No fluff. Speak to them directly.
 
 === THE ROUND JUST PLAYED ===
 {round_md}
+{annotations}"""
+
+ANNOTATIONS_HEADER = """
+=== PLAYER'S OWN POST-ROUND NOTES (first-hand context — weight these heavily) ===
+The player wrote these notes and confirmed the shot tags. A shot tagged
+recovery/punch/layup was deliberate trouble management, NOT a bad swing — judge the
+DECISION and whether it restored normal golf, and never treat its distance as a
+stock yardage.
 """
 
 
@@ -212,7 +220,38 @@ def build_context(stem: str, progress: dict | None = None) -> dict:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "context.md").write_text(state + "\n\n=== PUTTING BY DISTANCE ===\n" + putting)
     return {"profile": profile, "state": state, "putting": putting,
-            "stem": stem, "round_md": _round_md(stem) or ""}
+            "stem": stem, "round_md": _round_md(stem) or "",
+            "annotations": _annotations_block(stem)}
+
+
+def _annotations_block(stem: str) -> str:
+    """The player's narrative + confirmed tags for the prompt, when they exist."""
+    ann_dir = Path("data/annotations")
+    narrative = ann_dir / f"{stem}.md"
+    tags_file = ann_dir / f"{stem}.tags.json"
+    if not narrative.exists() and not tags_file.exists():
+        return ""
+    parts = [ANNOTATIONS_HEADER]
+    if narrative.exists():
+        parts.append(narrative.read_text().strip())
+    if tags_file.exists():
+        tags = json.loads(tags_file.read_text())
+        lines = []
+        for t in tags.get("shots", []):
+            ev = f" — {t['evaluation']}" if t.get("evaluation") else ""
+            note = f" ({t['note']})" if t.get("note") else ""
+            lines.append(f"  - H{t.get('hole')}: {t.get('intent')}{ev}{note}")
+        for t in tags.get("holes", []):
+            bits = [b for b in (
+                f"after-tee {t['postTeeState']}" if t.get("postTeeState") else None,
+                f"double: {t['doubleClass']}" if t.get("doubleClass") else None,
+                "preventable escalation" if t.get("preventableEscalation") else None,
+            ) if b]
+            if bits:
+                lines.append(f"  - H{t['hole']}: " + ", ".join(bits))
+        if lines:
+            parts.append("Confirmed shot/hole tags:\n" + "\n".join(lines))
+    return "\n\n".join(parts) + "\n"
 
 
 def _pick_provider() -> tuple[str, str] | None:

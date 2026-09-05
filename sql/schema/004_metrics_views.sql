@@ -42,6 +42,65 @@ FROM canon.round r
 LEFT JOIN tee_to_green t ON t.round_id = r.round_id
 LEFT JOIN putting p ON p.round_id = r.round_id;
 
+-- The join that makes annotation-aware metrics one-liners. Absence-means-normal on an
+-- ANNOTATED round (one with confirmed tags); on unannotated rounds intent is NULL so
+-- annotation-dependent metrics skip them — graceful degradation, never fabrication.
+CREATE OR REPLACE VIEW derived.shot_effective_context AS
+SELECT s.shot_id, s.round_id, s.hole_number,
+       (am.round_id IS NOT NULL)                            AS round_annotated,
+       coalesce(sc.intent,
+                CASE WHEN am.round_id IS NOT NULL THEN 'normal' END) AS intent,
+       sc.evaluation,
+       coalesce(sc.exclude_from_stock, FALSE)               AS exclude_from_stock
+FROM canon.shot s
+LEFT JOIN annot.annotation_meta am ON am.round_id = s.round_id
+LEFT JOIN annot.shot_context sc
+  ON sc.shot_id = s.shot_id AND sc.match_status = 'confirmed';
+
+-- Per-round annotation-dependent priority metrics (rounds with confirmed tags only).
+CREATE OR REPLACE VIEW derived.round_context_metrics AS
+WITH tee AS (
+  SELECT hc.round_id,
+         count(*) FILTER (WHERE hc.post_tee_state IS NOT NULL)     AS tee_states,
+         count(*) FILTER (WHERE hc.post_tee_state = 'clean')       AS tee_clean,
+         count(*) FILTER (WHERE hc.post_tee_state = 'compromised') AS tee_compromised,
+         count(*) FILTER (WHERE hc.post_tee_state = 'recovery')    AS tee_recovery
+  FROM annot.hole_context hc
+  JOIN canon.hole h USING (round_id, hole_number)
+  WHERE h.par >= 4
+  GROUP BY hc.round_id
+), rec AS (
+  SELECT sc.round_id,
+         count(*) FILTER (WHERE sc.evaluation IN ('recovery_success', 'recovery_fail'))
+                                                                   AS recovery_attempts,
+         count(*) FILTER (WHERE sc.evaluation = 'recovery_success') AS recovery_successes
+  FROM annot.shot_context sc
+  WHERE sc.match_status = 'confirmed' AND sc.intent IN ('recovery', 'punch')
+  GROUP BY sc.round_id
+), appr AS (
+  SELECT s.round_id,
+         count(*)                                          AS normal_approaches,
+         count(*) FILTER (WHERE s.end_lie = 'Green')       AS normal_approach_greens
+  FROM canon.shot s
+  JOIN derived.shot_sg sg ON sg.shot_id = s.shot_id
+  JOIN derived.shot_effective_context ec ON ec.shot_id = s.shot_id
+  WHERE sg.sg_category IN ('longApproach', 'midApproach') AND ec.intent = 'normal'
+  GROUP BY s.round_id
+)
+SELECT am.round_id,
+       coalesce(t.tee_states, 0)        AS tee_states,
+       coalesce(t.tee_clean, 0)         AS tee_clean,
+       coalesce(t.tee_compromised, 0)   AS tee_compromised,
+       coalesce(t.tee_recovery, 0)      AS tee_recovery,
+       coalesce(rec.recovery_attempts, 0)   AS recovery_attempts,
+       coalesce(rec.recovery_successes, 0)  AS recovery_successes,
+       coalesce(a.normal_approaches, 0)     AS normal_approaches,
+       coalesce(a.normal_approach_greens, 0) AS normal_approach_greens
+FROM annot.annotation_meta am
+LEFT JOIN tee t ON t.round_id = am.round_id
+LEFT JOIN rec ON rec.round_id = am.round_id
+LEFT JOIN appr a ON a.round_id = am.round_id;
+
 -- Per-round priority metrics (Garmin-derivable subset). Rates are computed at the
 -- window level in progress.py from these counts, never averaged from per-round rates.
 CREATE OR REPLACE VIEW derived.round_metrics AS
