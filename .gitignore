@@ -14,10 +14,14 @@ __pycache__/
 # Garmin token store may also land here if GARMINTOKENS is set locally
 .garminconnect/
 
-# Data: the raw responses are the asset, but they're large/personal — keep local.
-# Track the directory structure (.gitkeep) but ignore the contents.
-data/raw/*
-!data/raw/.gitkeep
+# Data: the raw responses are the asset — versioned so git is the durability story
+# (they are small, and the DuckDB spine is rebuilt from them; see docs/decisions.md).
+# The database itself is a rebuildable artifact, never committed.
+data/turn.duckdb
+data/turn.duckdb.wal
+
+# LLM-proposed annotation drafts are disposable; confirmed .tags.json IS versioned.
+data/annotations/*.tags.proposed.json
 
 # Processed round documents ARE versioned (opted in).
 
