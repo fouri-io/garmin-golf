@@ -18,10 +18,11 @@
     font:15px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
   .app{max-width:920px;margin:0 auto;min-height:100vh;
     padding:0 14px calc(86px + env(safe-area-inset-bottom))}
-  .mast{background:radial-gradient(120% 160% at 50% 30%,#0f6544,#064a35 85%);color:#fff;
-    padding:calc(10px + env(safe-area-inset-top)) 14px 8px;margin-bottom:6px}
+  .mast{background:linear-gradient(135deg,#1f4a36,#1b1d1a);color:#fff;
+    padding:calc(7px + env(safe-area-inset-top)) 14px 6px;margin-bottom:6px}
   .mastin{max-width:892px;margin:0 auto;display:flex;align-items:center;gap:11px}
-  .mast .logo{height:76px;width:auto;display:block}
+  .mast .logo{height:38px;width:auto;display:block}
+  .mast h1{font-size:17px;font-weight:800;letter-spacing:.02em;margin:0;color:#fff}
   .srhide{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);margin:-1px}
   .mast .date{margin-left:auto;font-size:12px;color:rgba(255,255,255,.65);text-align:right}
   .ctl{margin:8px 0}.ctl .lab{font-size:10px;color:var(--muted);text-transform:uppercase;
@@ -184,14 +185,16 @@
   .osub .gd{color:var(--good);font-weight:700}
   .osub .bd{color:var(--bad);font-weight:700}
   .ochartwrap{position:relative;margin-top:4px}
-  #osvg text{font:11px -apple-system,Segoe UI,Roboto,Arial,sans-serif;fill:var(--muted)}
-  #osvg .qlab{font-size:11.5px;fill:var(--ink);font-weight:600}
-  #osvg .nlab{font-size:10px;fill:var(--muted)}
-  #osvg .ptlab{font-size:12px;font-weight:800;fill:var(--ink)}
+  #osvg text{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;fill:var(--muted)}
+  #osvg .qlab{fill:var(--ink);font-weight:600}
+  #osvg .nlab{fill:var(--muted)}
+  #osvg .ptlab{font-weight:800;fill:var(--ink)}
   .otip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;
     padding:6px 9px;border-radius:8px;opacity:0;transition:opacity .12s;white-space:nowrap;
     transform:translate(-50%,-115%)}
   .otip small{display:block;color:#c8d2dc;font-size:10.5px}
+  table.otab{min-width:560px}
+  table.otab td,table.otab th{white-space:nowrap}
   table.otab td.now,table.otab th.now{background:#eef2ea}
   .mixgrid{display:flex;flex-direction:column;gap:7px}
   .mixrow{display:flex;align-items:center;gap:10px}
@@ -247,9 +250,9 @@
 <body>
 <header class="mast">
   <div class="mastin">
-    <svg class="logo" viewBox="100 40 1060 940" aria-label="The Turn — round by round"><defs><linearGradient id="tt_arcGrad" x1="0%" y1="80%" x2="75%" y2="0%"><stop offset="0%" stop-color="#7df2a8"/><stop offset="75%" stop-color="#f3f1e8"/><stop offset="100%" stop-color="#ffffff"/></linearGradient><linearGradient id="tt_flagGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7eea9b"/><stop offset="48%" stop-color="#56d47f"/><stop offset="100%" stop-color="#17ad67"/></linearGradient><linearGradient id="tt_poleGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f7f5ec"/><stop offset="100%" stop-color="#ffffff"/></linearGradient><filter id="tt_softShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity=".18"/></filter></defs><path d="M 285 890 C 120 705, 125 360, 330 195 C 515 45, 800 70, 995 245 C 1065 308, 1110 382, 1135 455" fill="none" stroke="url(#tt_arcGrad)" stroke-width="30" stroke-linecap="round"/><rect x="505" y="335" width="34" height="315" rx="17" fill="url(#tt_poleGrad)" filter="url(#tt_softShadow)"/><path d="M539 362 C586 345, 621 349, 661 370 C706 394, 739 410, 780 402 C808 397, 831 386, 849 372 L847 472 C817 494, 782 507, 749 508 C709 509, 680 494, 645 480 C604 463, 571 460, 539 478 Z" fill="url(#tt_flagGrad)"/><text x="600" y="835" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="148" font-weight="700" letter-spacing="-6" fill="#f8f6ef" filter="url(#tt_softShadow)">The Turn</text><text x="600" y="940" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="400" letter-spacing="14" fill="#7fe49c">round by round</text>
+    <svg class="logo" viewBox="100 40 1060 880" aria-label="The Turn — round by round"><defs><linearGradient id="tt_arcGrad" x1="0%" y1="80%" x2="75%" y2="0%"><stop offset="0%" stop-color="#7df2a8"/><stop offset="75%" stop-color="#f3f1e8"/><stop offset="100%" stop-color="#ffffff"/></linearGradient><linearGradient id="tt_flagGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7eea9b"/><stop offset="48%" stop-color="#56d47f"/><stop offset="100%" stop-color="#17ad67"/></linearGradient><linearGradient id="tt_poleGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f7f5ec"/><stop offset="100%" stop-color="#ffffff"/></linearGradient><filter id="tt_softShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity=".18"/></filter></defs><path d="M 285 890 C 120 705, 125 360, 330 195 C 515 45, 800 70, 995 245 C 1065 308, 1110 382, 1135 455" fill="none" stroke="url(#tt_arcGrad)" stroke-width="30" stroke-linecap="round"/><rect x="505" y="335" width="34" height="315" rx="17" fill="url(#tt_poleGrad)" filter="url(#tt_softShadow)"/><path d="M539 362 C586 345, 621 349, 661 370 C706 394, 739 410, 780 402 C808 397, 831 386, 849 372 L847 472 C817 494, 782 507, 749 508 C709 509, 680 494, 645 480 C604 463, 571 460, 539 478 Z" fill="url(#tt_flagGrad)"/>
 </svg>
-    <h1 class="srhide">The Turn</h1>
+    <h1>The Turn</h1>
     <div class="date" id="date"></div>
   </div>
 </header>
@@ -487,6 +490,8 @@ function renderOutcome(){
   // chart
   const pts=qs.map((q,i)=>({q,v:val(q),i})).filter(p=>p.v!=null);
   const svg=document.getElementById('osvg');
+  const cw=(svg.parentNode&&svg.parentNode.clientWidth)||880, K=cw&&cw<560?1.55:1;
+  svg.setAttribute('viewBox',`0 0 880 ${300+(K>1?26:0)}`);
   const goal=oLens==="raw"?sc.goal:P.scoring.break90OverRating;
   if(!pts.length){svg.innerHTML="";return;}
   const vals=pts.map(p=>p.v), lo=Math.min(...vals,goal)-2, hi=Math.max(...vals)+2;
@@ -495,17 +500,17 @@ function renderOutcome(){
   const step=Math.max(2,Math.ceil((hi-lo)/4));
   for(let t=Math.ceil(lo/step)*step;t<=hi;t+=step)
     g+=`<line x1="56" x2="856" y1="${Y(t)}" y2="${Y(t)}" stroke="#e5e3dc"/>`
-      +`<text x="48" y="${Y(t)+4}" text-anchor="end">${t}</text>`;
+      +`<text x="48" y="${Y(t)+4}" font-size="${11*K}" text-anchor="end">${t}</text>`;
   g+=`<line x1="56" x2="856" y1="${Y(goal)}" y2="${Y(goal)}" stroke="var(--good)" stroke-width="2" stroke-dasharray="2 5" opacity=".8"/>`
-    +`<text x="850" y="${Y(goal)-6}" text-anchor="end" fill="var(--good)" style="font-weight:700">${oLens==="raw"?(oScope==="h9"?"Break 45":"Break 90"):"Break-90 pace"}</text>`;
+    +`<text x="850" y="${Y(goal)-6}" font-size="${11.5*K}" text-anchor="end" fill="var(--good)" style="font-weight:700">${oLens==="raw"?(oScope==="h9"?"Break 45":"Break 90"):"Break-90 pace"}</text>`;
   g+=`<path d="${pts.map((p,k)=>(k?"L":"M")+X(p.i)+" "+Y(p.v)).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>`;
   pts.forEach((p,k)=>{
     const lastPt=k===pts.length-1;
     g+=`<circle cx="${X(p.i)}" cy="${Y(p.v)}" r="${lastPt?6.5:5.5}" fill="var(--accent)" stroke="#fff" stroke-width="2" data-q="${qlab(p.q.q)}" data-v="${p.v.toFixed(1)}" data-n="n=${p.q.rounds} round${p.q.rounds===1?"":"s"}${p.q.thin?" — thin sample":""}"/>`;
-    if(k===0||lastPt) g+=`<text class="ptlab" x="${X(p.i)}" y="${Y(p.v)-12}" text-anchor="middle">${p.v.toFixed(1)}</text>`;
+    if(k===0||lastPt) g+=`<text class="ptlab" font-size="${12*K}" x="${X(p.i)}" y="${Y(p.v)-12}" text-anchor="middle">${p.v.toFixed(1)}</text>`;
   });
-  qs.forEach((q,i)=>{g+=`<text class="qlab" x="${X(i)}" y="284" text-anchor="middle">${qlab(q.q)}</text>`
-    +`<text class="nlab" x="${X(i)}" y="297" text-anchor="middle">n=${q.rounds}${q.thin?" ⚠":""}</text>`;});
+  qs.forEach((q,i)=>{g+=`<text class="qlab" font-size="${11.5*K}" x="${X(i)}" y="${284+(K>1?4:0)}" text-anchor="middle">${qlab(q.q)}</text>`
+    +`<text class="nlab" font-size="${10*K}" x="${X(i)}" y="${297+(K>1?16:0)}" text-anchor="middle">n=${q.rounds}${q.thin?" ⚠":""}</text>`;});
   svg.innerHTML=g;
   const tip=document.getElementById('otip');
   svg.querySelectorAll('circle').forEach(c=>{
@@ -796,14 +801,15 @@ function roll(ys,n){return ys.map((_,i)=>{const a=ys.slice(Math.max(0,i-n+1),i+1
   return a.reduce((x,y)=>x+y,0)/a.length;});}
 function chart(pts,zero){
   if(pts.length<2)return '<div class="foot">need ≥2 rounds to show a trend</div>';
-  const W=880,H=290,L=46,Rm=16,T=22,B=36,ys=pts.map(p=>p.y);
+  const cw=document.getElementById('trendchart').clientWidth||880, K=cw&&cw<560?1.55:1;
+  const W=880,H=290+(K>1?26:0),L=46,Rm=16,T=22,B=36*K,ys=pts.map(p=>p.y);
   let mn=Math.min(...ys),mx=Math.max(...ys);if(zero){mn=Math.min(mn,0);mx=Math.max(mx,0);}
   if(mn===mx){mn-=1;mx+=1;}const pd=(mx-mn)*0.15||1;mn-=pd;mx+=pd;
   const X=i=>L+(W-L-Rm)*(pts.length<2?0:i/(pts.length-1)),Y=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
   let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">`;
   [mx,(mx+mn)/2,mn].forEach(t=>{const y=Y(t);
     s+=`<line x1="${L}" y1="${y}" x2="${W-Rm}" y2="${y}" stroke="#e4e6e2"/>`;
-    s+=`<text x="${L-6}" y="${y+4}" font-size="11" fill="#6d7269" text-anchor="end">${t>0?'+':''}${t.toFixed(1)}</text>`;});
+    s+=`<text x="${L-6}" y="${y+4}" font-size="${11*K}" fill="#6d7269" text-anchor="end">${t>0?'+':''}${t.toFixed(1)}</text>`;});
   if(zero&&0>mn&&0<mx){const z=Y(0);
     s+=`<line x1="${L}" y1="${z}" x2="${W-Rm}" y2="${z}" stroke="#9aa098" stroke-dasharray="3 4"/>`;}
   // per-round dots (light) under a rolling-5 form line (the read)
@@ -811,15 +817,15 @@ function chart(pts,zero){
   if(pts.length>=5){const rys=roll(ys,5);
     s+=`<polyline points="${rys.map((v,i)=>X(i)+','+Y(v)).join(' ')}" fill="none" stroke="#1f4a36" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"/>`;
     const last=rys[rys.length-1];
-    s+=`<text x="${X(pts.length-1)}" y="${Y(last)-10}" font-size="12" font-weight="800" fill="#1a1c19" text-anchor="end">${last>0?'+':''}${last.toFixed(1)}</text>`;}
+    s+=`<text x="${X(pts.length-1)}" y="${Y(last)-10}" font-size="${12*K}" font-weight="800" fill="#1a1c19" text-anchor="end">${last>0?'+':''}${last.toFixed(1)}</text>`;}
   // selective direct labels: min + max rounds only
   const iMin=ys.indexOf(Math.min(...ys)),iMax=ys.indexOf(Math.max(...ys));
   [...new Set([iMin,iMax])].forEach(i=>{
-    s+=`<text x="${X(i)}" y="${Y(ys[i])+(i===iMin&&!zero?16:-8)}" font-size="10" fill="#6d7269" text-anchor="middle">${ys[i]>0?'+':''}${ys[i].toFixed(1)}</text>`;});
+    s+=`<text x="${X(i)}" y="${Y(ys[i])+(i===iMin&&!zero?16:-8)}" font-size="${10*K}" fill="#6d7269" text-anchor="middle">${ys[i]>0?'+':''}${ys[i].toFixed(1)}</text>`;});
   // thinned x axis: ~6 date ticks
-  const step=Math.max(1,Math.ceil(pts.length/6));
+  const step=Math.max(1,Math.ceil(pts.length/(K>1?4:6)));
   pts.forEach((p,i)=>{if(i%step===0||i===pts.length-1)
-    s+=`<text x="${X(i)}" y="${H-12}" font-size="10" fill="#6d7269" text-anchor="middle">${p.label}</text>`;});
+    s+=`<text x="${X(i)}" y="${H-12}" font-size="${10*K}" fill="#6d7269" text-anchor="middle">${p.label}</text>`;});
   return s+'</svg>';
 }
 function renderTrend(){
@@ -914,6 +920,7 @@ document.getElementById('roundDetail').addEventListener('click',e=>{
   const s=e.target.closest('.exp-share');if(s){sharePack(DATA.rounds[detailRound]);return;}});
 
 renderOutcome();renderProgress();renderProcess();renderRoundsList();renderClubs();
+let _rz;window.addEventListener('resize',()=>{clearTimeout(_rz);_rz=setTimeout(()=>{renderOutcome();if(!document.getElementById('tab-trend').classList.contains('hide'))renderTrend();},200);});
 </script>
 </body>
 </html>
