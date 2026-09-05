@@ -327,7 +327,9 @@ TEMPLATE = r"""<!doctype html>
   .tpill{font-size:11px;font-weight:700;border-radius:4px;padding:2px 9px}
   .tpill.up{background:#e4f5ec;color:var(--good)}.tpill.down{background:#fbe7e5;color:var(--bad)}
   .tpill.flat{background:#eef1f4;color:var(--muted)}
-  #trendhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  #trendhead{margin-bottom:6px}
+  #trendhead b{display:block;font-size:15px;margin-bottom:5px}
+  #trendhead .tpill,#trendhead .wchip{white-space:nowrap;margin:0 8px 0 0}
   /* maps */
   .rsel{width:100%;background:var(--card);color:var(--ink);border:1px solid var(--line);
     border-radius:6px;padding:11px 12px;font-size:15px;font-weight:600;margin-bottom:8px}
@@ -917,7 +919,7 @@ function chart(pts,zero){
   let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">`;
   [mx,(mx+mn)/2,mn].forEach(t=>{const y=Y(t);
     s+=`<line x1="${L}" y1="${y}" x2="${W-Rm}" y2="${y}" stroke="#e4e6e2"/>`;
-    s+=`<text x="${L-6}" y="${y+4}" font-size="${11*K}" fill="#6d7269" text-anchor="end">${t>0?'+':''}${t.toFixed(1)}</text>`;});
+    s+=`<text x="${L-6}" y="${y+4}" font-size="${11*K}" fill="#6d7269" text-anchor="end">${t.toFixed(1)}</text>`;});
   if(zero&&0>mn&&0<mx){const z=Y(0);
     s+=`<line x1="${L}" y1="${z}" x2="${W-Rm}" y2="${z}" stroke="#9aa098" stroke-dasharray="3 4"/>`;}
   // per-round dots (light) under a rolling-5 form line (the read)
@@ -925,15 +927,17 @@ function chart(pts,zero){
   if(pts.length>=5){const rys=roll(ys,5);
     s+=`<polyline points="${rys.map((v,i)=>X(i)+','+Y(v)).join(' ')}" fill="none" stroke="#1f4a36" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"/>`;
     const last=rys[rys.length-1];
-    s+=`<text x="${X(pts.length-1)}" y="${Y(last)-10}" font-size="${12*K}" font-weight="800" fill="#1a1c19" text-anchor="end">${last>0?'+':''}${last.toFixed(1)}</text>`;}
+    s+=`<text x="${X(pts.length-1)}" y="${Y(last)-14}" font-size="${12*K}" font-weight="800" fill="#1a1c19" text-anchor="end">${last>0?'+':''}${last.toFixed(1)}</text>`;}
   // selective direct labels: min + max rounds only
-  const iMin=ys.indexOf(Math.min(...ys)),iMax=ys.indexOf(Math.max(...ys));
+  if(K===1){const iMin=ys.indexOf(Math.min(...ys)),iMax=ys.indexOf(Math.max(...ys));
   [...new Set([iMin,iMax])].forEach(i=>{
-    s+=`<text x="${X(i)}" y="${Y(ys[i])+(i===iMin&&!zero?16:-8)}" font-size="${10*K}" fill="#6d7269" text-anchor="middle">${ys[i]>0?'+':''}${ys[i].toFixed(1)}</text>`;});
+    const lx=Math.min(Math.max(X(i),L+26),W-Rm-26);
+    s+=`<text x="${lx}" y="${Y(ys[i])+(i===iMin&&!zero?16:-8)}" font-size="10" fill="#6d7269" text-anchor="middle">${ys[i]>0?'+':''}${ys[i].toFixed(1)}</text>`;});}
   // thinned x axis: ~6 date ticks
   const step=Math.max(1,Math.ceil(pts.length/(K>1?4:6)));
-  pts.forEach((p,i)=>{if(i%step===0||i===pts.length-1)
-    s+=`<text x="${X(i)}" y="${H-12}" font-size="${10*K}" fill="#6d7269" text-anchor="middle">${p.label}</text>`;});
+  pts.forEach((p,i)=>{if(i%step===0||i===pts.length-1){
+    const anc=i===0?'start':i===pts.length-1?'end':'middle';
+    s+=`<text x="${X(i)}" y="${H-12}" font-size="${10*K}" fill="#6d7269" text-anchor="${anc}">${p.label}</text>`;}});
   return s+'</svg>';
 }
 function renderTrend(){
@@ -941,7 +945,7 @@ function renderTrend(){
   const all=TS.filter(r=>m.clean?r.clean:(m.get(r)!=null));
   lastPts=all.slice(-20).map(r=>({label:r.date.slice(5).replace('-','/'),date:r.date,y:m.get(r),clean:r.clean}));
   const d=lastPts.length>=2?dir(lastPts.map(p=>p.y),m.low):{t:'',c:'flat'};
-  document.getElementById('trendhead').innerHTML=`<b>${m.label}</b><span class="wchip">last ${lastPts.length} rounds</span><span class="tpill ${d.c}">${d.t}</span>`;
+  document.getElementById('trendhead').innerHTML=`<b>${m.label.replace(/ \(.*/,'')}</b><span class="wchip">last ${lastPts.length} rounds</span><span class="tpill ${d.c}">${d.t}</span>`;
   document.getElementById('trendchart').innerHTML=chart(lastPts,m.k!=='over');
   document.getElementById('trendfoot').textContent=
     `last ${lastPts.length} of ${all.length} ${m.clean?'clean ':''}rounds · dots = rounds, line = 5-round average · tap a dot for its date`;
