@@ -53,3 +53,36 @@ Short ADR-style log of choices that aren't obvious from the code.
     (`ANTHROPIC_API_KEY`); degrades gracefully if absent. The living spec
     (`config/golfer_profile.md` + auto-generated state) is the durable context that makes
     coaching personal. See coach.md.
+
+15. **DuckDB is the analytics spine; committed files remain the asset.** Canonical
+    (`canon.*`/`annot.*`) and derived (`derived.*`) layers live in `data/turn.duckdb` —
+    a durable materialized index over the committed raw files. It persists and ingests
+    incrementally (sha-gated per round) but is gitignored and fully rebuildable
+    (`python -m src.db rebuild`): every write originates in a committed file, so the DB
+    never holds unique state. Loader bugs can't corrupt truth; schema evolution is
+    edit-DDL-and-rebuild, not ALTER migrations. Extends #1; supersedes the "flat files,
+    no DB" architecture. Revisit if annotations are ever written to the DB directly,
+    data outgrows cheap rebuild, or multi-tenant (→ Postgres) arrives.
+
+16. **`data/raw/` is committed to git.** Supersedes the original keep-raw-local call:
+    the raw JSON is small (MBs), personal, and is the layer everything rebuilds from —
+    gitignoring it meant the rawest trustworthy data existed on one disk. The summary
+    list also lands as dated snapshots (`data/raw/summaries/`) instead of being
+    overwritten.
+
+17. **Post-round narrative + confirmed tags are first-class raw-layer inputs.** The
+    player's own notes (`data/annotations/<stem>.md`) and LLM-structured, human-
+    confirmed tags (`<stem>.tags.json`) load into `annot.*` on every ingest. Context
+    NEVER overwrites facts or SG — a recovery punch stays in the round's SG — but
+    `exclude_from_stock` keeps non-stock swings out of club-distance/dispersion stats,
+    and tags drive the process metrics (clean second-shot %, one-shot recovery %,
+    normal-approach GIR %). Untagged shots on an annotated round default to `normal`;
+    unannotated rounds contribute nothing (coverage is always shown, never faked).
+
+18. **The round document is an export at schema v2 (amends #2).** The faithful-superset
+    contract survives — every v1 field is preserved — but the document is generated
+    from the DB by `export_rounds.py`, not parsed directly from raw. v2 adds per-shot
+    `shotId` (Garmin's stable id), `confidence`
+    (authoritative/inferred/approximate/anomalous), per-shot `annotation`, and a
+    round-level `annotations` block. Re-exported (byte-idempotently) on every update
+    run.

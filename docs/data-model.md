@@ -1,4 +1,4 @@
-# Data model — raw → round document
+# Data model — raw → canonical (DuckDB) → derived → round document
 
 ## Raw (the asset)
 Three Garmin golf endpoints (confirmed against `garminconnect` 0.3.5):
@@ -16,9 +16,33 @@ Keys: `scorecardId` joins all three levels; `clubId` joins shots→clubDetails;
 `holeNumber`+`shotOrder` order shots. Coordinates are **semicircles** (`degrees =
 semicircles × 180/2^31`), converted in `geo.py`.
 
-## Round document (`data/processed/rounds/<YYYY_MM_DD_id>.json`)
-A faithful **superset**: every Garmin field preserved, derived fields added alongside
-(never replacing), provenance kept. Filename is date-prefixed for browsability.
+Also raw-layer inputs (committed, human-authored):
+- `data/annotations/<stem>.md` — post-round narrative (never rewritten by tooling)
+- `data/annotations/<stem>.tags.json` — confirmed shot/hole context tags
+  (`src/annotate.py` flow: scaffold → LLM `--structure` → validate `--confirm`)
+
+## Canonical + derived (`data/turn.duckdb` — see `sql/schema/`)
+- `canon.round / hole / shot` — facts only; deterministic conversions (semicircles →
+  degrees, `holePars` digits → per-hole par with the 9-as-18 modulo, `holeHandicaps` →
+  stroke index). **`canon.shot.shot_id` is Garmin's stable shot id** — the join key for
+  annotations and derived tables. `canon.ingest_meta` sha-gates incremental ingest.
+- `canon.club / club_type / sg_baseline` — reloaded from `config/` each run.
+- `annot.round_narrative / shot_context / hole_context / annotation_meta` — reloaded
+  from `data/annotations/` each run (files are truth).
+- `derived.shot_geom / shot_sg / hole_putting` — Python-written (geometry via
+  `geo.py`, SG via `sg_core.py`), recomputed for changed rounds.
+- Views: `shot_flags` (phantom + confidence: authoritative/inferred/approximate/
+  anomalous), `hole_recon`/`round_recon` (reconciliation, clean gate),
+  `hole_first_putt` (real-putt guard), `hole_facts` (GIR/scramble/doubles),
+  `putting_bands` (0-3/3-6/6-10/10-20/20-40/40+ ft), `shot_effective_context`
+  (absence-means-normal on annotated rounds), `round_sg`, `round_metrics`,
+  `round_context_metrics`.
+
+## Round document (`data/processed/rounds/<YYYY_MM_DD_id>.json`, schema v2)
+A faithful **superset**, now EXPORTED from the DB by `src/export_rounds.py`: every
+Garmin field preserved, derived fields added alongside (never replacing), provenance
+kept. Filename is date-prefixed for browsability. v2 adds per-shot `shotId`,
+`confidence`, `annotation` (confirmed tag), and a round-level `annotations` block.
 
 Top-level keys:
 - `scorecardId`, `round` (date/tees/handicap/walked), `course` (name/location/par/holePars/lat-lon)
