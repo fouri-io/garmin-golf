@@ -32,7 +32,8 @@
       "p75Yds": 229,
       "maxYds": 311,
       "stdevYds": 59.4,
-      "lowConfidence": false
+      "lowConfidence": false,
+      "dispersion": null
     },
     {
       "club": "5 Wood",
@@ -46,7 +47,16 @@
       "p75Yds": 201,
       "maxYds": 242,
       "stdevYds": 49.5,
-      "lowConfidence": false
+      "lowConfidence": false,
+      "dispersion": {
+        "approachShots": 47,
+        "leftPct": 32,
+        "straightPct": 11,
+        "rightPct": 57,
+        "shortPct": 89,
+        "longPct": 11,
+        "medianLateralYds": 19.4
+      }
     },
     {
       "club": "4 Hybrid",
@@ -60,7 +70,16 @@
       "p75Yds": 171,
       "maxYds": 214,
       "stdevYds": 39.3,
-      "lowConfidence": false
+      "lowConfidence": false,
+      "dispersion": {
+        "approachShots": 30,
+        "leftPct": 20,
+        "straightPct": 27,
+        "rightPct": 53,
+        "shortPct": 100,
+        "longPct": 0,
+        "medianLateralYds": 13.9
+      }
     },
     {
       "club": "7 Iron",
@@ -74,7 +93,16 @@
       "p75Yds": 153,
       "maxYds": 203,
       "stdevYds": 39.5,
-      "lowConfidence": false
+      "lowConfidence": false,
+      "dispersion": {
+        "approachShots": 132,
+        "leftPct": 36,
+        "straightPct": 13,
+        "rightPct": 51,
+        "shortPct": 94,
+        "longPct": 6,
+        "medianLateralYds": 18.1
+      }
     },
     {
       "club": "8 Iron",
@@ -88,7 +116,16 @@
       "p75Yds": 148,
       "maxYds": 170,
       "stdevYds": 42.8,
-      "lowConfidence": false
+      "lowConfidence": false,
+      "dispersion": {
+        "approachShots": 86,
+        "leftPct": 33,
+        "straightPct": 23,
+        "rightPct": 44,
+        "shortPct": 65,
+        "longPct": 35,
+        "medianLateralYds": 11.9
+      }
     },
     {
       "club": "9 Iron",
@@ -102,7 +139,16 @@
       "p75Yds": 132,
       "maxYds": 162,
       "stdevYds": 44.1,
-      "lowConfidence": false
+      "lowConfidence": false,
+      "dispersion": {
+        "approachShots": 85,
+        "leftPct": 32,
+        "straightPct": 33,
+        "rightPct": 35,
+        "shortPct": 69,
+        "longPct": 31,
+        "medianLateralYds": 8.9
+      }
     },
     {
       "club": "6 Iron",
@@ -116,7 +162,16 @@
       "p75Yds": 155,
       "maxYds": 188,
       "stdevYds": 49.7,
-      "lowConfidence": false
+      "lowConfidence": false,
+      "dispersion": {
+        "approachShots": 31,
+        "leftPct": 35,
+        "straightPct": 19,
+        "rightPct": 45,
+        "shortPct": 77,
+        "longPct": 23,
+        "medianLateralYds": 15.3
+      }
     },
     {
       "club": "PW",
@@ -130,7 +185,16 @@
       "p75Yds": 111,
       "maxYds": 136,
       "stdevYds": 34.0,
-      "lowConfidence": false
+      "lowConfidence": false,
+      "dispersion": {
+        "approachShots": 160,
+        "leftPct": 26,
+        "straightPct": 36,
+        "rightPct": 38,
+        "shortPct": 68,
+        "longPct": 32,
+        "medianLateralYds": 8.0
+      }
     },
     {
       "club": "50\u00b0 GW",
@@ -144,7 +208,16 @@
       "p75Yds": 77,
       "maxYds": 112,
       "stdevYds": 25.4,
-      "lowConfidence": false
+      "lowConfidence": false,
+      "dispersion": {
+        "approachShots": 88,
+        "leftPct": 17,
+        "straightPct": 58,
+        "rightPct": 25,
+        "shortPct": 59,
+        "longPct": 41,
+        "medianLateralYds": 3.9
+      }
     },
     {
       "club": "54\u00b0 SW",
@@ -158,7 +231,16 @@
       "p75Yds": 39,
       "maxYds": 75,
       "stdevYds": 18.9,
-      "lowConfidence": false
+      "lowConfidence": false,
+      "dispersion": {
+        "approachShots": 276,
+        "leftPct": 12,
+        "straightPct": 65,
+        "rightPct": 24,
+        "shortPct": 64,
+        "longPct": 36,
+        "medianLateralYds": 3.4
+      }
     },
     {
       "club": "Putter",
@@ -172,7 +254,8 @@
       "p75Yds": null,
       "maxYds": null,
       "stdevYds": null,
-      "lowConfidence": true
+      "lowConfidence": true,
+      "dispersion": null
     }
   ],
   "note": "Distances are per-shot travel (yds) for full-ish shots (putts & chips excluded). Unknown-club and suspect-hole shots dropped. Small samples are flagged lowConfidence \u2014 these firm up as more rounds are added."

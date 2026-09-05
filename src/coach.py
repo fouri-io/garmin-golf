@@ -143,7 +143,30 @@ def state_summary(progress: dict) -> str:
             lines.append(f"  - {lbl}: {_fmt(cur)} ({arrow} vs all-time {_fmt(base)})")
         lines.append(f"  - SG 0-100 (leverage): {_fmt(last5['sg0to100'])}  · "
                      f"total {_fmt(last5['total'])}")
+    lines += _process_lines(progress)
     return "\n".join(lines)
+
+
+def _process_lines(progress: dict) -> list[str]:
+    """Process-layer metrics from post-round annotations, when any rounds are annotated.
+    These explain HOW strokes were lost (tee-state, recovery discipline, real approach
+    skill) — weight them, but respect the small samples the coverage counts show."""
+    pm = (progress.get("priorityMetrics") or {}).get("allTime") or {}
+    rows = [("cleanSecondShotPct", "Clean second-shot % (after par-4/5 tee balls)"),
+            ("recoveryOneShotPct", "One-shot recovery success %"),
+            ("normalApproachGirPct", "Normal-approach GIR % (stock swings only)")]
+    out = []
+    for key, lbl in rows:
+        c = pm.get(key) or {}
+        if c.get("value") is not None:
+            out.append(f"  - {lbl}: {c['value']}% "
+                       f"(n={c['nObs']} across {c['nRounds']} annotated round"
+                       f"{'s' if c['nRounds'] != 1 else ''})")
+    if out:
+        out.insert(0, "")
+        out.insert(1, "Process metrics (from the player's own post-round annotations — "
+                      "small samples, treat as directional):")
+    return out
 
 
 def _fmt_buckets(buckets: list[dict]) -> str:

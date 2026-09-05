@@ -32,6 +32,7 @@ OUT_MD = Path("data/processed/club_stats.md")
 DISTANCE_EXCLUDE_TYPES = {"PUTT", "CHIP"}  # partials/short game — not full-swing distance
 PUTTER_CLUBTYPE_ID = 23  # never a full-swing distance club
 LOW_CONFIDENCE_N = 4
+DISPERSION_MIN_N = 5     # approach shots needed before a miss-bias read is shown
 
 
 def _percentile(sorted_vals: list[float], p: float) -> float | None:
@@ -97,6 +98,52 @@ def build_club_stats() -> dict:
                 and club_type_id != PUTTER_CLUBTYPE_ID):
             info["dist"].append(yards)
 
+    # Approach dispersion per club: only shots where the pin IS the target line
+    # (long/mid/inside50 — never tee shots), same trust filters as distances, and
+    # never a tagged non-stock swing. Side/short-long come from shot geometry.
+    disp_rows = con.execute("""
+        SELECT s.club_id, g.miss_side, g.miss_range, g.lateral_yds
+        FROM canon.shot s
+        JOIN canon.round r USING (round_id)
+        JOIN derived.shot_sg sg ON sg.shot_id = s.shot_id
+        JOIN derived.shot_geom g ON g.shot_id = s.shot_id
+        JOIN derived.shot_flags f ON f.shot_id = s.shot_id
+        JOIN derived.hole_recon hr
+          ON hr.round_id = s.round_id AND hr.hole_number = s.hole_number
+        JOIN derived.shot_effective_context ec ON ec.shot_id = s.shot_id
+        WHERE r.round_date >= ? AND NOT f.phantom AND NOT hr.suspect
+          AND NOT ec.exclude_from_stock AND s.shot_type != 'PUTT'
+          AND coalesce(s.club_type_id, 0) != ?
+          AND sg.sg_category IN ('longApproach', 'midApproach', 'inside50')
+          AND g.miss_side IS NOT NULL
+        """, [since, PUTTER_CLUBTYPE_ID]).fetchall()
+    disp: dict[int, dict] = defaultdict(lambda: {"n": 0, "left": 0, "straight": 0,
+                                                 "right": 0, "short": 0, "long": 0,
+                                                 "lat": []})
+    for club_id, side, rng, lat in disp_rows:
+        d = disp[club_id]
+        d["n"] += 1
+        d[side] += 1
+        if rng in ("short", "long"):
+            d[rng] += 1
+        if lat is not None:
+            d["lat"].append(lat)
+
+    def _dispersion(club_id: int) -> dict | None:
+        d = disp.get(club_id)
+        if not d or d["n"] < DISPERSION_MIN_N:
+            return None
+        n = d["n"]
+        return {
+            "approachShots": n,
+            "leftPct": round(100 * d["left"] / n),
+            "straightPct": round(100 * d["straight"] / n),
+            "rightPct": round(100 * d["right"] / n),
+            "shortPct": round(100 * d["short"] / n),
+            "longPct": round(100 * d["long"] / n),
+            "medianLateralYds": round(st.median(d["lat"]), 1) if d["lat"] else None,
+        }
+
     clubs = []
     for club_id, info in per_club.items():
         vals = sorted(info["dist"])
@@ -113,6 +160,7 @@ def build_club_stats() -> dict:
             "maxYds": round(max(vals)) if vals else None,
             "stdevYds": round(st.pstdev(vals), 1) if len(vals) > 1 else None,
             "lowConfidence": len(vals) < LOW_CONFIDENCE_N,
+            "dispersion": _dispersion(club_id),
         })
     # Longest median first; clubs without distance (putter) sink to the bottom.
     clubs.sort(key=lambda c: (c["medianYds"] is None, -(c["medianYds"] or 0)))

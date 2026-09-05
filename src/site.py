@@ -298,6 +298,11 @@ TEMPLATE = r"""<!doctype html>
   .m-bog{background:var(--warn)}
   .m-dbl{background:var(--bad)}
   .mixlegend{display:flex;gap:16px;margin-top:8px;font-size:11.5px;color:var(--muted);flex-wrap:wrap}
+  .dwrap{min-width:118px}
+  .dbar{display:flex;height:9px;border-radius:2px;overflow:hidden;gap:1px;margin-bottom:2px}
+  .dbar span{display:block}
+  .dl{background:#b97e39}.ds{background:#218a54}.dr{background:#46626e}
+  .dtxt{font-size:9.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
   .sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:5px;text-decoration:none}
   .pflag{font-size:9px;font-weight:600;color:#b98a00;background:#fdf4dd;border-radius:4px;
     padding:1px 4px;vertical-align:1px;letter-spacing:0;text-transform:none}
@@ -427,9 +432,12 @@ TEMPLATE = r"""<!doctype html>
   </div>
 
   <div id="tab-clubs" class="hide">
-    <div class="legend">Full-swing shots only; median is your stock yardage. ⚠ = low sample.</div>
-    <div class="card"><table><thead><tr><th>Club</th><th>n</th><th>Median</th><th>p25–p75</th><th>Max</th></tr></thead>
-      <tbody id="clubsbody"></tbody></table></div></div>
+    <div class="legend" id="clublegend">Full-swing shots only; median is your stock yardage. ⚠ = low sample.
+      Miss bias covers approach shots only (pin = target line); tagged punches/layups/recoveries are excluded from all club stats.</div>
+    <div class="card" style="overflow-x:auto"><table><thead><tr><th>Club</th><th>n</th><th>Median</th><th>p25–p75</th><th>Max</th><th>Miss bias · L/str/R</th></tr></thead>
+      <tbody id="clubsbody"></tbody></table></div>
+    <div class="foot" style="padding:0 4px">Bias bar: share of approach misses left / straight / right of the pin line
+      (GPS-based, ±5y counts as straight). Text under it = short/long split. Needs 5+ approach shots.</div></div>
 
   <div id="tab-coach" class="hide">
     <div class="coachhdr"><span class="ai">AI COACH</span>
@@ -779,12 +787,20 @@ function renderRoundDetail(i){
 }
 document.getElementById('roundsList').onclick=e=>{const c=e.target.closest('[data-r]');if(c)renderRoundDetail(+c.dataset.r);};
 
+function dbar(d){
+  if(!d)return '<span class="mut">—</span>';
+  const seg=(w,cls)=>w?`<span class="${cls}" style="width:${w}%"></span>`:'';
+  return `<div class="dwrap"><div class="dbar">${seg(d.leftPct,'dl')}${seg(d.straightPct,'ds')}${seg(d.rightPct,'dr')}</div>
+    <div class="dtxt">${d.leftPct}·${d.straightPct}·${d.rightPct}% &nbsp; sh ${d.shortPct}/lg ${d.longPct}%</div></div>`;
+}
 function renderClubs(){
+  const ex=DATA.clubs.generatedFrom.annotatedShotsExcluded;
+  if(ex)document.getElementById('clublegend').innerHTML+=` <b>${ex}</b> tagged non-stock swing${ex===1?'':'s'} excluded.`;
   document.getElementById('clubsbody').innerHTML=DATA.clubs.clubs.map(c=>{
-    if(c.medianYds===null)return `<tr><td>${c.club}</td><td>${c.shots}</td><td>—</td><td>—</td><td>—</td></tr>`;
+    if(c.medianYds===null)return `<tr><td>${c.club}</td><td>${c.shots}</td><td>—</td><td>—</td><td>—</td><td class="mut">—</td></tr>`;
     const w=c.lowConfidence?" ⚠":"";
     return `<tr><td>${c.club}${w}</td><td>${c.distanceShots}</td><td><b>${c.medianYds}</b></td>
-      <td>${c.p25Yds}–${c.p75Yds}</td><td>${c.maxYds}</td></tr>`;}).join("");
+      <td>${c.p25Yds}–${c.p75Yds}</td><td>${c.maxYds}</td><td>${dbar(c.dispersion)}</td></tr>`;}).join("");
 }
 
 function setWin(w){win=w;
