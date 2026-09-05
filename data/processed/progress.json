@@ -403,19 +403,19 @@
         "nObs": 63
       },
       "cleanSecondShotPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 60,
+        "nRounds": 1,
+        "nObs": 5
       },
       "recoveryOneShotPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 71,
+        "nRounds": 1,
+        "nObs": 7
       },
       "normalApproachGirPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 12,
+        "nRounds": 1,
+        "nObs": 24
       },
       "upDownPct": {
         "value": 6,
@@ -450,19 +450,19 @@
         "nObs": 126
       },
       "cleanSecondShotPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 60,
+        "nRounds": 1,
+        "nObs": 5
       },
       "recoveryOneShotPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 71,
+        "nRounds": 1,
+        "nObs": 7
       },
       "normalApproachGirPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 12,
+        "nRounds": 1,
+        "nObs": 24
       },
       "upDownPct": {
         "value": 9,
@@ -497,19 +497,19 @@
         "nObs": 270
       },
       "cleanSecondShotPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 60,
+        "nRounds": 1,
+        "nObs": 5
       },
       "recoveryOneShotPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 71,
+        "nRounds": 1,
+        "nObs": 7
       },
       "normalApproachGirPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 12,
+        "nRounds": 1,
+        "nObs": 24
       },
       "upDownPct": {
         "value": 9,
@@ -544,19 +544,19 @@
         "nObs": 513
       },
       "cleanSecondShotPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 60,
+        "nRounds": 1,
+        "nObs": 5
       },
       "recoveryOneShotPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 71,
+        "nRounds": 1,
+        "nObs": 7
       },
       "normalApproachGirPct": {
-        "value": null,
-        "nRounds": 0,
-        "nObs": 0
+        "value": 12,
+        "nRounds": 1,
+        "nObs": 24
       },
       "upDownPct": {
         "value": 8,
@@ -578,6 +578,200 @@
         "nRounds": 39,
         "nObs": 280
       }
+    }
+  },
+  "outcome": {
+    "h18": {
+      "label": "18-hole",
+      "scoreBasis": "per round (18)",
+      "goal": 90,
+      "quarters": [
+        {
+          "q": "2026-Q1",
+          "rounds": 1,
+          "holes": 18,
+          "avgScore": 101.0,
+          "overRating18": 30.4,
+          "pen18": 4.0,
+          "dbl18": 10.0,
+          "tp18": 10.0,
+          "girPct": 28.0,
+          "fwPct": 79.0,
+          "mix": {
+            "birdie": 5.6,
+            "par": 5.6,
+            "bogey": 33.3,
+            "double": 55.6
+          },
+          "thin": true
+        },
+        {
+          "q": "2026-Q2",
+          "rounds": 10,
+          "holes": 180,
+          "avgScore": 99.5,
+          "overRating18": 32.2,
+          "pen18": 2.8,
+          "dbl18": 9.7,
+          "tp18": 4.1,
+          "girPct": 12.0,
+          "fwPct": 53.0,
+          "mix": {
+            "birdie": 0.6,
+            "par": 11.7,
+            "bogey": 33.9,
+            "double": 53.9
+          },
+          "thin": false
+        },
+        {
+          "q": "2026-Q3",
+          "rounds": 11,
+          "holes": 198,
+          "avgScore": 96.3,
+          "overRating18": 28.4,
+          "pen18": 2.5,
+          "dbl18": 7.1,
+          "tp18": 1.9,
+          "girPct": 18.0,
+          "fwPct": 53.0,
+          "mix": {
+            "birdie": 0.5,
+            "par": 21.2,
+            "bogey": 38.9,
+            "double": 39.4
+          },
+          "thin": false
+        }
+      ]
+    },
+    "h9": {
+      "label": "9-hole",
+      "scoreBasis": "per round (9)",
+      "goal": 45,
+      "quarters": [
+        {
+          "q": "2026-Q1",
+          "rounds": 2,
+          "holes": 18,
+          "avgScore": 42.0,
+          "overRating18": 23.4,
+          "pen18": 0.0,
+          "dbl18": 8.0,
+          "tp18": 6.0,
+          "girPct": 17.0,
+          "fwPct": 33.0,
+          "mix": {
+            "birdie": 0.0,
+            "par": 16.7,
+            "bogey": 38.9,
+            "double": 44.4
+          },
+          "thin": true
+        },
+        {
+          "q": "2026-Q2",
+          "rounds": 12,
+          "holes": 108,
+          "avgScore": 39.7,
+          "overRating18": 19.4,
+          "pen18": 1.2,
+          "dbl18": 4.5,
+          "tp18": 3.7,
+          "girPct": 28.0,
+          "fwPct": 56.0,
+          "mix": {
+            "birdie": 1.9,
+            "par": 22.2,
+            "bogey": 50.9,
+            "double": 25.0
+          },
+          "thin": false
+        },
+        {
+          "q": "2026-Q3",
+          "rounds": 11,
+          "holes": 99,
+          "avgScore": 37.2,
+          "overRating18": 14.7,
+          "pen18": 1.3,
+          "dbl18": 3.1,
+          "tp18": 2.4,
+          "girPct": 34.0,
+          "fwPct": 70.0,
+          "mix": {
+            "birdie": 4.0,
+            "par": 31.3,
+            "bogey": 47.5,
+            "double": 17.2
+          },
+          "thin": false
+        }
+      ]
+    },
+    "all": {
+      "label": "All (per-18)",
+      "scoreBasis": "per 18 (normalized)",
+      "goal": 90,
+      "quarters": [
+        {
+          "q": "2026-Q1",
+          "rounds": 3,
+          "holes": 36,
+          "avgScore": 89.7,
+          "overRating18": 25.7,
+          "pen18": 2.0,
+          "dbl18": 9.0,
+          "tp18": 8.0,
+          "girPct": 22.0,
+          "fwPct": 65.0,
+          "mix": {
+            "birdie": 2.8,
+            "par": 11.1,
+            "bogey": 36.1,
+            "double": 50.0
+          },
+          "thin": false
+        },
+        {
+          "q": "2026-Q2",
+          "rounds": 22,
+          "holes": 288,
+          "avgScore": 88.5,
+          "overRating18": 25.2,
+          "pen18": 2.2,
+          "dbl18": 7.8,
+          "tp18": 3.9,
+          "girPct": 18.0,
+          "fwPct": 54.0,
+          "mix": {
+            "birdie": 1.0,
+            "par": 15.6,
+            "bogey": 40.3,
+            "double": 43.1
+          },
+          "thin": false
+        },
+        {
+          "q": "2026-Q3",
+          "rounds": 22,
+          "holes": 297,
+          "avgScore": 85.3,
+          "overRating18": 21.5,
+          "pen18": 2.1,
+          "dbl18": 5.8,
+          "tp18": 2.1,
+          "girPct": 23.0,
+          "fwPct": 56.0,
+          "mix": {
+            "birdie": 1.7,
+            "par": 24.6,
+            "bogey": 41.8,
+            "double": 32.0
+          },
+          "thin": false
+        }
+      ]
     }
   },
   "timeSeries": [

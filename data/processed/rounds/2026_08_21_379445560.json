@@ -150,7 +150,303 @@
     "emptyShotHoles": [],
     "note": "Score is authoritative. The sensor shot layer is imperfect: it can under-record (un-sensed short shots; penalties carry no position) or over-record (phantom/practice strokes). Treat shot counts as spatial detail, not stroke truth; discount suspectHoles for club/distance stats. Counts here EXCLUDE phantomShots (between-hole transit logged as strokes); those shots stay in `holes[].shots` flagged with phantom=true."
   },
-  "annotations": null,
+  "annotations": {
+    "narrative": "# Post-round notes \u2014 2026_08_21_379445560\n\nAlright, had another round at Riverside today and shot a 95 -- could tell pretty early it wasn't going to be a 'scoring day' but a decent day of golf.\n\nOverview:\nDriver was good and consistent today -- very manageable -- not a bomber, not dead straight but very playable\nLong clubs were very good and reliable -- work with my 5W and 4H really paying off and used them confidently and well\nIrons -- really still working those new irons in -- need more calibration, and today wasn't a great iron day, but mid-round was able to do feet together drill and reset well carrying the rest of the day well (found I simply was pulling my backswing a bit too wide instead of inside with my irons and corrected -- likely due to long-clubs going with a wide takeaway) -- all in all new irons confirmed go roughly 10y shorter than other irons -- nothing wrong with these, just need more reps and not my best day with them\nPutting was really meh -- missed some that should have gone in from 10' and in -- just wasn't 'on', but lag was decent -- not terrible, not great -- nothing really rolling my way today in putting.\nWedges -- poor today -- but not all poor. My pitching was just fine generally -- from 30-70y could use my vokeys well with the pitch shots. My #1 priority is obvious now and was terrible today -- 25y in for 'chipping'. not pitching -- this is something I can definitely improve, but has not been a strong area of focus. Will spend some real time working on this and my game will improve A LOT\nBunkers -- other than H5 as a blow up hole, my bunker shots (3 in all) were very good, think I figured out the clay a bit, going about a half inch behind the ball instead of 2\" with soft sand -- really did well with bunkers today\n\nThe Turn Breakdown\n\nMy breakdown for select holes:\n\nH5 - Par 3, blew up\nThis one pushes my distance with the new irons with 175 yard tee to hole\ntook 6i, decent strike, with good distance but landed in tree cover to right of path\nHad a poor lie across path with trees overhead, sent into green-side bunker\nThese are clay packed bunkers and simply got a hold of the ball clean (without sand) and sent it over green, wedged back and ended up in another trap\nJust struggle after struggle here.\nPoor hole\n\nH7 - Par 4\nDecent drive 219y\nAbsolutely duffed my next shot with 7i and ended up in trees to right\nHad to punch out as directly behind tree, decent wedge from there, but 3 putt\n\nH8 - Par 4 - #1 handicap on course\nEnded up with a bogey and very well played hole\nThis one doglegs right, but driver had a strong fade, so went with 5W off tee for straighter shot\nSent it 224 yards straight\nHit my 4h decent but a bit chunky, short to right at 148y\nWedged and 2 putt -- very happy with result - first time not double or worse on hole\n\nH9 - Par 4\nOnly talk briefly about this hole, drive sliced right, but playable\nanother bad 7i into bunker\nAmazing bunker out with a tap-in for bogey\n\nH10 - Par 3\nIrons weren't going great so went with 4h\nSent way left as I hit ground before ball\nPlaying recovery from there with tress and cart path between green\nPitched to safe spot, wedged and putted from there for triple bogey\n\nH11\nSolid recovery here -- realized my irons weren't behaving so did feet together drill to get good strike\nSolid strike a bit right to 131y into bunker on right green\nGreat out, 2 putt in for bogey\n\nH12 Par 5\nUsually do well on this hole\nI was focused on fixing driver -- meaning was not getting my release well enough causing fades/slices\nUnfortunately when I overdo release, often will top the drive which I did here for only 64y\n5W awesome recovery cracking ball for 244y\nEnded up with another 5w for 149y but for once went very straight (I usually aim a bit left but release was good) - Trees dropped it a bit short\nTough 85y to green with tree overhang having to go over, so sent it a bit over, but overall good shot\nBad wedge shot from there, had to chip again, followed by putt -- double bogey\n\nH15 Par 4\nDecent drive 211, but low and short\nGreat 5w strike for 214y -- however a bit right which made me contend with tree overhangs blocking clean approach\nBad pitch, pitched again followed by 3 putt\n",
+    "shots": [
+      {
+        "shotId": 10615854972,
+        "hole": 5,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "good_decision_bad_execution",
+        "excludeFromStock": false,
+        "note": "6i decent strike good distance but landed in tree cover right of path"
+      },
+      {
+        "shotId": 10615855006,
+        "hole": 5,
+        "intent": "recovery",
+        "lieQuality": null,
+        "evaluation": "recovery_fail",
+        "excludeFromStock": true,
+        "note": "poor lie across path, trees overhead, sent into greenside bunker"
+      },
+      {
+        "shotId": 10615854994,
+        "hole": 5,
+        "intent": "recovery",
+        "lieQuality": null,
+        "evaluation": "recovery_fail",
+        "excludeFromStock": true,
+        "note": "clay bunker, caught ball clean over green into another trap"
+      },
+      {
+        "shotId": 10615854999,
+        "hole": 7,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_well",
+        "excludeFromStock": false,
+        "note": "decent drive 219y"
+      },
+      {
+        "shotId": 10615855016,
+        "hole": 7,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_poorly",
+        "excludeFromStock": false,
+        "note": "absolutely duffed 7i into trees right"
+      },
+      {
+        "shotId": 10615855014,
+        "hole": 7,
+        "intent": "punch",
+        "lieQuality": null,
+        "evaluation": "recovery_success",
+        "excludeFromStock": true,
+        "note": "had to punch out from directly behind tree"
+      },
+      {
+        "shotId": 10615855002,
+        "hole": 7,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_well",
+        "excludeFromStock": false,
+        "note": "decent wedge from there"
+      },
+      {
+        "shotId": 10615854944,
+        "hole": 8,
+        "intent": "safety",
+        "lieQuality": null,
+        "evaluation": "executed_well",
+        "excludeFromStock": false,
+        "note": "went 5W off tee for straighter shot on dogleg right, 224y straight"
+      },
+      {
+        "shotId": 10615854992,
+        "hole": 8,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_poorly",
+        "excludeFromStock": false,
+        "note": "4h a bit chunky, short to right"
+      },
+      {
+        "shotId": 10615854954,
+        "hole": 9,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_poorly",
+        "excludeFromStock": false,
+        "note": "drive sliced right but playable"
+      },
+      {
+        "shotId": 10615854943,
+        "hole": 9,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_poorly",
+        "excludeFromStock": false,
+        "note": "another bad 7i into bunker"
+      },
+      {
+        "shotId": 10615854970,
+        "hole": 9,
+        "intent": "recovery",
+        "lieQuality": null,
+        "evaluation": "recovery_success",
+        "excludeFromStock": true,
+        "note": "amazing bunker out with tap-in"
+      },
+      {
+        "shotId": 10615855005,
+        "hole": 10,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_poorly",
+        "excludeFromStock": false,
+        "note": "went 4h, hit ground before ball, way left"
+      },
+      {
+        "shotId": 10615854936,
+        "hole": 10,
+        "intent": "recovery",
+        "lieQuality": null,
+        "evaluation": "recovery_success",
+        "excludeFromStock": true,
+        "note": "pitched to safe spot from trees/cart path recovery"
+      },
+      {
+        "shotId": 10615854977,
+        "hole": 10,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": null,
+        "excludeFromStock": false,
+        "note": "wedged"
+      },
+      {
+        "shotId": 10615854965,
+        "hole": 11,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_well",
+        "excludeFromStock": false,
+        "note": "solid strike a bit right to 131y into bunker after feet-together reset"
+      },
+      {
+        "shotId": 10615855018,
+        "hole": 11,
+        "intent": "recovery",
+        "lieQuality": null,
+        "evaluation": "recovery_success",
+        "excludeFromStock": true,
+        "note": "great bunker out"
+      },
+      {
+        "shotId": 10615855009,
+        "hole": 12,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_poorly",
+        "excludeFromStock": false,
+        "note": "topped the drive, only 64y overdoing release"
+      },
+      {
+        "shotId": 10615854990,
+        "hole": 12,
+        "intent": "recovery",
+        "lieQuality": null,
+        "evaluation": "recovery_success",
+        "excludeFromStock": true,
+        "note": "awesome 5W recovery 244y"
+      },
+      {
+        "shotId": 10615854998,
+        "hole": 12,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_well",
+        "excludeFromStock": false,
+        "note": "5W 149y went very straight, trees dropped it short"
+      },
+      {
+        "shotId": 10615854969,
+        "hole": 12,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_well",
+        "excludeFromStock": false,
+        "note": "tough 85y over tree overhang, sent a bit over, good shot"
+      },
+      {
+        "shotId": 10615855001,
+        "hole": 12,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_poorly",
+        "excludeFromStock": false,
+        "note": "bad wedge, had to chip again"
+      },
+      {
+        "shotId": 10615854931,
+        "hole": 15,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_poorly",
+        "excludeFromStock": false,
+        "note": "decent drive but low and short"
+      },
+      {
+        "shotId": 10615854986,
+        "hole": 15,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "good_decision_bad_execution",
+        "excludeFromStock": false,
+        "note": "great 5w strike but a bit right, tree overhangs blocking approach"
+      },
+      {
+        "shotId": 10615854932,
+        "hole": 15,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": "executed_poorly",
+        "excludeFromStock": false,
+        "note": "bad pitch"
+      },
+      {
+        "shotId": 10615854980,
+        "hole": 15,
+        "intent": "normal",
+        "lieQuality": null,
+        "evaluation": null,
+        "excludeFromStock": false,
+        "note": "pitched again"
+      }
+    ],
+    "holes": [
+      {
+        "hole": 5,
+        "postTeeState": null,
+        "doubleClass": "compounded",
+        "preventableEscalation": true,
+        "note": "par 3 blow up, struggle after struggle in clay bunkers"
+      },
+      {
+        "hole": 7,
+        "postTeeState": "clean",
+        "doubleClass": "compounded",
+        "preventableEscalation": true,
+        "note": "decent drive; duffed 7i into trees, punch out, 3 putt"
+      },
+      {
+        "hole": 8,
+        "postTeeState": "clean",
+        "doubleClass": null,
+        "preventableEscalation": null,
+        "note": "well played bogey, first time not double or worse here"
+      },
+      {
+        "hole": 9,
+        "postTeeState": "compromised",
+        "doubleClass": null,
+        "preventableEscalation": null,
+        "note": null
+      },
+      {
+        "hole": 10,
+        "postTeeState": null,
+        "doubleClass": "compounded",
+        "preventableEscalation": true,
+        "note": "4h way left, recovery from trees/path, triple bogey"
+      },
+      {
+        "hole": 12,
+        "postTeeState": "recovery",
+        "doubleClass": "short_game_driven",
+        "preventableEscalation": false,
+        "note": "topped drive but 5W recovery restored normal golf; bad wedge/chip cost the double"
+      },
+      {
+        "hole": 15,
+        "postTeeState": "clean",
+        "doubleClass": "short_game_driven",
+        "preventableEscalation": true,
+        "note": "bad pitch then 3 putt"
+      }
+    ],
+    "unmatched": [
+      {
+        "hole": 5,
+        "text": "wedged back and ended up in another trap (no matching recorded shot \u2014 Garmin sequence for this hole is noisy: an artifact 75y 'shot' precedes the tee ball and the second bunker visit is unrecorded)",
+        "intent": "recovery"
+      }
+    ]
+  },
   "holes": [
     {
       "number": 1,
@@ -1191,7 +1487,13 @@
           "sgCategory": "longApproach",
           "strokesGained": -0.75,
           "confidence": "authoritative",
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "good_decision_bad_execution",
+            "note": "6i decent strike good distance but landed in tree cover right of path",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615855006,
@@ -1234,7 +1536,13 @@
           "sgCategory": "inside50",
           "strokesGained": -0.746,
           "confidence": "authoritative",
-          "resultCategory": "bunker"
+          "resultCategory": "bunker",
+          "annotation": {
+            "intent": "recovery",
+            "evaluation": "recovery_fail",
+            "note": "poor lie across path, trees overhead, sent into greenside bunker",
+            "excludeFromStock": true
+          }
         },
         {
           "shotId": 10615854994,
@@ -1277,7 +1585,13 @@
           "sgCategory": "inside50",
           "strokesGained": -1.178,
           "confidence": "authoritative",
-          "resultCategory": "long"
+          "resultCategory": "long",
+          "annotation": {
+            "intent": "recovery",
+            "evaluation": "recovery_fail",
+            "note": "clay bunker, caught ball clean over green into another trap",
+            "excludeFromStock": true
+          }
         },
         {
           "shotId": 10615855019,
@@ -1591,7 +1905,13 @@
           "sgCategory": "offTee",
           "strokesGained": -0.33,
           "confidence": "authoritative",
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_well",
+            "note": "decent drive 219y",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615855016,
@@ -1634,7 +1954,13 @@
           "sgCategory": "midApproach",
           "strokesGained": -0.561,
           "confidence": "approximate",
-          "resultCategory": "off-map"
+          "resultCategory": "off-map",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_poorly",
+            "note": "absolutely duffed 7i into trees right",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615855014,
@@ -1677,7 +2003,13 @@
           "sgCategory": "midApproach",
           "strokesGained": -0.99,
           "confidence": "authoritative",
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "annotation": {
+            "intent": "punch",
+            "evaluation": "recovery_success",
+            "note": "had to punch out from directly behind tree",
+            "excludeFromStock": true
+          }
         },
         {
           "shotId": 10615855002,
@@ -1720,7 +2052,13 @@
           "sgCategory": "midApproach",
           "strokesGained": -0.205,
           "confidence": "authoritative",
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_well",
+            "note": "decent wedge from there",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854995,
@@ -1877,7 +2215,13 @@
           "sgCategory": "offTee",
           "strokesGained": -0.161,
           "confidence": "authoritative",
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "annotation": {
+            "intent": "safety",
+            "evaluation": "executed_well",
+            "note": "went 5W off tee for straighter shot on dogleg right, 224y straight",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854992,
@@ -1920,7 +2264,13 @@
           "sgCategory": "longApproach",
           "strokesGained": -0.665,
           "confidence": "authoritative",
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_poorly",
+            "note": "4h a bit chunky, short to right",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615855003,
@@ -2077,7 +2427,13 @@
           "sgCategory": "offTee",
           "strokesGained": -0.415,
           "confidence": "approximate",
-          "resultCategory": "off-map"
+          "resultCategory": "off-map",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_poorly",
+            "note": "drive sliced right but playable",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854943,
@@ -2120,7 +2476,13 @@
           "sgCategory": "longApproach",
           "strokesGained": -0.826,
           "confidence": "inferred",
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_poorly",
+            "note": "another bad 7i into bunker",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854971,
@@ -2206,7 +2568,13 @@
           "sgCategory": "inside50",
           "strokesGained": 0.495,
           "confidence": "authoritative",
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "annotation": {
+            "intent": "recovery",
+            "evaluation": "recovery_success",
+            "note": "amazing bunker out with tap-in",
+            "excludeFromStock": true
+          }
         }
       ]
     },
@@ -2277,7 +2645,13 @@
           "sgCategory": "longApproach",
           "strokesGained": -0.911,
           "confidence": "authoritative",
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_poorly",
+            "note": "went 4h, hit ground before ball, way left",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854936,
@@ -2320,7 +2694,13 @@
           "sgCategory": "midApproach",
           "strokesGained": -0.759,
           "confidence": "authoritative",
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "annotation": {
+            "intent": "recovery",
+            "evaluation": "recovery_success",
+            "note": "pitched to safe spot from trees/cart path recovery",
+            "excludeFromStock": true
+          }
         },
         {
           "shotId": 10615854977,
@@ -2363,7 +2743,13 @@
           "sgCategory": "inside50",
           "strokesGained": 0.054,
           "confidence": "authoritative",
-          "resultCategory": "green"
+          "resultCategory": "green",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": null,
+            "note": "wedged",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854958,
@@ -2520,7 +2906,13 @@
           "sgCategory": "midApproach",
           "strokesGained": -0.538,
           "confidence": "inferred",
-          "resultCategory": "bunker"
+          "resultCategory": "bunker",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_well",
+            "note": "solid strike a bit right to 131y into bunker after feet-together reset",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615855018,
@@ -2563,7 +2955,13 @@
           "sgCategory": "inside50",
           "strokesGained": -0.925,
           "confidence": "authoritative",
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "annotation": {
+            "intent": "recovery",
+            "evaluation": "recovery_success",
+            "note": "great bunker out",
+            "excludeFromStock": true
+          }
         },
         {
           "shotId": 10615854953,
@@ -2720,7 +3118,13 @@
           "sgCategory": "offTee",
           "strokesGained": -0.73,
           "confidence": "authoritative",
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_poorly",
+            "note": "topped the drive, only 64y overdoing release",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854990,
@@ -2763,7 +3167,13 @@
           "sgCategory": "offTee",
           "strokesGained": 0.048,
           "confidence": "authoritative",
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "annotation": {
+            "intent": "recovery",
+            "evaluation": "recovery_success",
+            "note": "awesome 5W recovery 244y",
+            "excludeFromStock": true
+          }
         },
         {
           "shotId": 10615854998,
@@ -2806,7 +3216,13 @@
           "sgCategory": "longApproach",
           "strokesGained": -0.792,
           "confidence": "authoritative",
-          "resultCategory": "short-left"
+          "resultCategory": "short-left",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_well",
+            "note": "5W 149y went very straight, trees dropped it short",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854969,
@@ -2849,7 +3265,13 @@
           "sgCategory": "midApproach",
           "strokesGained": -0.619,
           "confidence": "authoritative",
-          "resultCategory": "long"
+          "resultCategory": "long",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_well",
+            "note": "tough 85y over tree overhang, sent a bit over, good shot",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615855001,
@@ -2892,7 +3314,13 @@
           "sgCategory": "inside50",
           "strokesGained": -0.797,
           "confidence": "authoritative",
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_poorly",
+            "note": "bad wedge, had to chip again",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854996,
@@ -3449,7 +3877,13 @@
           "sgCategory": "offTee",
           "strokesGained": -0.107,
           "confidence": "authoritative",
-          "resultCategory": "short-right"
+          "resultCategory": "short-right",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_poorly",
+            "note": "decent drive but low and short",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854986,
@@ -3492,7 +3926,13 @@
           "sgCategory": "longApproach",
           "strokesGained": -0.642,
           "confidence": "authoritative",
-          "resultCategory": "long-right"
+          "resultCategory": "long-right",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "good_decision_bad_execution",
+            "note": "great 5w strike but a bit right, tree overhangs blocking approach",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854932,
@@ -3535,7 +3975,13 @@
           "sgCategory": "inside50",
           "strokesGained": -0.794,
           "confidence": "authoritative",
-          "resultCategory": "short"
+          "resultCategory": "short",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": "executed_poorly",
+            "note": "bad pitch",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615854980,
@@ -3578,7 +4024,13 @@
           "sgCategory": "inside50",
           "strokesGained": -0.788,
           "confidence": "authoritative",
-          "resultCategory": "long-right"
+          "resultCategory": "long-right",
+          "annotation": {
+            "intent": "normal",
+            "evaluation": null,
+            "note": "pitched again",
+            "excludeFromStock": false
+          }
         },
         {
           "shotId": 10615855013,

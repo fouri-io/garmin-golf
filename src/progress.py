@@ -234,6 +234,72 @@ def _priority_window(rounds: list[dict]) -> dict:
     }
 
 
+def _outcome_section(con) -> dict:
+    """Layer-1 Outcome data: quarterly scorecard-objective trends per round scope.
+
+    Scopes: 18-hole rounds (the headline), 9-hole rounds (their own per-9 trend),
+    and everything normalized per 18. NO analysis-cutoff filter here — the Outcome
+    layer is pure scorecard history, so pre-cutoff and backfilled rounds all count.
+    Ratios are per-18 in every scope (the app-wide convention); avgScore is per
+    round in h18/h9 and per-18-normalized in 'all'.
+    """
+    scopes = {
+        "h18": {"label": "18-hole", "where": "r.holes_completed >= 18",
+                "scoreBasis": "per round (18)", "goal": 90},
+        "h9": {"label": "9-hole", "where": "r.holes_completed < 18",
+               "scoreBasis": "per round (9)", "goal": 45},
+        "all": {"label": "All (per-18)", "where": "TRUE",
+                "scoreBasis": "per 18 (normalized)", "goal": 90},
+    }
+    out = {}
+    for key, s in scopes.items():
+        rounds = {r[0]: r for r in con.execute(f"""
+            SELECT strftime(r.round_date, '%Y') || '-Q' ||
+                   CAST((month(r.round_date) + 2) // 3 AS VARCHAR) AS q,
+                   count(*),
+                   round(avg(CASE WHEN ? = 'all'
+                             THEN r.total_strokes * 18.0 / r.holes_completed
+                             ELSE r.total_strokes END), 1),
+                   round(avg((r.total_strokes - r.tee_rating) * 18.0 / r.holes_completed)
+                         FILTER (WHERE r.tee_rating IS NOT NULL), 1)
+            FROM canon.round r WHERE {s["where"]}
+            GROUP BY q""", [key]).fetchall()}
+        holes = {r[0]: r for r in con.execute(f"""
+            SELECT strftime(hf.round_date, '%Y') || '-Q' ||
+                   CAST((month(hf.round_date) + 2) // 3 AS VARCHAR) AS q,
+                   count(*),
+                   round(18.0 * sum(hf.penalties) / count(*), 1),
+                   round(18.0 * count(*) FILTER (WHERE hf.double_plus) / count(*), 1),
+                   round(18.0 * count(*) FILTER (WHERE hf.putts >= 3) / count(*), 1),
+                   round(100.0 * count(*) FILTER (WHERE hf.gir) / count(*)),
+                   round(100.0 * count(*) FILTER (WHERE hf.fairway_outcome = 'HIT')
+                         / nullif(count(*) FILTER (WHERE hf.fairway_outcome IS NOT NULL), 0)),
+                   round(100.0 * count(*) FILTER (WHERE hf.score_to_par < 0) / count(*), 1),
+                   round(100.0 * count(*) FILTER (WHERE hf.score_to_par = 0) / count(*), 1),
+                   round(100.0 * count(*) FILTER (WHERE hf.score_to_par = 1) / count(*), 1),
+                   round(100.0 * count(*) FILTER (WHERE hf.score_to_par >= 2) / count(*), 1)
+            FROM derived.hole_facts hf
+            JOIN canon.round r USING (round_id) WHERE {s["where"]}
+            GROUP BY q""").fetchall()}
+        quarters = []
+        for q in sorted(rounds):
+            _, n_rounds, avg_score, over_rating = rounds[q]
+            h = holes.get(q)
+            quarters.append({
+                "q": q, "rounds": n_rounds, "holes": h[1] if h else 0,
+                "avgScore": avg_score, "overRating18": over_rating,
+                "pen18": h[2] if h else None, "dbl18": h[3] if h else None,
+                "tp18": h[4] if h else None, "girPct": h[5] if h else None,
+                "fwPct": h[6] if h else None,
+                "mix": {"birdie": h[7], "par": h[8], "bogey": h[9], "double": h[10]}
+                       if h else None,
+                "thin": n_rounds < 3,
+            })
+        out[key] = {"label": s["label"], "scoreBasis": s["scoreBasis"],
+                    "goal": s["goal"], "quarters": quarters}
+    return out
+
+
 def _baselines(all_time: dict | None) -> dict:
     """Comparison baselines as per-bucket SG offsets vs scratch. SG-vs-baseline = your
     SG-vs-scratch minus the baseline's. Scratch = 0; My-average = your season norm;
@@ -317,6 +383,7 @@ def build(through_scorecard_id: int | None = None, write: bool = True) -> dict:
         "authoritative": auth,
         "putting": putting,
         "priorityMetrics": priority,
+        "outcome": _outcome_section(con),
         "timeSeries": series,
     }
     if write:

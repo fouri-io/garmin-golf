@@ -244,6 +244,33 @@ TEMPLATE = r"""<!doctype html>
   table.proc td.pmna{color:var(--muted)}
   table.proc .pmn{font-size:10px;color:var(--muted)}
   table.proc td:first-child{white-space:nowrap}
+  /* Outcome layer */
+  .osub{font-size:12px;margin-top:2px;color:var(--muted)}
+  .osub .gd{color:var(--good);font-weight:700}
+  .osub .bd{color:var(--bad);font-weight:700}
+  .ochartwrap{position:relative;margin-top:4px}
+  #osvg text{font:11px -apple-system,Segoe UI,Roboto,Arial,sans-serif;fill:var(--muted)}
+  #osvg .qlab{font-size:11.5px;fill:var(--ink);font-weight:600}
+  #osvg .nlab{font-size:10px;fill:var(--muted)}
+  #osvg .ptlab{font-size:12px;font-weight:800;fill:var(--ink)}
+  .otip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;
+    padding:6px 9px;border-radius:8px;opacity:0;transition:opacity .12s;white-space:nowrap;
+    transform:translate(-50%,-115%)}
+  .otip small{display:block;color:#c8d2dc;font-size:10.5px}
+  table.otab td.now,table.otab th.now{background:#f2f6fa}
+  .mixgrid{display:flex;flex-direction:column;gap:7px}
+  .mixrow{display:flex;align-items:center;gap:10px}
+  .mixq{width:76px;font-size:12px;color:var(--ink);text-align:right;flex:none}
+  .mixq .esttag{font-style:normal;font-size:9.5px;color:var(--muted)}
+  .mixbar{flex:1;display:flex;height:22px;border-radius:5px;overflow:hidden;gap:2px}
+  .mixbar span{display:flex;align-items:center;justify-content:center;font-size:10.5px;
+    font-weight:700;color:#fff;border-radius:2px;min-width:0;overflow:hidden}
+  .m-bird{background:#0d6a3a}
+  .m-par{background:var(--good)}
+  .m-bog{background:var(--warn)}
+  .m-dbl{background:var(--bad)}
+  .mixlegend{display:flex;gap:16px;margin-top:8px;font-size:11.5px;color:var(--muted);flex-wrap:wrap}
+  .sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:5px;text-decoration:none}
   .pflag{font-size:9px;font-weight:600;color:#b98a00;background:#fdf4dd;border-radius:4px;
     padding:1px 4px;vertical-align:1px;letter-spacing:0;text-transform:none}
   /* trend */
@@ -285,6 +312,31 @@ TEMPLATE = r"""<!doctype html>
       <div class="date" id="date"></div></div></div>
 
   <div id="tab-progress">
+    <div class="card"><h2>Am I improving?<span id="obasis" style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)"></span></h2>
+      <div class="ctl" style="margin:0 0 10px">
+        <div class="seg" id="oscope">
+          <button class="on" data-s="h18">18-hole</button>
+          <button data-s="h9">9-hole</button>
+          <button data-s="all">All (per-18)</button></div>
+        <div class="seg" id="olens">
+          <button class="on" data-l="raw">Raw score</button>
+          <button data-l="rating">vs rating</button></div>
+      </div>
+      <div class="tiles" style="grid-template-columns:repeat(3,1fr)">
+        <div class="tile"><div class="lab" id="ot1l">This quarter</div><div class="v" id="ot1">—</div><div class="osub" id="ot1s"></div></div>
+        <div class="tile"><div class="lab">12-month change</div><div class="v" id="ot2">—</div><div class="osub" id="ot2s"></div></div>
+        <div class="tile"><div class="lab">Since start</div><div class="v" id="ot3">—</div><div class="osub" id="ot3s"></div></div>
+      </div>
+      <div class="ochartwrap"><svg id="osvg" viewBox="0 0 880 300" width="100%"></svg><div class="otip" id="otip"></div></div>
+      <div class="foot" id="overdict" style="margin-top:6px"></div></div>
+    <div class="card"><h2>Outcome metrics by quarter<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">per-18 ratios · scorecard only</span></h2>
+      <div id="otable" style="overflow-x:auto"></div>
+      <div class="foot" style="margin-top:6px">Green/red is direction-aware. Birdie/par/bogey/double live in the score mix below.</div></div>
+    <div class="card"><h2>Score mix by quarter<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">what your holes are made of</span></h2>
+      <div class="mixgrid" id="omix"></div>
+      <div class="mixlegend"><span><s class="sw m-bird"></s>Birdie+</span><span><s class="sw m-par"></s>Par</span><span><s class="sw m-bog"></s>Bogey</span><span><s class="sw m-dbl"></s>Double+</span></div>
+      <div class="foot" style="margin-top:4px">Improvement reads as mass flowing left (doubles → bogeys → pars).</div></div>
+
     <div class="ctl"><span class="lab">Window — which rounds you're viewing</span>
       <div class="seg" id="win">
         <button class="on" data-w="thisRound">This round</button>
@@ -440,6 +492,117 @@ function renderProgress(){
     document.getElementById('puttfoot').textContent='First-putt distance is GPS-estimated (0–3 ft least reliable); putt counts are exact.';}
   drawBars(vals);
 }
+// ---- Outcome layer (layer 1: what did I score, and is it improving?) ----
+let oScope="h18", oLens="raw";
+const OROWS=[["avgScore","Avg score","down",1],["pen18","Penalties","down",1],
+  ["dbl18","Doubles+","down",1],["tp18","3-putts","down",1],
+  ["girPct","GIR %","up",0],["fwPct","Fairways %","up",0]];
+function qlab(q){const [y,n]=q.split("-");return n+" ’"+y.slice(2);}
+function ofmt(v,d){return v==null?"—":v.toFixed(d);}
+function renderOutcome(){
+  const O=P.outcome; if(!O||!O[oScope])return;
+  const sc=O[oScope], all=sc.quarters, qs=all.slice(-8);
+  const val=q=> oLens==="raw"? q.avgScore : q.overRating18;
+  document.getElementById('obasis').textContent=
+    (oLens==="raw"? "avg score, "+sc.scoreBasis : "score vs course rating, per 18")+" · quarterly";
+  // tiles
+  const last=qs[qs.length-1], prev=qs[qs.length-2];
+  const t1=document.getElementById('ot1');
+  document.getElementById('ot1l').textContent="This quarter ("+(last?qlab(last.q):"—")+")";
+  t1.textContent=last&&val(last)!=null?val(last).toFixed(1):"—";
+  const dtile=(el,sel,a,b,suffix)=>{
+    const e=document.getElementById(el), s=document.getElementById(sel);
+    if(a==null||b==null){e.textContent="—";s.textContent="";return;}
+    const d=a-b, good=d<0;
+    e.textContent=(d>0?"+":"")+d.toFixed(1);
+    e.className="v "+(good?"pos":"neg");
+    s.innerHTML=suffix;
+  };
+  document.getElementById('ot1s').innerHTML=last&&prev&&val(last)!=null&&val(prev)!=null?
+    ((val(last)-val(prev))<=0?`<span class="gd">▼ ${(val(prev)-val(last)).toFixed(1)}</span>`
+      :`<span class="bd">▲ ${(val(last)-val(prev)).toFixed(1)}</span>`)
+    +` vs ${qlab(prev.q)} · n=${last.rounds}`:(last?`n=${last.rounds}`:"");
+  const back4=all.length>4?all[all.length-5]:null;
+  dtile('ot2','ot2s',last?val(last):null,back4?val(back4):null,
+    back4?`${ofmt(val(back4),1)} → ${ofmt(val(last),1)}`:"");
+  if(!back4){document.getElementById('ot2').textContent="—";
+    document.getElementById('ot2s').textContent="needs 5+ quarters";}
+  const first=all[0];
+  dtile('ot3','ot3s',last?val(last):null,first&&first!==last?val(first):null,
+    first&&first!==last?`${ofmt(val(first),1)} (${qlab(first.q)}) → ${ofmt(val(last),1)}`:"");
+  if(!first||first===last){document.getElementById('ot3').textContent="—";
+    document.getElementById('ot3s').textContent="one quarter so far";}
+  // chart
+  const pts=qs.map((q,i)=>({q,v:val(q),i})).filter(p=>p.v!=null);
+  const svg=document.getElementById('osvg');
+  const goal=oLens==="raw"?sc.goal:P.scoring.break90OverRating;
+  if(!pts.length){svg.innerHTML="";return;}
+  const vals=pts.map(p=>p.v), lo=Math.min(...vals,goal)-2, hi=Math.max(...vals)+2;
+  const X=i=> 90+(qs.length<2?0:i*(760/(qs.length-1))), Y=v=> 40+(hi-v)/(hi-lo)*222;
+  let g="";
+  const step=Math.max(2,Math.ceil((hi-lo)/4));
+  for(let t=Math.ceil(lo/step)*step;t<=hi;t+=step)
+    g+=`<line x1="56" x2="856" y1="${Y(t)}" y2="${Y(t)}" stroke="#e6eaee"/>`
+      +`<text x="48" y="${Y(t)+4}" text-anchor="end">${t}</text>`;
+  g+=`<line x1="56" x2="856" y1="${Y(goal)}" y2="${Y(goal)}" stroke="var(--good)" stroke-width="2" stroke-dasharray="2 5" opacity=".8"/>`
+    +`<text x="850" y="${Y(goal)-6}" text-anchor="end" fill="var(--good)" style="font-weight:700">${oLens==="raw"?(oScope==="h9"?"Break 45":"Break 90"):"Break-90 pace"}</text>`;
+  g+=`<path d="${pts.map((p,k)=>(k?"L":"M")+X(p.i)+" "+Y(p.v)).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>`;
+  pts.forEach((p,k)=>{
+    const lastPt=k===pts.length-1;
+    g+=`<circle cx="${X(p.i)}" cy="${Y(p.v)}" r="${lastPt?6.5:5.5}" fill="var(--accent)" stroke="#fff" stroke-width="2" data-q="${qlab(p.q.q)}" data-v="${p.v.toFixed(1)}" data-n="n=${p.q.rounds} round${p.q.rounds===1?"":"s"}${p.q.thin?" — thin sample":""}"/>`;
+    if(k===0||lastPt) g+=`<text class="ptlab" x="${X(p.i)}" y="${Y(p.v)-12}" text-anchor="middle">${p.v.toFixed(1)}</text>`;
+  });
+  qs.forEach((q,i)=>{g+=`<text class="qlab" x="${X(i)}" y="284" text-anchor="middle">${qlab(q.q)}</text>`
+    +`<text class="nlab" x="${X(i)}" y="297" text-anchor="middle">n=${q.rounds}${q.thin?" ⚠":""}</text>`;});
+  svg.innerHTML=g;
+  const tip=document.getElementById('otip');
+  svg.querySelectorAll('circle').forEach(c=>{
+    c.addEventListener('mouseenter',()=>{const r=c.getBoundingClientRect(),w=c.closest('.ochartwrap').getBoundingClientRect();
+      tip.innerHTML=`<b>${c.dataset.q}</b> — ${c.dataset.v}<small>${c.dataset.n}</small>`;
+      tip.style.left=(r.left-w.left+r.width/2)+'px';tip.style.top=(r.top-w.top)+'px';tip.style.opacity=1;});
+    c.addEventListener('mouseleave',()=>tip.style.opacity=0);
+  });
+  // verdict
+  let streak=0;
+  for(let k=pts.length-1;k>0&&pts[k].v<pts[k-1].v;k--)streak++;
+  const vd=document.getElementById('overdict');
+  if(pts.length<2){vd.textContent="";}
+  else{const total=pts[0].v-pts[pts.length-1].v;
+    const word=total>1?"Improving":total<-1?"Regressing":"Plateau";
+    vd.innerHTML=`<b>${word}</b>${streak>1?` — ${streak} straight quarters better`:""}`
+      +` · ${total>=0?"−":"+"}${Math.abs(total).toFixed(1)} since ${qlab(pts[0].q.q)}`;}
+  // table
+  const hd=`<tr><th>Metric /18</th>${qs.map((q,i)=>`<th${i===qs.length-1?' class="now"':''}>${qlab(q.q)}</th>`).join("")}<th>Δ</th></tr>`;
+  const rows=OROWS.map(([key,lab,dir,dec])=>{
+    const cells=qs.map((q,i)=>{
+      const v=key==="avgScore"?q.avgScore:q[key];
+      return `<td${i===qs.length-1?' class="now"':''}>${v==null?"—":(i===qs.length-1?"<b>"+v.toFixed(dec)+"</b>":v.toFixed(dec))}</td>`;
+    }).join("");
+    let delta='<td class="mut">—</td>';
+    if(last&&prev){
+      const a=key==="avgScore"?last.avgScore:last[key], b=key==="avgScore"?prev.avgScore:prev[key];
+      if(a!=null&&b!=null){const d=a-b, flat=Math.abs(d)<(dec?0.3:2);
+        const good=dir==="down"?d<0:d>0;
+        delta=flat?`<td><span class="mut" style="font-size:11px">≈ flat</span></td>`
+          :`<td><span style="font-size:11px;font-weight:700;color:var(--${good?"good":"bad"})">${d<0?"▼":"▲"} ${Math.abs(d).toFixed(dec)}</span></td>`;}
+    }
+    return `<tr><td>${lab}</td>${cells}${delta}</tr>`;
+  }).join("");
+  document.getElementById('otable').innerHTML=
+    `<table class="putt otab"><thead>${hd}</thead><tbody>${rows}</tbody></table>`;
+  // score mix
+  document.getElementById('omix').innerHTML=qs.map((q,i)=>{
+    const m=q.mix; if(!m)return "";
+    const seg=(cls,v)=>`<span class="${cls}" style="width:${v}%">${v>=10?Math.round(v)+"%":""}</span>`;
+    return `<div class="mixrow"><span class="mixq">${i===qs.length-1?"<b>"+qlab(q.q)+"</b>":qlab(q.q)}${q.thin?' <i class="esttag">n='+q.rounds+'⚠</i>':""}</span>`
+      +`<div class="mixbar">${seg("m-bird",m.birdie)}${seg("m-par",m.par)}${seg("m-bog",m.bogey)}${seg("m-dbl",m.double)}</div></div>`;
+  }).join("");
+}
+document.getElementById('oscope').onclick=e=>{if(!e.target.dataset.s)return;oScope=e.target.dataset.s;
+  [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===e.target));renderOutcome();};
+document.getElementById('olens').onclick=e=>{if(!e.target.dataset.l)return;oLens=e.target.dataset.l;
+  [...e.currentTarget.children].forEach(b=>b.classList.toggle('on',b===e.target));renderOutcome();};
+
 const PM_ROWS=[
   ["penalties18","Penalties /18","n1"],
   ["doubles18","Doubles+ /18","n1"],
@@ -764,7 +927,7 @@ document.getElementById('roundDetail').addEventListener('click',e=>{
   const c=e.target.closest('.exp-copy');if(c){copyPack(DATA.rounds[detailRound],c);return;}
   const s=e.target.closest('.exp-share');if(s){sharePack(DATA.rounds[detailRound]);return;}});
 
-renderProgress();renderProcess();renderRoundsList();renderClubs();
+renderOutcome();renderProgress();renderProcess();renderRoundsList();renderClubs();
 </script>
 </body>
 </html>

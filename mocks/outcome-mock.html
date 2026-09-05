@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outcome — mock</title>
+<style>
+  /* Site design system (from site/index.html) */
+  :root{--bg:#eef1f4;--card:#fff;--ink:#1c2530;--muted:#7a8794;--line:#e9edf1;
+    --good:#1f9d57;--bad:#d6443c;--accent:#15497a;--warn:#e8a33d;
+    --grid:#e6eaee;--est:#8fa3b8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  .app{max-width:920px;margin:0 auto;padding:18px 14px 60px}
+  .mockbar{background:#fff4d6;border:1px solid #ecd9a0;color:#7a5c00;border-radius:10px;
+    padding:8px 12px;font-size:12px;margin-bottom:14px}
+  h1{font-size:19px;margin:0 0 2px}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+  .card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;
+    box-shadow:0 1px 2px rgba(20,30,40,.06)}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 8px}
+
+  /* KPI row */
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+  .tile{background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:0 1px 2px rgba(20,30,40,.06)}
+  .tile .lab{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .tile .v{font-size:30px;font-weight:800;margin-top:2px}
+  .tile .d{font-size:12px;margin-top:2px}
+  .dn{color:var(--good);font-weight:700}   /* improving (score falling) */
+  .up{color:var(--bad);font-weight:700}
+  .mut{color:var(--muted)}
+
+  /* lens + filter chips */
+  .ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
+  .seg{display:flex;background:#e2e7ec;border-radius:12px;padding:3px}
+  .seg button{border:0;background:none;padding:7px 12px;border-radius:9px;font-size:12.5px;
+    color:var(--muted);font-weight:600;cursor:pointer}
+  .seg button.on{background:#fff;color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+  .chip{font-size:11.5px;color:var(--muted);background:#e8edf2;border-radius:999px;padding:4px 10px}
+
+  /* chart */
+  .chartwrap{position:relative}
+  svg text{font:11px -apple-system,Segoe UI,Roboto,Arial,sans-serif;fill:var(--muted)}
+  svg .qlab{font-size:11.5px;fill:var(--ink);font-weight:600}
+  svg .nlab{font-size:10px;fill:var(--muted)}
+  svg .pt-label{font-size:12px;font-weight:800;fill:var(--ink)}
+  .tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;
+    padding:6px 9px;border-radius:8px;opacity:0;transition:opacity .12s;white-space:nowrap;
+    transform:translate(-50%,-115%)}
+  .tip small{display:block;color:#c8d2dc;font-size:10.5px}
+  .foot{font-size:11.5px;color:var(--muted)}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+     text-align:right;padding:4px 6px;border-bottom:1px solid var(--line)}
+  th:first-child{text-align:left}
+  td{text-align:right;padding:6px;border-top:1px solid var(--line)}
+  td:first-child{text-align:left;font-weight:600;white-space:nowrap}
+  tr:hover td{background:#f5f8fa}
+  td.est{color:var(--est);font-style:italic}
+  th.now,td.now{background:#f2f6fa}
+  td .delta{font-size:11px;margin-left:6px}
+  .legendrow{display:flex;gap:16px;margin-top:8px;font-size:11.5px;color:var(--muted);flex-wrap:wrap}
+  .legendrow i{display:inline-block;width:18px;height:0;border-top:2.5px solid var(--accent);
+    vertical-align:middle;margin-right:5px}
+  .legendrow i.dash{border-top-style:dashed;border-top-color:var(--est)}
+
+  /* score-mix stacked bars (ordered severity; 2px surface gaps between segments) */
+  .mixgrid{display:flex;flex-direction:column;gap:7px}
+  .mixrow{display:flex;align-items:center;gap:10px}
+  .mixq{width:88px;font-size:12px;color:var(--ink);text-align:right;flex:none}
+  .esttag{font-style:normal;font-size:9.5px;color:var(--est)}
+  .mixbar{flex:1;display:flex;height:22px;border-radius:5px;overflow:hidden;gap:2px;background:var(--card)}
+  .mixbar span{display:flex;align-items:center;justify-content:center;font-size:10.5px;
+    font-weight:700;color:#fff;border-radius:2px;min-width:0;overflow:hidden}
+  .mixbar.est span{opacity:.45}
+  .m-bird{background:#0d6a3a}
+  .m-par{background:var(--good)}
+  .m-bog{background:var(--warn)}
+  .m-dbl{background:var(--bad)}
+  .sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:5px}
+  .legendrow b.goal{display:inline-block;width:18px;height:0;border-top:2px dotted var(--good);
+    vertical-align:middle;margin-right:5px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="mockbar"><b>MOCK</b> — proposed “Outcome” opening screen. 2026 values are your real data
+  (18-hole rounds). 2025 values are placeholders pending the 18Birdies backfill.</div>
+
+  <h1>Am I improving as a golfer?</h1>
+  <div class="sub">Average score · 18-hole rounds · quarterly</div>
+
+  <div class="tiles">
+    <div class="tile"><div class="lab">This quarter (Q3 ’26)</div><div class="v">96.3</div>
+      <div class="d"><span class="dn">▼ 4.0</span> <span class="mut">vs Q2 ’26 · n=11</span></div></div>
+    <div class="tile"><div class="lab">12-month change</div><div class="v dn">−12.2</div>
+      <div class="d"><span class="mut">108.5 → 96.3 avg</span></div></div>
+    <div class="tile"><div class="lab">Since backfill start</div><div class="v dn">−17.2</div>
+      <div class="d"><span class="mut">113.5 (Q3 ’25) → 96.3</span></div></div>
+  </div>
+
+  <div class="card">
+    <h2>Scoring trend <span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">lower is better</span></h2>
+    <div class="ctl">
+      <div class="seg" title="round scope — drives the chart AND the tables below">
+        <button class="on">18-hole</button>
+        <button title="mock — per-9 trend for 9-hole rounds, tracked on its own scale">9-hole</button>
+        <button title="mock — every round normalized per 18">All (per-18)</button>
+      </div>
+      <div class="seg">
+        <button class="on">Raw score</button>
+        <button title="mock — same chart as (score − course rating)">vs rating</button>
+      </div>
+      <span class="chip">Last 8 quarters (2y) ▾</span>
+      <span class="chip" title="persists even when the window scrolls past it">all-time: started ≈115 · Q3 ’25</span>
+    </div>
+    <div class="chartwrap">
+      <svg viewBox="0 0 880 300" width="100%" role="img" aria-label="Quarterly average score, 2025 Q2 through 2026 Q3, falling from about 115 to 96.3">
+        <!-- y grid: 90..120 → y = 262 - (v-90)*7.4 ; x: 6 quarters at 90+i*140 -->
+        <g>
+          <line x1="56" x2="856" y1="40"  y2="40"  stroke="var(--grid)"/><text x="48" y="44" text-anchor="end">120</text>
+          <line x1="56" x2="856" y1="114" y2="114" stroke="var(--grid)"/><text x="48" y="118" text-anchor="end">110</text>
+          <line x1="56" x2="856" y1="188" y2="188" stroke="var(--grid)"/><text x="48" y="192" text-anchor="end">100</text>
+          <line x1="56" x2="856" y1="262" y2="262" stroke="#c9d2da"/><text x="48" y="266" text-anchor="end">90</text>
+        </g>
+        <!-- Break-90 goal line -->
+        <line x1="56" x2="856" y1="262" y2="262" stroke="var(--good)" stroke-width="2" stroke-dasharray="2 5" opacity=".8"/>
+        <text x="850" y="256" text-anchor="end" fill="var(--good)" style="font-weight:700">Break 90</text>
+
+        <!-- backfill segment (dashed, hollow) : Q2'25 114.8 → Q3'25 113.5 → Q4'25 108.5 → Q1'26 101.0 -->
+        <path d="M 90 78.5 L 230 88.1 L 370 125.1 L 510 180.6" fill="none"
+              stroke="var(--est)" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"/>
+        <!-- garmin segment (solid) : Q1'26 101.0 → Q2'26 100.3 → Q3'26 96.3 -->
+        <path d="M 510 180.6 L 650 185.8 L 790 215.4" fill="none"
+              stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
+
+        <!-- markers: hollow = backfill/est, filled = measured -->
+        <g class="pts">
+          <circle cx="90"  cy="78.5"  r="5.5" fill="var(--card)" stroke="var(--est)" stroke-width="2.5" data-q="Q2 ’25" data-v="≈114.8" data-n="18Birdies backfill (est.)"/>
+          <circle cx="230" cy="88.1"  r="5.5" fill="var(--card)" stroke="var(--est)" stroke-width="2.5" data-q="Q3 ’25" data-v="≈113.5" data-n="18Birdies backfill (est.)"/>
+          <circle cx="370" cy="125.1" r="5.5" fill="var(--card)" stroke="var(--est)" stroke-width="2.5" data-q="Q4 ’25" data-v="≈108.5" data-n="18Birdies backfill (est.)"/>
+          <circle cx="510" cy="180.6" r="5.5" fill="var(--accent)" stroke="var(--card)" stroke-width="2" data-q="Q1 ’26" data-v="101.0" data-n="n=1 round — thin sample"/>
+          <circle cx="650" cy="185.8" r="5.5" fill="var(--accent)" stroke="var(--card)" stroke-width="2" data-q="Q2 ’26" data-v="100.3" data-n="n=9 rounds"/>
+          <circle cx="790" cy="215.4" r="6.5" fill="var(--accent)" stroke="var(--card)" stroke-width="2" data-q="Q3 ’26" data-v="96.3" data-n="n=11 rounds"/>
+        </g>
+        <!-- selective direct labels: first + latest -->
+        <text class="pt-label" x="90"  y="64" text-anchor="middle" fill="var(--est)">≈115</text>
+        <text class="pt-label" x="790" y="202" text-anchor="middle">96.3</text>
+
+        <!-- x labels + n badges -->
+        <g>
+          <text class="qlab" x="90"  y="284" text-anchor="middle">Q2 ’25</text><text class="nlab" x="90"  y="297" text-anchor="middle">est</text>
+          <text class="qlab" x="230" y="284" text-anchor="middle">Q3 ’25</text><text class="nlab" x="230" y="297" text-anchor="middle">est</text>
+          <text class="qlab" x="370" y="284" text-anchor="middle">Q4 ’25</text><text class="nlab" x="370" y="297" text-anchor="middle">est</text>
+          <text class="qlab" x="510" y="284" text-anchor="middle">Q1 ’26</text><text class="nlab" x="510" y="297" text-anchor="middle">n=1 ⚠</text>
+          <text class="qlab" x="650" y="284" text-anchor="middle">Q2 ’26</text><text class="nlab" x="650" y="297" text-anchor="middle">n=9</text>
+          <text class="qlab" x="790" y="284" text-anchor="middle">Q3 ’26</text><text class="nlab" x="790" y="297" text-anchor="middle">n=11</text>
+        </g>
+      </svg>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="legendrow">
+      <span><i></i>Garmin-measured quarters</span>
+      <span><i class="dash"></i>18Birdies backfill (estimate until imported)</span>
+      <span><b class="goal"></b>Break-90 goal</span>
+    </div>
+    <div class="foot" style="margin-top:6px">Verdict line (auto-generated): <b style="color:var(--ink)">Improving — 3 straight quarters of decline, −17 strokes since Q3 ’25; on pace to challenge 90 around Q1 ’27 at the current slope.</b></div>
+  </div>
+
+  <div class="card">
+    <h2>Outcome metrics by quarter <span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">same filter as chart · per-18 ratios</span></h2>
+    <table>
+      <thead><tr>
+        <th>Metric /18</th><th>Q2 ’25</th><th>Q3 ’25</th><th>Q4 ’25</th><th>Q1 ’26</th><th>Q2 ’26</th><th class="now">Q3 ’26</th><th>Δ vs Q2</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Avg score</td><td class="est">≈114.8</td><td class="est">≈113.5</td><td class="est">≈108.5</td><td>101.0</td><td>100.3</td><td class="now"><b>96.3</b></td><td><span class="dn">▼ 4.0</span></td></tr>
+        <tr><td>Penalties</td><td class="est">—</td><td class="est">—</td><td class="est">—</td><td>4.0</td><td>2.4</td><td class="now"><b>2.5</b></td><td><span class="mut">≈ flat</span></td></tr>
+        <tr><td>Doubles+</td><td class="est">≈11</td><td class="est">≈11</td><td class="est">≈10</td><td>10.0</td><td>9.6</td><td class="now"><b>7.1</b></td><td><span class="dn">▼ 2.5</span></td></tr>
+        <tr><td>3-putts</td><td class="est">≈5</td><td class="est">≈5</td><td class="est">≈4</td><td>10.0</td><td>3.8</td><td class="now"><b>1.9</b></td><td><span class="dn">▼ 1.9</span></td></tr>
+        <tr><td>GIR %</td><td class="est">—</td><td class="est">—</td><td class="est">—</td><td>28</td><td>13</td><td class="now"><b>18</b></td><td><span class="dn" style="color:var(--good)">▲ 5</span></td></tr>
+        <tr><td>Fairways %</td><td class="est">—</td><td class="est">—</td><td class="est">—</td><td>79</td><td>52</td><td class="now"><b>53</b></td><td><span class="mut">≈ flat</span></td></tr>
+      </tbody>
+    </table>
+    <div class="foot" style="margin-top:8px">
+      Green/red is direction-aware. Birdie/par/bogey/double live in the score-mix bars below — as table counts they
+      were ambiguous (a bogey rise while doubles fall is progress, not regression). Italic ≈ cells = 18Birdies
+      backfill; “—” = depends on which fields the 18Birdies export carries. Q1 ’26 is a single round — read gently.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Score mix by quarter <span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">what your 18 holes are made of</span></h2>
+    <div class="mixgrid">
+      <div class="mixrow"><span class="mixq">Q3 ’25 <i class="esttag">est</i></span>
+        <div class="mixbar est"><span class="m-par" style="width:6%"></span><span class="m-bog" style="width:28%"></span><span class="m-dbl" style="width:66%">≈66%</span></div></div>
+      <div class="mixrow"><span class="mixq">Q4 ’25 <i class="esttag">est</i></span>
+        <div class="mixbar est"><span class="m-par" style="width:9%"></span><span class="m-bog" style="width:33%"></span><span class="m-dbl" style="width:58%">≈58%</span></div></div>
+      <div class="mixrow"><span class="mixq">Q1 ’26 <i class="esttag">n=1⚠</i></span>
+        <div class="mixbar"><span class="m-bird" style="width:5.6%"></span><span class="m-par" style="width:5.6%"></span><span class="m-bog" style="width:33.3%">33%</span><span class="m-dbl" style="width:55.5%">56%</span></div></div>
+      <div class="mixrow"><span class="mixq">Q2 ’26</span>
+        <div class="mixbar"><span class="m-bird" style="width:0.6%"></span><span class="m-par" style="width:12.3%">12%</span><span class="m-bog" style="width:33.7%">34%</span><span class="m-dbl" style="width:53.4%">53%</span></div></div>
+      <div class="mixrow"><span class="mixq"><b>Q3 ’26</b></span>
+        <div class="mixbar"><span class="m-bird" style="width:0.6%"></span><span class="m-par" style="width:21%">21%</span><span class="m-bog" style="width:39%">39%</span><span class="m-dbl" style="width:39.4%">39%</span></div></div>
+    </div>
+    <div class="legendrow" style="margin-top:10px">
+      <span><s class="sw m-bird"></s>Birdie+</span>
+      <span><s class="sw m-par"></s>Par</span>
+      <span><s class="sw m-bog"></s>Bogey</span>
+      <span><s class="sw m-dbl"></s>Double+</span>
+    </div>
+    <div class="foot" style="margin-top:6px">One bar = one quarter’s holes. Improvement reads as <b>mass flowing left</b>
+      (doubles → bogeys → pars) — no “is a bogey rise bad?” ambiguity: Q3 turned 14 points of double+ into bogeys and pars.</div>
+  </div>
+
+  <div class="card">
+    <h2>Where this sits</h2>
+    <div class="foot" style="font-size:12.5px;line-height:1.6">
+      This becomes the <b>top of the Overview tab</b> (or its own first tab, “Outcome”), answering
+      layer 1: <i>what did I score, and is it improving?</i> The existing SG section stays below it as layer 2
+      (<i>which parts produced the score</i>), and the Process card as layer 3 (<i>why they succeeded or failed</i>) —
+      the three questions in order, top to bottom.
+    </div>
+  </div>
+</div>
+<script>
+  const tip = document.getElementById('tip');
+  document.querySelectorAll('.pts circle').forEach(c => {
+    c.addEventListener('mouseenter', e => {
+      const r = c.getBoundingClientRect(), w = c.closest('.chartwrap').getBoundingClientRect();
+      tip.innerHTML = `<b>${c.dataset.q}</b> — avg ${c.dataset.v}<small>${c.dataset.n}</small>`;
+      tip.style.left = (r.left - w.left + r.width/2) + 'px';
+      tip.style.top = (r.top - w.top) + 'px';
+      tip.style.opacity = 1;
+    });
+    c.addEventListener('mouseleave', () => tip.style.opacity = 0);
+  });
+</script>
+</body>
+</html>
