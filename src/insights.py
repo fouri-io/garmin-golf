@@ -29,7 +29,8 @@ PROGRESS = Path("data/processed/progress.json")
 CLUB_STATS = Path("data/processed/club_stats.json")
 
 CONE_WINDOW = 16          # rolling rounds per cone point
-CONE_MIN = CONE_WINDOW    # full windows only — partial windows understate the tails
+CONE_PROVISIONAL = 8      # dashed 'forming' cone from here; tails are biased narrow
+CONE_MIN = CONE_WINDOW    # solid cone + all comparisons use full windows only
 RECENT_N = 10             # "last N vs previous N" trend windows
 MID_IRON_TYPE_IDS = {15, 16, 17, 18}   # 6i-9i: the mid-iron miss-pattern family
 
@@ -45,15 +46,18 @@ def _pct(vals: list[float], p: float) -> float:
 
 
 def cone_series(over18: list[float], window: int = CONE_WINDOW) -> list[dict]:
-    """Rolling p20/p50/p80 — one point per round once CONE_MIN rounds exist."""
+    """Rolling p20/p50/p80. Points exist from CONE_PROVISIONAL rounds but carry
+    full=False until the window fills — sub-window percentiles systematically
+    understate the tails, so provisional points render dashed and are never used
+    for start/current comparisons."""
     out = []
     for i in range(len(over18)):
         lo = max(0, i - window + 1)
         w = over18[lo:i + 1]
-        if len(w) < CONE_MIN:
+        if len(w) < CONE_PROVISIONAL:
             continue
         out.append({"i": i, "p20": round(_pct(w, .2), 1), "p50": round(_pct(w, .5), 1),
-                    "p80": round(_pct(w, .8), 1)})
+                    "p80": round(_pct(w, .8), 1), "full": len(w) >= window})
     return out
 
 
@@ -140,8 +144,9 @@ def build(write: bool = True) -> dict:
 
     over = [r["over18"] for r in rounds]
     series = cone_series(over)
-    cur = series[-1] if series else None
-    first = series[0] if series else None
+    fulls = [p for p in series if p["full"]]
+    cur = fulls[-1] if fulls else None
+    first = fulls[0] if fulls else None
 
     current = start = None
     if cur and first:
@@ -316,7 +321,7 @@ def build(write: bool = True) -> dict:
             "rounds": [{"date": r["date"], "v": r["over18"], "src": r["source"]}
                        for r in rounds],
             "points": [{"date": rounds[p["i"]]["date"], **{k: p[k] for k in
-                        ("i", "p20", "p50", "p80")}} for p in series],
+                        ("i", "p20", "p50", "p80", "full")}} for p in series],
         },
         "insights": insights,
         "floorDrivers": drivers,

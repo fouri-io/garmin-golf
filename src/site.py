@@ -471,7 +471,7 @@ TEMPLATE = r"""<!doctype html>
     <div class="card"><h2>Performance cone<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">rolling 16 rounds · score vs rating /18 · lower is better</span></h2>
       <div class="ochartwrap"><svg id="conesvg" viewBox="0 0 880 320" width="100%"></svg><div class="otip" id="conetip"></div></div>
       <div class="mixlegend"><span><i class="cl-ceil"></i>ceiling (best 20%)</span><span><i class="cl-med"></i>median</span><span><i class="cl-floor"></i>floor (worst 20%)</span><span><i class="cl-dot"></i>rounds</span></div>
-      <div class="foot" id="conefoot" style="margin-top:4px">Improvement moves the cone down. Mastery narrows it.</div></div>
+      <div class="foot" id="conefoot" style="margin-top:4px">Improvement moves the cone down. Mastery narrows it. Dashed = forming estimate (under 16 rounds, percentiles run narrow); solid = full evidence.</div></div>
     <div class="card"><h2>What changed</h2><div id="inscards"></div></div>
     <div class="card"><h2>Why your floor is moving<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">last 10 vs previous 10</span></h2>
       <div id="insdrivers" style="overflow-x:auto"></div></div>
@@ -1079,12 +1079,17 @@ function drawCone(I){
   // individual rounds (light dots, honesty layer)
   rds.forEach(r=>{g+=`<circle cx="${Xd(r.date)}" cy="${Yv(r.v)}" r="3" fill="#c9cfc9" data-d="${r.date}" data-v="${r.v}" style="cursor:pointer"/>`;});
   // band p20..p80
-  const band=pts.map(p=>`${Xd(p.date)},${Yv(p.p20)}`).join(' ')+' '+
-    [...pts].reverse().map(p=>`${Xd(p.date)},${Yv(p.p80)}`).join(' ');
-  g+=`<polygon points="${band}" fill="#1f4a36" opacity="0.10" style="pointer-events:none"/>`;
-  const line=(key,color,wd)=>`<polyline points="${pts.map(p=>Xd(p.date)+','+Yv(p[key])).join(' ')}" fill="none" stroke="${color}" stroke-width="${wd}" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"/>`;
-  g+=line('p20','#218a54',2.5)+line('p80','#b3312d',2.5)+line('p50','#1f4a36',3);
-  const last=pts[pts.length-1];
+  const full=pts.filter(p=>p.full);
+  const prov=pts.filter(p=>!p.full).concat(full.length?[full[0]]:[]);  // join seamlessly
+  const bandOf=ps=>ps.map(p=>`${Xd(p.date)},${Yv(p.p20)}`).join(' ')+' '+
+    [...ps].reverse().map(p=>`${Xd(p.date)},${Yv(p.p80)}`).join(' ');
+  const line=(ps,key,color,wd,dash)=>`<polyline points="${ps.map(p=>Xd(p.date)+','+Yv(p[key])).join(' ')}" fill="none" stroke="${color}" stroke-width="${wd}"${dash?' stroke-dasharray="4 5" opacity="0.55"':''} stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"/>`;
+  if(prov.length>1){
+    g+=`<polygon points="${bandOf(prov)}" fill="#1f4a36" opacity="0.04" style="pointer-events:none"/>`;
+    g+=line(prov,'p20','#218a54',2,1)+line(prov,'p80','#b3312d',2,1)+line(prov,'p50','#1f4a36',2.2,1);}
+  g+=`<polygon points="${bandOf(full)}" fill="#1f4a36" opacity="0.10" style="pointer-events:none"/>`;
+  g+=line(full,'p20','#218a54',2.5)+line(full,'p80','#b3312d',2.5)+line(full,'p50','#1f4a36',3);
+  const last=full[full.length-1]||pts[pts.length-1];
   {const lbl=[['p20','#218a54'],['p50','#1a1c19'],['p80','#b3312d']]
     .map(([k,col])=>({col,v:last[k],y:Yv(last[k])+4})).sort((a,b)=>a.y-b.y);
   const gap=15*K;
@@ -1096,10 +1101,11 @@ function drawCone(I){
     const lab=String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getFullYear()).slice(2);
     const anc=j===0?'start':j===nt?'end':'middle';
     g+=`<text x="${L+(W-L-Rm)*j/nt}" y="${H-14}" font-size="${10*K}" fill="#6d7269" text-anchor="${anc}">${lab}</text>`;}
-  // mark where the cone begins (first full 16-round window)
-  if(rds.length&&pts.length&&pts[0].date!==rds[0].date){
-    g+=`<line x1="${Xd(pts[0].date)}" y1="${T}" x2="${Xd(pts[0].date)}" y2="${H-B}" stroke="#c3c9c3" stroke-dasharray="2 4"/>`
-      +`<text x="${Xd(pts[0].date)+5}" y="${T+12*K}" font-size="${9.5*K}" fill="#6d7269">cone starts after 16 rounds</text>`;}
+  // mark where the window fills: dashed cone = forming estimate, solid = full evidence
+  if(full.length&&prov.length>1){
+    g+=`<line x1="${Xd(full[0].date)}" y1="${T}" x2="${Xd(full[0].date)}" y2="${H-B}" stroke="#c3c9c3" stroke-dasharray="2 4"/>`
+      +`<text x="${Xd(full[0].date)-5}" y="${T+12*K}" font-size="${9.5*K}" fill="#6d7269" text-anchor="end">forming</text>`
+      +`<text x="${Xd(full[0].date)+5}" y="${T+12*K}" font-size="${9.5*K}" fill="#6d7269">16-round window full</text>`;}
   svg.innerHTML=g;
   const tip=document.getElementById('conetip');
   svg.querySelectorAll('circle').forEach(el=>{

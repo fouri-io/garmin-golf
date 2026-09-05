@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from src.insights import (CONE_MIN, CONE_WINDOW, _conf, _mid_iron_miss, _pct,
-                          _trend, cone_series)
+from src.insights import (CONE_MIN, CONE_PROVISIONAL, CONE_WINDOW, _conf,
+                          _mid_iron_miss, _pct, _trend, cone_series)
 
 
 def test_pct_bounds_and_interpolation():
@@ -20,20 +20,24 @@ def test_pct_bounds_and_interpolation():
 
 
 def test_cone_series_waits_for_min_rounds():
-    assert cone_series([30.0] * (CONE_MIN - 1)) == []
-    s = cone_series([30.0] * CONE_MIN)
+    assert cone_series([30.0] * (CONE_PROVISIONAL - 1)) == []
+    s = cone_series([30.0] * CONE_PROVISIONAL)
     assert len(s) == 1 and s[0]["p20"] == s[0]["p80"] == 30.0
+    assert s[0]["full"] is False
+    s = cone_series([30.0] * CONE_MIN)
+    assert s[-1]["full"] is True and not s[-2]["full"]
 
 
 def test_cone_series_rolls_and_narrows():
     # 30 rounds trending 40 -> 20: the window should slide and percentiles drop
     vals = [40 - i * 0.7 for i in range(30)]
     s = cone_series(vals)
-    assert s[0]["i"] == CONE_MIN - 1 and s[-1]["i"] == 29
+    assert s[0]["i"] == CONE_PROVISIONAL - 1 and s[-1]["i"] == 29
     assert s[-1]["p50"] < s[0]["p50"]
     assert all(p["p20"] <= p["p50"] <= p["p80"] for p in s)
-    # window is rolling, not expanding
-    assert len(s) == 30 - CONE_MIN + 1
+    assert [p["full"] for p in s] == [False] * (CONE_MIN - CONE_PROVISIONAL) + \
+        [True] * (30 - CONE_MIN + 1)
+    assert len(s) == 30 - CONE_PROVISIONAL + 1
     w = vals[30 - CONE_WINDOW:30]
     assert s[-1]["p50"] == round(_pct(w, .5), 1)
 
