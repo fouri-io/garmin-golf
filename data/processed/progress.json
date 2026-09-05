@@ -72,6 +72,30 @@
       "sg0to100": -8.9,
       "cleanRounds": 5
     },
+    "last10": {
+      "byCategory": {
+        "offTee": -4.4,
+        "longApproach": -4.7,
+        "midApproach": -6.7,
+        "inside50": -6.9,
+        "putting": -2.9
+      },
+      "total": -25.6,
+      "sg0to100": -9.2,
+      "cleanRounds": 10
+    },
+    "last20": {
+      "byCategory": {
+        "offTee": -4.3,
+        "longApproach": -5.6,
+        "midApproach": -7.2,
+        "inside50": -7.4,
+        "putting": -2.5
+      },
+      "total": -27.0,
+      "sg0to100": -10.4,
+      "cleanRounds": 20
+    },
     "allTime": {
       "byCategory": {
         "offTee": -4.4,
@@ -102,6 +126,22 @@
       "penalties18": 0.3,
       "doubles18": 4.0
     },
+    "last10": {
+      "overRating18": 21.9,
+      "handicapDiff": 22.4,
+      "putts18": 35.0,
+      "threePutts18": 2.1,
+      "penalties18": 0.7,
+      "doubles18": 4.4
+    },
+    "last20": {
+      "overRating18": 23.8,
+      "handicapDiff": 23.3,
+      "putts18": 35.1,
+      "threePutts18": 2.1,
+      "penalties18": 1.7,
+      "doubles18": 5.7
+    },
     "allTime": {
       "overRating18": 25.1,
       "handicapDiff": 25.0,
@@ -114,10 +154,22 @@
   "putting": {
     "thisRound": [
       {
-        "label": "0\u201310 ft",
+        "label": "0\u20133 ft",
+        "n": 0,
+        "avg": null,
+        "makePct": null
+      },
+      {
+        "label": "3\u20136 ft",
         "n": 1,
         "avg": 2.0,
         "makePct": 0
+      },
+      {
+        "label": "6\u201310 ft",
+        "n": 0,
+        "avg": null,
+        "makePct": null
       },
       {
         "label": "10\u201320 ft",
@@ -126,29 +178,35 @@
         "makePct": null
       },
       {
-        "label": "20\u201330 ft",
-        "n": 3,
-        "avg": 1.67,
-        "makePct": 33
+        "label": "20\u201340 ft",
+        "n": 6,
+        "avg": 2.0,
+        "makePct": 17
       },
       {
-        "label": "30\u201350 ft",
-        "n": 5,
-        "avg": 2.2,
+        "label": "40+ ft",
+        "n": 2,
+        "avg": 2.0,
         "makePct": 0
-      },
-      {
-        "label": "50+ ft",
-        "n": 0,
-        "avg": null,
-        "makePct": null
       }
     ],
     "last5": [
       {
-        "label": "0\u201310 ft",
-        "n": 10,
-        "avg": 2.1,
+        "label": "0\u20133 ft",
+        "n": 2,
+        "avg": 2.0,
+        "makePct": 0
+      },
+      {
+        "label": "3\u20136 ft",
+        "n": 2,
+        "avg": 2.5,
+        "makePct": 0
+      },
+      {
+        "label": "6\u201310 ft",
+        "n": 6,
+        "avg": 2.0,
         "makePct": 0
       },
       {
@@ -158,30 +216,112 @@
         "makePct": 13
       },
       {
-        "label": "20\u201330 ft",
-        "n": 13,
+        "label": "20\u201340 ft",
+        "n": 24,
         "avg": 2.0,
         "makePct": 8
       },
       {
-        "label": "30\u201350 ft",
-        "n": 15,
+        "label": "40+ ft",
+        "n": 4,
         "avg": 2.0,
-        "makePct": 7
+        "makePct": 0
+      }
+    ],
+    "last10": [
+      {
+        "label": "0\u20133 ft",
+        "n": 2,
+        "avg": 2.0,
+        "makePct": 0
       },
       {
-        "label": "50+ ft",
-        "n": 0,
-        "avg": null,
-        "makePct": null
+        "label": "3\u20136 ft",
+        "n": 3,
+        "avg": 2.0,
+        "makePct": 33
+      },
+      {
+        "label": "6\u201310 ft",
+        "n": 9,
+        "avg": 1.89,
+        "makePct": 11
+      },
+      {
+        "label": "10\u201320 ft",
+        "n": 36,
+        "avg": 2.03,
+        "makePct": 14
+      },
+      {
+        "label": "20\u201340 ft",
+        "n": 56,
+        "avg": 2.0,
+        "makePct": 12
+      },
+      {
+        "label": "40+ ft",
+        "n": 8,
+        "avg": 2.12,
+        "makePct": 0
+      }
+    ],
+    "last20": [
+      {
+        "label": "0\u20133 ft",
+        "n": 3,
+        "avg": 2.0,
+        "makePct": 0
+      },
+      {
+        "label": "3\u20136 ft",
+        "n": 7,
+        "avg": 2.14,
+        "makePct": 14
+      },
+      {
+        "label": "6\u201310 ft",
+        "n": 20,
+        "avg": 1.75,
+        "makePct": 30
+      },
+      {
+        "label": "10\u201320 ft",
+        "n": 70,
+        "avg": 2.06,
+        "makePct": 13
+      },
+      {
+        "label": "20\u201340 ft",
+        "n": 121,
+        "avg": 1.98,
+        "makePct": 12
+      },
+      {
+        "label": "40+ ft",
+        "n": 22,
+        "avg": 2.05,
+        "makePct": 14
       }
     ],
     "allTime": [
       {
-        "label": "0\u201310 ft",
-        "n": 58,
-        "avg": 2.0,
-        "makePct": 16
+        "label": "0\u20133 ft",
+        "n": 6,
+        "avg": 1.83,
+        "makePct": 17
+      },
+      {
+        "label": "3\u20136 ft",
+        "n": 15,
+        "avg": 2.27,
+        "makePct": 7
+      },
+      {
+        "label": "6\u201310 ft",
+        "n": 37,
+        "avg": 1.92,
+        "makePct": 19
       },
       {
         "label": "10\u201320 ft",
@@ -190,24 +330,255 @@
         "makePct": 14
       },
       {
-        "label": "20\u201330 ft",
-        "n": 141,
+        "label": "20\u201340 ft",
+        "n": 227,
         "avg": 2.07,
         "makePct": 11
       },
       {
-        "label": "30\u201350 ft",
-        "n": 129,
-        "avg": 2.1,
-        "makePct": 12
-      },
-      {
-        "label": "50+ ft",
-        "n": 10,
-        "avg": 2.3,
-        "makePct": 0
+        "label": "40+ ft",
+        "n": 53,
+        "avg": 2.19,
+        "makePct": 9
       }
     ]
+  },
+  "priorityMetrics": {
+    "thisRound": {
+      "penalties18": {
+        "value": 0.0,
+        "nRounds": 1,
+        "nObs": 9
+      },
+      "doubles18": {
+        "value": 0.0,
+        "nRounds": 1,
+        "nObs": 9
+      },
+      "cleanSecondShotPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "recoveryOneShotPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "normalApproachGirPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "upDownPct": {
+        "value": 0,
+        "nRounds": 1,
+        "nObs": 5
+      },
+      "make3to6Pct": {
+        "value": 0,
+        "nRounds": 1,
+        "nObs": 1
+      },
+      "make6to10Pct": {
+        "value": null,
+        "nRounds": 1,
+        "nObs": 0
+      },
+      "threePutt30PlusPct": {
+        "value": 12,
+        "nRounds": 1,
+        "nObs": 8
+      }
+    },
+    "last5": {
+      "penalties18": {
+        "value": 0.3,
+        "nRounds": 5,
+        "nObs": 63
+      },
+      "doubles18": {
+        "value": 4.0,
+        "nRounds": 5,
+        "nObs": 63
+      },
+      "cleanSecondShotPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "recoveryOneShotPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "normalApproachGirPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "upDownPct": {
+        "value": 6,
+        "nRounds": 5,
+        "nObs": 49
+      },
+      "make3to6Pct": {
+        "value": 0,
+        "nRounds": 5,
+        "nObs": 2
+      },
+      "make6to10Pct": {
+        "value": 0,
+        "nRounds": 5,
+        "nObs": 6
+      },
+      "threePutt30PlusPct": {
+        "value": 7,
+        "nRounds": 5,
+        "nObs": 28
+      }
+    },
+    "last10": {
+      "penalties18": {
+        "value": 0.7,
+        "nRounds": 10,
+        "nObs": 126
+      },
+      "doubles18": {
+        "value": 4.4,
+        "nRounds": 10,
+        "nObs": 126
+      },
+      "cleanSecondShotPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "recoveryOneShotPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "normalApproachGirPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "upDownPct": {
+        "value": 9,
+        "nRounds": 10,
+        "nObs": 93
+      },
+      "make3to6Pct": {
+        "value": 33,
+        "nRounds": 10,
+        "nObs": 3
+      },
+      "make6to10Pct": {
+        "value": 11,
+        "nRounds": 10,
+        "nObs": 9
+      },
+      "threePutt30PlusPct": {
+        "value": 12,
+        "nRounds": 10,
+        "nObs": 64
+      }
+    },
+    "last20": {
+      "penalties18": {
+        "value": 1.7,
+        "nRounds": 20,
+        "nObs": 270
+      },
+      "doubles18": {
+        "value": 5.7,
+        "nRounds": 20,
+        "nObs": 270
+      },
+      "cleanSecondShotPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "recoveryOneShotPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "normalApproachGirPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "upDownPct": {
+        "value": 9,
+        "nRounds": 20,
+        "nObs": 206
+      },
+      "make3to6Pct": {
+        "value": 14,
+        "nRounds": 20,
+        "nObs": 7
+      },
+      "make6to10Pct": {
+        "value": 30,
+        "nRounds": 20,
+        "nObs": 20
+      },
+      "threePutt30PlusPct": {
+        "value": 11,
+        "nRounds": 20,
+        "nObs": 143
+      }
+    },
+    "allTime": {
+      "penalties18": {
+        "value": 2.3,
+        "nRounds": 39,
+        "nObs": 513
+      },
+      "doubles18": {
+        "value": 6.5,
+        "nRounds": 39,
+        "nObs": 513
+      },
+      "cleanSecondShotPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "recoveryOneShotPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "normalApproachGirPct": {
+        "value": null,
+        "nRounds": 0,
+        "nObs": 0
+      },
+      "upDownPct": {
+        "value": 8,
+        "nRounds": 39,
+        "nObs": 406
+      },
+      "make3to6Pct": {
+        "value": 7,
+        "nRounds": 39,
+        "nObs": 15
+      },
+      "make6to10Pct": {
+        "value": 19,
+        "nRounds": 39,
+        "nObs": 37
+      },
+      "threePutt30PlusPct": {
+        "value": 19,
+        "nRounds": 39,
+        "nObs": 280
+      }
+    }
   },
   "timeSeries": [
     {

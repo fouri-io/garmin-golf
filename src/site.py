@@ -241,6 +241,9 @@ TEMPLATE = r"""<!doctype html>
   table.putt td:first-child{text-align:left;font-weight:600}
   table.putt tr.pmt td{color:var(--muted);font-weight:400}
   table.putt tr.pnoisy td{color:var(--muted)}
+  table.proc td.pmna{color:var(--muted)}
+  table.proc .pmn{font-size:10px;color:var(--muted)}
+  table.proc td:first-child{white-space:nowrap}
   .pflag{font-size:9px;font-weight:600;color:#b98a00;background:#fdf4dd;border-radius:4px;
     padding:1px 4px;vertical-align:1px;letter-spacing:0;text-transform:none}
   /* trend */
@@ -286,6 +289,8 @@ TEMPLATE = r"""<!doctype html>
       <div class="seg" id="win">
         <button class="on" data-w="thisRound">This round</button>
         <button data-w="last5">Last 5</button>
+        <button data-w="last10">Last 10</button>
+        <button data-w="last20">Last 20</button>
         <button data-w="allTime">All-time</button></div></div>
     <div class="hero">
       <div class="herocol"><div class="lab">Scoring · over rating <span class="pill" id="winpill"></span></div>
@@ -313,6 +318,9 @@ TEMPLATE = r"""<!doctype html>
     <div class="card"><h2>Putting by distance<span id="putthd" style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)"></span></h2>
       <div id="puttbox"></div>
       <div class="foot" id="puttfoot" style="margin-top:6px"></div></div>
+    <div class="card"><h2>Process · did I keep normal golf?</h2>
+      <div id="procbox" style="overflow-x:auto"></div>
+      <div class="foot" style="margin-top:6px">Counts, not vibes: each cell shows the window value with its sample size. Clean-2nd-shot, recovery and normal-approach rows need annotated rounds — they fill in as post-round notes are added.</div></div>
   </div>
 
   <div id="tab-trend" class="hide">
@@ -371,7 +379,8 @@ const CATS=[["offTee","Off-Tee"],["longApproach","Long"],["midApproach","Mid"],
             ["inside50","In50"],["putting","Putt"]];
 const FULL={offTee:"Off-the-Tee",longApproach:"Long approach 150+",midApproach:"Mid approach 50–150",
   inside50:"Inside 50",putting:"Putting"};
-const WLAB={thisRound:"This round",last5:"Last 5",allTime:"All-time"};
+const WLAB={thisRound:"This round",last5:"Last 5",last10:"Last 10",last20:"Last 20",
+  allTime:"All-time"};
 let win="thisRound", base="scratch", detailRound=0;
 
 document.getElementById('date').textContent="Updated "+(P.thisRoundDate||"")+" · "+P.generatedFromRounds+" rounds";
@@ -387,7 +396,7 @@ function fmt(v){return v===null?"—":(v>0?"+":"")+v.toFixed(1);}
 
 function puttTable(buckets){
   const rows=buckets.map(b=>{
-    const noisy=b.label==='0–10 ft';
+    const noisy=b.label==='0–3 ft';
     const nm=b.label+(noisy?' <span class="pflag">GPS≈</span>':'');
     if(!b.n)return `<tr class="pmt"><td>${nm}</td><td>0</td><td>—</td><td>—</td></tr>`;
     return `<tr${noisy?' class="pnoisy"':''}><td>${nm}</td><td>${b.n}</td>`+
@@ -428,8 +437,36 @@ function renderProgress(){
   const pb=P.putting?P.putting[win]:null;
   if(pb){document.getElementById('puttbox').innerHTML=puttTable(pb);
     document.getElementById('putthd').textContent=`${sc.putts18.toFixed(0)} putts/18 · ${sc.threePutts18.toFixed(1)} 3-putts/18`;
-    document.getElementById('puttfoot').textContent='First-putt distance is GPS-estimated (0–10 ft least reliable); putt counts are exact.';}
+    document.getElementById('puttfoot').textContent='First-putt distance is GPS-estimated (0–3 ft least reliable); putt counts are exact.';}
   drawBars(vals);
+}
+const PM_ROWS=[
+  ["penalties18","Penalties /18","n1"],
+  ["doubles18","Doubles+ /18","n1"],
+  ["cleanSecondShotPct","Clean 2nd shot %","pct"],
+  ["recoveryOneShotPct","1-shot recovery %","pct"],
+  ["normalApproachGirPct","Normal-approach GIR %","pct"],
+  ["upDownPct","Up &amp; down %","pct"],
+  ["make3to6Pct","Make % · 3–6 ft","pct"],
+  ["make6to10Pct","Make % · 6–10 ft","pct"],
+  ["threePutt30PlusPct","3-putt % · 30+ ft","pct"]];
+const PM_WINS=["thisRound","last5","last10","last20","allTime"];
+const PM_WLAB={thisRound:"This",last5:"L5",last10:"L10",last20:"L20",allTime:"All"};
+function renderProcess(){
+  const PMX=P.priorityMetrics; if(!PMX)return;
+  const head=`<tr><th>Metric</th>${PM_WINS.map(w=>`<th>${PM_WLAB[w]}</th>`).join("")}</tr>`;
+  const rows=PM_ROWS.map(([key,lab,kind])=>{
+    const tds=PM_WINS.map(w=>{
+      const c=PMX[w]&&PMX[w][key];
+      if(!c||c.value==null)return `<td class="pmna">—</td>`;
+      const v=kind==="pct"?`${c.value}%`:c.value.toFixed(1);
+      const n=kind==="pct"?` <span class="pmn">n${c.nObs}</span>`:"";
+      return `<td>${v}${n}</td>`;
+    }).join("");
+    return `<tr><td>${lab}</td>${tds}</tr>`;
+  }).join("");
+  document.getElementById('procbox').innerHTML=
+    `<table class="putt proc"><thead>${head}</thead><tbody>${rows}</tbody></table>`;
 }
 function drawBars(vals){
   const host=document.getElementById('bars');host.querySelectorAll('.col').forEach(c=>c.remove());
@@ -727,7 +764,7 @@ document.getElementById('roundDetail').addEventListener('click',e=>{
   const c=e.target.closest('.exp-copy');if(c){copyPack(DATA.rounds[detailRound],c);return;}
   const s=e.target.closest('.exp-share');if(s){sharePack(DATA.rounds[detailRound]);return;}});
 
-renderProgress();renderRoundsList();renderClubs();
+renderProgress();renderProcess();renderRoundsList();renderClubs();
 </script>
 </body>
 </html>

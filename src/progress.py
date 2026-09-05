@@ -1,16 +1,19 @@
 """The single progress dashboard — one file to view after every round.
 
-Three horizons, read side by side:
+Five horizons, read side by side:
   - This round  : your latest round (the immediate review)
   - Last 5      : current form (rolling, smooths one-round noise)
+  - Last 10/20  : medium-term trend windows
   - All-time    : baseline since the analysis cutoff
 
 How to read across: This-vs-Last5 tells you whether a round was above or below your
 form (signal vs noise); Last5-vs-All tells you whether you're trending up.
 
-Authoritative metrics (score-vs-rating, putts, penalties, doubles) use every round in
-the window. Strokes Gained uses only CLEAN rounds (over-recorded rounds excluded —
-their shot data is phantom). Putting SG is count-based; other SG buckets are GPS-based.
+All aggregation reads the DuckDB derived layer (canon facts + recomputable views);
+this module only windows per-round rows and renders. Authoritative metrics
+(score-vs-rating, putts, penalties, doubles) use every round in the window. Strokes
+Gained uses only CLEAN rounds (over-recorded rounds excluded — their shot data is
+phantom). Putting SG is count-based; other SG buckets are GPS-based.
 
 Usage:  python -m src.progress
 """
@@ -20,16 +23,78 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .analyze import load_rounds
 from .config import analysis_start_date, sg_target
 from .constants import POLLUTION_DELTA, RECENT_N, SG_CATS, SG_LABELS, SG_SHORT
-from .putting import putt_buckets
 
 OUT_JSON = Path("data/processed/progress.json")
 OUT_MD = Path("data/processed/progress.md")
 SCRATCH_PUTTS_18 = 30
 GARMIN_HANDICAP = 23.6
 BREAK_90_OVER_RATING = 22    # ~ shooting 89 on the player's ~67-rated tees
+
+# Dashboard putting bands (vNext fine bands; first-putt distance is GPS-derived, so
+# the shortest band is the least reliable).
+PUTT_BANDS = [("0–3 ft", "0-3"), ("3–6 ft", "3-6"), ("6–10 ft", "6-10"),
+              ("10–20 ft", "10-20"), ("20–40 ft", "20-40"), ("40+ ft", "40+")]
+
+_SG_COLS = {"offTee": "sg_off_tee", "longApproach": "sg_long_approach",
+            "midApproach": "sg_mid_approach", "inside50": "sg_inside50",
+            "putting": "sg_putting"}
+
+
+def _load_rounds_from_db(con) -> list[dict]:
+    """Per-round records shaped like the legacy round documents (only the fields the
+    window math uses), built from canon + derived. Ordered by start time."""
+    since = analysis_start_date()
+    rows = con.execute("""
+        SELECT r.round_id, r.start_time, r.course_name, r.tee_rating, r.tee_slope,
+               r.total_strokes, r.total_putts, r.total_penalties, r.holes_completed,
+               rr.shot_count_delta,
+               sg.sg_off_tee, sg.sg_long_approach, sg.sg_mid_approach, sg.sg_inside50,
+               sg.sg_putting, sg.sg_0_100,
+               m.doubles_plus, m.three_putt_holes, m.scramble_opps, m.scramble_saves,
+               m.putts_3_6, m.makes_3_6, m.putts_6_10, m.makes_6_10,
+               m.long_first_putts, m.long_three_putts
+        FROM canon.round r
+        JOIN derived.round_recon rr USING (round_id)
+        JOIN derived.round_sg sg USING (round_id)
+        JOIN derived.round_metrics m USING (round_id)
+        WHERE r.round_date >= ?
+        ORDER BY r.start_time
+        """, [since]).fetchall()
+    bands = {}
+    for rid, band, putts in con.execute("""
+        SELECT round_id, band, putts FROM derived.putting_bands
+        """).fetchall():
+        bands.setdefault(rid, []).append((band, putts))
+
+    records = []
+    for (rid, start, course, rating, slope, strokes, putts, pens, holes, delta,
+         ott, lng, mid, i50, sgp, sg0, dbl, tp3, opps, saves,
+         p36, m36, p610, m610, plong, plong3) in rows:
+        records.append({
+            "scorecardId": rid,
+            "round": {"date": start, "teeBoxRating": rating, "teeBoxSlope": slope},
+            "course": {"name": course},
+            "score": {"strokes": strokes, "holesCompleted": holes},
+            "reconciliation": {"shotCountDelta": delta},
+            "strokesGained": {
+                # rounded per round to match the legacy round documents exactly
+                "byCategory": {"offTee": round(ott, 2), "longApproach": round(lng, 2),
+                               "midApproach": round(mid, 2), "inside50": round(i50, 2),
+                               "putting": round(sgp, 2)},
+                "sg0to100": round(sg0, 2),
+                "penaltyStrokes": pens,
+                "doublesOrWorse": dbl,
+                "putting": {"totalPutts": putts, "threePutts": tp3},
+            },
+            "_metrics": {"scrambleOpps": opps, "scrambleSaves": saves,
+                         "putts36": p36, "makes36": m36,
+                         "putts610": p610, "makes610": m610,
+                         "longFirstPutts": plong, "longThreePutts": plong3},
+            "_bands": bands.get(rid, []),
+        })
+    return records
 
 
 def _holes(d: dict) -> int:
@@ -101,6 +166,56 @@ def _auth_window(rounds: list[dict]) -> dict:
     }
 
 
+def _putting_window(rounds: list[dict]) -> list[dict]:
+    """Fine putting bands over a window: {label, n, avg, makePct} per band (same row
+    shape the dashboard has always rendered, now at vNext granularity)."""
+    out = []
+    for label, key in PUTT_BANDS:
+        putts = [p for d in rounds for b, p in d["_bands"] if b == key]
+        n = len(putts)
+        out.append({
+            "label": label, "n": n,
+            "avg": round(sum(putts) / n, 2) if n else None,
+            "makePct": round(100 * sum(1 for p in putts if p == 1) / n) if n else None,
+        })
+    return out
+
+
+def _cell(value, n_rounds: int, n_obs: int) -> dict:
+    return {"value": value, "nRounds": n_rounds, "nObs": n_obs}
+
+
+def _priority_window(rounds: list[dict]) -> dict:
+    """The vNext priority metrics over a window. Annotation-dependent metrics are
+    placeholders (null cells) until annotation loading lands — the dashboard renders
+    them as '—' with zero coverage rather than pretending."""
+    n = len(rounds)
+    holes = sum(_holes(d) for d in rounds)
+    m = [d["_metrics"] for d in rounds]
+    pens = sum(d["strokesGained"]["penaltyStrokes"] for d in rounds)
+    dbls = sum(d["strokesGained"]["doublesOrWorse"] for d in rounds)
+    opps = sum(x["scrambleOpps"] for x in m)
+    saves = sum(x["scrambleSaves"] for x in m)
+    p36, m36 = sum(x["putts36"] for x in m), sum(x["makes36"] for x in m)
+    p610, m610 = sum(x["putts610"] for x in m), sum(x["makes610"] for x in m)
+    plong, plong3 = sum(x["longFirstPutts"] for x in m), sum(x["longThreePutts"] for x in m)
+
+    def pct(num, den):
+        return round(100 * num / den) if den else None
+
+    return {
+        "penalties18": _cell(round(pens / holes * 18, 1) if holes else None, n, holes),
+        "doubles18": _cell(round(dbls / holes * 18, 1) if holes else None, n, holes),
+        "cleanSecondShotPct": _cell(None, 0, 0),        # needs annotations (Phase 4)
+        "recoveryOneShotPct": _cell(None, 0, 0),        # needs annotations (Phase 4)
+        "normalApproachGirPct": _cell(None, 0, 0),      # needs annotations (Phase 4)
+        "upDownPct": _cell(pct(saves, opps), n, opps),
+        "make3to6Pct": _cell(pct(m36, p36), n, p36),
+        "make6to10Pct": _cell(pct(m610, p610), n, p610),
+        "threePutt30PlusPct": _cell(pct(plong3, plong), n, plong),
+    }
+
+
 def _baselines(all_time: dict | None) -> dict:
     """Comparison baselines as per-bucket SG offsets vs scratch. SG-vs-baseline = your
     SG-vs-scratch minus the baseline's. Scratch = 0; My-average = your season norm;
@@ -123,14 +238,16 @@ def _baselines(all_time: dict | None) -> dict:
 
 
 def build(through_scorecard_id: int | None = None, write: bool = True) -> dict:
-    """Aggregate every window over the analysis set.
+    """Aggregate every window over the analysis set (read from the DuckDB spine).
 
     `through_scorecard_id` truncates the round list at that round, so a backfilled coach
     report sees the game AS IT STOOD THEN instead of being told about averages drawn from
     rounds that hadn't been played yet. `write=False` keeps that what-if view out of the
     real progress.json.
     """
-    rounds = sorted(load_rounds(analysis_start_date()), key=lambda d: d["round"]["date"])
+    from .db import connect
+    con = connect()
+    rounds = _load_rounds_from_db(con)
     if through_scorecard_id is not None:
         idx = next((i for i, d in enumerate(rounds)
                     if d["scorecardId"] == through_scorecard_id), None)
@@ -140,11 +257,14 @@ def build(through_scorecard_id: int | None = None, write: bool = True) -> dict:
     horizons = {
         "thisRound": [rounds[-1]] if rounds else [],
         "last5": rounds[-RECENT_N:],
+        "last10": rounds[-10:],
+        "last20": rounds[-20:],
         "allTime": rounds,
     }
     sg = {k: _sg_window(v) for k, v in horizons.items()}
     auth = {k: _auth_window(v) for k, v in horizons.items()}
-    putting = {k: putt_buckets([h for d in v for h in d["holes"]]) for k, v in horizons.items()}
+    putting = {k: _putting_window(v) for k, v in horizons.items()}
+    priority = {k: _priority_window(v) for k, v in horizons.items()}
 
     # Scoring "potential" = better half of rounds (≈ what a handicap measures).
     over_vals = sorted(v for v in (_over_rating18(d) for d in rounds) if v is not None)
@@ -178,6 +298,7 @@ def build(through_scorecard_id: int | None = None, write: bool = True) -> dict:
         "sg": sg,
         "authoritative": auth,
         "putting": putting,
+        "priorityMetrics": priority,
         "timeSeries": series,
     }
     if write:

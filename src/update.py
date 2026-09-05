@@ -38,7 +38,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from . import analyze, coach, parse, progress, pull, site
+from . import analyze, coach, db, derive, ingest, parse, progress, pull, site
 from .config import publish_target, publish_verify_url
 
 SITE_FILE = Path("site/index.html")
@@ -241,6 +241,20 @@ def main() -> None:
         for sid in ids:
             parse.parse_scorecard(sid)
         print(f"re-parsed {len(ids)} tracked rounds")
+
+    # Sync the DuckDB spine: incremental ingest (sha-gated per round), then re-derive
+    # just the changed rounds. A fresh/empty derived layer triggers a full derive.
+    print("Syncing database...")
+    con = db.connect()
+    res = ingest.ingest_all(con)
+    if res["ingestedIds"]:
+        derive.derive_all(con, res["ingestedIds"])
+        print(f"  db: ingested {res['ingested']} rounds, derived updates applied")
+    elif con.execute("SELECT count(*) FROM derived.shot_sg").fetchone()[0] == 0:
+        derive.derive_all(con)
+        print("  db: derived layer rebuilt")
+    else:
+        print(f"  db: up to date ({res['skipped']} rounds unchanged)")
 
     print("Building aggregates...")
     analyze.build_club_stats()

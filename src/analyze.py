@@ -1,14 +1,14 @@
 """Cross-round analysis — per-club distance distributions for the LLM coach.
 
-Reads the processed round documents (the source of truth), not raw. Builds a
-`club_stats` artifact: for each club, how far you actually hit it (median, typical
-range, max, dispersion) across the clean, current-bag rounds.
+Reads the DuckDB spine (canon facts + derived flags). Builds a `club_stats`
+artifact: for each club, how far you actually hit it (median, typical range, max,
+dispersion) across the clean, current-bag rounds.
 
 Cleaning rules (so the numbers are trustworthy):
   - Only rounds on/after config/analysis.json:analysisStartDate (current sensor/bag).
   - Drop unknown-club shots (clubId 0 — auto-detected, no CT10 tag).
-  - Drop shots on reconciliation.suspectHoles (sensor over-recorded).
-  - Drop phantom shots (between-hole transit logged as a stroke — see parse.py).
+  - Drop shots on suspect holes (sensor over-recorded — derived.hole_recon).
+  - Drop phantom shots (between-hole transit logged as a stroke — derived.shot_flags).
   - For distance, use full-ish shots only: exclude putts and chips (partials deflate
     a club's full-swing distance). The Putter therefore shows a shot count, no distance.
 
@@ -18,7 +18,6 @@ Usage:
 
 from __future__ import annotations
 
-import glob
 import json
 import statistics as st
 from collections import defaultdict
@@ -27,7 +26,6 @@ from pathlib import Path
 from .config import analysis_start_date
 from .constants import SG_CATS, SG_LABELS, SG_SHORT  # noqa: F401 — re-exported for consumers
 
-ROUNDS_DIR = Path("data/processed/rounds")
 OUT_JSON = Path("data/processed/club_stats.json")
 OUT_MD = Path("data/processed/club_stats.md")
 
@@ -47,43 +45,51 @@ def _percentile(sorted_vals: list[float], p: float) -> float | None:
     return sorted_vals[f] + (sorted_vals[c] - sorted_vals[f]) * (k - f)
 
 
-def load_rounds(since: str) -> list[dict]:
-    rounds = []
-    for f in sorted(glob.glob(str(ROUNDS_DIR / "*.json"))):
-        d = json.load(open(f))
-        if d["round"]["date"][:10] >= since:
-            rounds.append(d)
-    return rounds
-
-
 def build_club_stats() -> dict:
+    from .db import connect
     since = analysis_start_date()
-    rounds = load_rounds(since)
+    con = connect()
+    n_rounds, courses = con.execute(
+        "SELECT count(*), list(DISTINCT course_name ORDER BY course_name) "
+        "FROM canon.round WHERE round_date >= ?", [since]).fetchone()
+    shots = con.execute("""
+        SELECT s.club_id, s.club_type_id, s.shot_type, g.yards,
+               coalesce(c.name, ct.name, 'unknown') AS club_name,
+               coalesce(c.retired, FALSE)           AS retired,
+               f.phantom, hr.suspect
+        FROM canon.shot s
+        JOIN canon.round r USING (round_id)
+        LEFT JOIN canon.club c ON c.club_id = s.club_id
+        LEFT JOIN canon.club_type ct ON ct.club_type_id = s.club_type_id
+        LEFT JOIN derived.shot_geom g ON g.shot_id = s.shot_id
+        JOIN derived.shot_flags f ON f.shot_id = s.shot_id
+        JOIN derived.hole_recon hr
+          ON hr.round_id = s.round_id AND hr.hole_number = s.hole_number
+        WHERE r.round_date >= ?
+        ORDER BY s.round_id, s.hole_number, s.shot_order
+        """, [since]).fetchall()
 
     # Aggregate by physical clubId (so the wedges stay separate), labeled by resolved name.
     per_club: dict[int, dict] = defaultdict(
         lambda: {"all": 0, "dist": [], "clubTypeId": None, "name": None})
     suspect_excluded = 0
     phantom_excluded = 0
-    for d in rounds:
-        suspect = set(d["reconciliation"]["suspectHoles"])
-        for h in d["holes"]:
-            for s in h["shots"]:
-                if s["club"].startswith("unknown") or s["clubId"] == 0 or s.get("clubRetired"):
-                    continue
-                if s.get("phantom"):     # between-hole transit, not a stroke
-                    phantom_excluded += 1
-                    continue
-                if h["number"] in suspect:
-                    suspect_excluded += 1
-                    continue
-                info = per_club[s["clubId"]]
-                info["clubTypeId"] = s["clubTypeId"]
-                info["name"] = s["club"]
-                info["all"] += 1
-                if (s["type"] not in DISTANCE_EXCLUDE_TYPES and s["yards"] is not None
-                        and s["clubTypeId"] != PUTTER_CLUBTYPE_ID):
-                    info["dist"].append(s["yards"])
+    for club_id, club_type_id, shot_type, yards, name, retired, phantom, suspect in shots:
+        if name.startswith("unknown") or club_id == 0 or retired:
+            continue
+        if phantom:              # between-hole transit, not a stroke
+            phantom_excluded += 1
+            continue
+        if suspect:
+            suspect_excluded += 1
+            continue
+        info = per_club[club_id]
+        info["clubTypeId"] = club_type_id
+        info["name"] = name
+        info["all"] += 1
+        if (shot_type not in DISTANCE_EXCLUDE_TYPES and yards is not None
+                and club_type_id != PUTTER_CLUBTYPE_ID):
+            info["dist"].append(yards)
 
     clubs = []
     for club_id, info in per_club.items():
@@ -107,9 +113,9 @@ def build_club_stats() -> dict:
 
     doc = {
         "generatedFrom": {
-            "rounds": len(rounds),
+            "rounds": n_rounds,
             "analysisStartDate": since,
-            "courses": sorted({d["course"]["name"] for d in rounds}),
+            "courses": courses or [],
             "suspectHoleShotsExcluded": suspect_excluded,
             "phantomShotsExcluded": phantom_excluded,
         },
