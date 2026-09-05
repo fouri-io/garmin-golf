@@ -37,7 +37,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from . import analyze, coach, db, derive, export_rounds, ingest, progress, pull, site
+from . import analyze, coach, db, derive, export_rounds, ingest, insights, progress, pull, site
 from .config import publish_target, publish_verify_url
 
 SITE_FILE = Path("site/index.html")
@@ -255,6 +255,7 @@ def main() -> None:
     print("Building aggregates...")
     analyze.build_club_stats()
     progress.build()
+    insights.build()
 
     # Coach runs before site so its report is inlined. Default: when new rounds were
     # pulled (and not suppressed); always when --coach is given.

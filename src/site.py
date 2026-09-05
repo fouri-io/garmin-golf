@@ -81,9 +81,12 @@ def _coach_reports() -> dict:
 def build() -> Path:
     progress = json.loads((PROCESSED / "progress.json").read_text())
     clubs = json.loads((PROCESSED / "club_stats.json").read_text())
+    ins_p = PROCESSED / "insights.json"
+    insights = json.loads(ins_p.read_text()) if ins_p.exists() else None
     rounds = sorted((_compact_round(Path(p)) for p in glob.glob(str(ROUNDS_DIR / "*.json"))),
                     key=lambda r: r["date"], reverse=True)
-    data = {"progress": progress, "clubs": clubs, "rounds": rounds, "coach": _coach_reports()}
+    data = {"progress": progress, "clubs": clubs, "rounds": rounds,
+            "insights": insights, "coach": _coach_reports()}
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     html = TEMPLATE.replace("/*__DATA__*/null", json.dumps(data))
     out = OUT_DIR / "index.html"
@@ -277,6 +280,26 @@ TEMPLATE = r"""<!doctype html>
   .secdiv b{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
   .secdiv span{font-size:11.5px;color:var(--muted)}
   .secdiv:after{content:"";flex:1;height:1px;background:#d5d8d3}
+  .cl-ceil,.cl-med,.cl-floor,.cl-dot{display:inline-block;width:16px;height:0;vertical-align:middle;margin-right:5px;border-top:2.5px solid var(--good)}
+  .cl-med{border-top-color:var(--accent)}
+  .cl-floor{border-top-color:var(--bad)}
+  .cl-dot{border-top:0;width:7px;height:7px;border-radius:50%;background:#c9cfc9}
+  .inscard{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;
+    padding:10px 12px;margin-bottom:8px}
+  .inscard .ic-top{display:flex;gap:8px;align-items:center;margin-bottom:4px;flex-wrap:wrap}
+  .ic-cat{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent)}
+  .ic-conf{font-size:10px;color:var(--muted);background:#eef1ee;border-radius:4px;padding:1px 7px}
+  .ic-conf.em{background:#fdf4dd;color:#8a6100}
+  .inscard p{margin:0;font-size:13.5px;line-height:1.45}
+  .pri{display:flex;gap:10px;margin-bottom:10px}
+  .pri .n{flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;
+    font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .pri b{display:block;font-size:13.5px}
+  .pri .ev{font-size:12px;color:var(--muted);margin-top:1px}
+  table.dtab{width:auto;min-width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  table.dtab td,table.dtab th{white-space:nowrap;padding:6px 0 6px 18px;text-align:right;border-top:1px solid var(--line)}
+  table.dtab th{border-top:0;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+  table.dtab td:first-child,table.dtab th:first-child{text-align:left;padding-left:0;font-weight:600}
   .wchip{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
     background:#e9efe7;color:var(--accent);border-radius:4px;padding:2px 8px;
     margin:0 8px;vertical-align:1px;white-space:nowrap;display:inline-block}
@@ -441,6 +464,21 @@ TEMPLATE = r"""<!doctype html>
       <div class="foot" style="margin-top:6px">Counts, not vibes: each cell shows the window value with its sample size. Clean-2nd-shot, recovery and normal-approach rows need annotated rounds — they fill in as post-round notes are added.</div></div>
   </div>
 
+  <div id="tab-insights" class="hide">
+    <div class="card"><h2>Your game right now</h2>
+      <div class="foot" id="inssum" style="font-size:13.5px;color:var(--ink);line-height:1.5;margin-bottom:10px"></div>
+      <div class="tiles" style="margin-bottom:0" id="instiles"></div></div>
+    <div class="card"><h2>Performance cone<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">rolling 16 rounds · score vs rating /18 · lower is better</span></h2>
+      <div class="ochartwrap"><svg id="conesvg" viewBox="0 0 880 320" width="100%"></svg><div class="otip" id="conetip"></div></div>
+      <div class="mixlegend"><span><i class="cl-ceil"></i>ceiling (best 20%)</span><span><i class="cl-med"></i>median</span><span><i class="cl-floor"></i>floor (worst 20%)</span><span><i class="cl-dot"></i>rounds</span></div>
+      <div class="foot" id="conefoot" style="margin-top:4px">Improvement moves the cone down. Mastery narrows it.</div></div>
+    <div class="card"><h2>What changed</h2><div id="inscards"></div></div>
+    <div class="card"><h2>Why your floor is moving<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">last 10 vs previous 10</span></h2>
+      <div id="insdrivers" style="overflow-x:auto"></div></div>
+    <div class="card"><h2>What to focus on</h2><div id="inspri"></div></div>
+    <div class="foot" style="padding:0 4px" id="insnote"></div>
+  </div>
+
   <div id="tab-trend" class="hide">
     <div class="ctl"><span class="lab">Metric over time</span>
       <select class="rsel" id="trendMetric"></select></div>
@@ -488,6 +526,7 @@ TEMPLATE = r"""<!doctype html>
 
 <div class="tabbar" id="tabs">
   <button class="t on" data-t="progress"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Overview</button>
+  <button class="t" data-t="insights"><svg class="ic" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1.3 1.5 1.5 2.5h5c.2-1 .8-1.8 1.5-2.5A6 6 0 0 0 12 3z"/></svg>Insights</button>
   <button class="t" data-t="trend"><svg class="ic" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Trend</button>
   <button class="t" data-t="rounds"><svg class="ic" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>Rounds</button>
   <button class="t" data-t="clubs"><svg class="ic" viewBox="0 0 24 24"><path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>Clubs</button>
@@ -987,9 +1026,90 @@ function renderCoach(){
   document.getElementById('coachReport').innerHTML=md(reps[0].text);
 }
 
+
+/* ---- Insights (deterministic development intelligence) ---- */
+function renderInsights(){
+  const I=DATA.insights; if(!I)return;
+  document.getElementById('inssum').textContent=I.summary;
+  document.getElementById('insnote').textContent=I.note;
+  const c=I.current,st=I.start;
+  document.getElementById('instiles').innerHTML=!c?'':[
+    ['Current level','+'+c.median.toFixed(0),'median vs rating /18'],
+    ['Ceiling','+'+c.ceiling.toFixed(0),'best 20% of rounds'],
+    ['Floor','+'+c.floor.toFixed(0),'worst 20% of rounds'],
+    ['Reliability gap',c.gap.toFixed(0),st?`was ${st.gap.toFixed(0)} at start`:''],
+  ].map(([l,v,sub])=>`<div class="tile"><div class="lab">${l}</div><div class="v">${v}</div><div class="osub">${sub}</div></div>`).join('');
+  drawCone(I);
+  document.getElementById('inscards').innerHTML=I.insights.map(x=>
+    `<div class="inscard"><div class="ic-top"><span class="ic-cat">${x.cat}</span>`+
+    `<span class="ic-conf${x.confidence==='Emerging signal'?' em':''}">${x.confidence}</span></div>`+
+    `<p>${x.text}</p></div>`).join('');
+  document.getElementById('insdrivers').innerHTML=
+    `<table class="dtab"><thead><tr><th>Driver</th><th>Prev 10</th><th>Last 10</th><th>Verdict</th></tr></thead><tbody>`+
+    I.floorDrivers.map(d=>{
+      const col=d.verdict==='improving'?'var(--good)':d.verdict==='worse'?'var(--bad)':'var(--muted)';
+      const arrow=d.verdict==='improving'?'▲':d.verdict==='worse'?'▼':'→';
+      return `<tr><td>${d.label}</td><td>${d.prev}</td><td><b>${d.now}</b></td>`+
+        `<td><span style="color:${col};font-weight:700;font-size:12px">${arrow} ${d.verdict}</span></td></tr>`;
+    }).join('')+`</tbody></table>`;
+  document.getElementById('inspri').innerHTML=I.priorities.map((x,i)=>
+    `<div class="pri"><span class="n">${i+1}</span><div><b>${x.text}</b>`+
+    `<div class="ev">${x.evidence}</div></div></div>`).join('');
+}
+function drawCone(I){
+  const svg=document.getElementById('conesvg');
+  const pts=I.cone.points, rds=I.cone.rounds;
+  if(!pts.length){svg.innerHTML='';return;}
+  const cw=(svg.parentNode&&svg.parentNode.clientWidth)||880,K=cw&&cw<560?2.0:1;
+  const W=880,H=320+(K>1?24:0),L=46,Rm=16,T=24,B=40;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const i0=pts[0].i,iN=pts[pts.length-1].i;
+  const allv=rds.map(r=>r.v).concat(pts.flatMap(p=>[p.p20,p.p80]));
+  let mn=Math.min(...allv)-2,mx=Math.max(...allv)+2;
+  const X=i=>L+(W-L-Rm)*((i-i0)/Math.max(1,iN-i0));
+  // natural score axis: worse (higher over-rating) plots higher, so improving = cone descends
+  const Yv=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
+  let g='';
+  const step=Math.max(2,Math.ceil((mx-mn)/4));
+  for(let t=Math.ceil(mn/step)*step;t<=mx;t+=step)
+    g+=`<line x1="${L}" y1="${Yv(t)}" x2="${W-Rm}" y2="${Yv(t)}" stroke="#e4e6e2"/>`
+      +`<text x="${L-6}" y="${Yv(t)+4}" font-size="${11*K}" fill="#6d7269" text-anchor="end">+${t}</text>`;
+  // individual rounds (light dots, honesty layer)
+  rds.forEach((r,i)=>{if(i>=i0&&i<=iN)g+=`<circle cx="${X(i)}" cy="${Yv(r.v)}" r="3" fill="#c9cfc9" data-d="${r.date}" data-v="${r.v}" style="cursor:pointer"/>`;});
+  // band p20..p80
+  const band=pts.map(p=>`${X(p.i)},${Yv(p.p20)}`).join(' ')+' '+
+    [...pts].reverse().map(p=>`${X(p.i)},${Yv(p.p80)}`).join(' ');
+  g+=`<polygon points="${band}" fill="#1f4a36" opacity="0.10" style="pointer-events:none"/>`;
+  const line=(key,color,wd)=>`<polyline points="${pts.map(p=>X(p.i)+','+Yv(p[key])).join(' ')}" fill="none" stroke="${color}" stroke-width="${wd}" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"/>`;
+  g+=line('p20','#218a54',2.5)+line('p80','#b3312d',2.5)+line('p50','#1f4a36',3);
+  const last=pts[pts.length-1];
+  {const lbl=[['p20','#218a54'],['p50','#1a1c19'],['p80','#b3312d']]
+    .map(([k,col])=>({col,v:last[k],y:Yv(last[k])+4})).sort((a,b)=>a.y-b.y);
+  const gap=15*K;
+  for(let j=1;j<lbl.length;j++)if(lbl[j].y-lbl[j-1].y<gap)lbl[j].y=lbl[j-1].y+gap;
+  lbl.forEach(o=>{g+=`<text x="${W-Rm}" y="${o.y}" font-size="${11.5*K}" font-weight="800" fill="${o.col}" text-anchor="end">+${o.v.toFixed(0)}</text>`;});}
+  // x date ticks
+  const tick=Math.max(1,Math.ceil(pts.length/(K>1?4:6)));
+  pts.forEach((p,j)=>{if(j%tick===0||j===pts.length-1){
+    const anc=j===0?'start':j===pts.length-1?'end':'middle';
+    g+=`<text x="${X(p.i)}" y="${H-14}" font-size="${10*K}" fill="#6d7269" text-anchor="${anc}">${p.date.slice(5).replace('-','/')}</text>`;}});
+  svg.innerHTML=g;
+  const tip=document.getElementById('conetip');
+  svg.querySelectorAll('circle').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{const r=el.getBoundingClientRect(),w=el.closest('.ochartwrap').getBoundingClientRect();
+      tip.innerHTML=`<b>${el.dataset.d}</b> — +${(+el.dataset.v).toFixed(1)}`;
+      tip.style.left=(r.left-w.left+r.width/2)+'px';tip.style.top=(r.top-w.top)+'px';tip.style.opacity=1;});
+    el.addEventListener('mouseleave',()=>tip.style.opacity=0);
+  });
+  const cn=I.current,sn=I.start;
+  if(cn&&sn)document.getElementById('conefoot').textContent=
+    `Improvement moves the cone down; mastery narrows it. Gap: ${sn.gap.toFixed(0)} strokes at start → ${cn.gap.toFixed(0)} now.`;
+}
+
 function setTab(name){
   [...document.getElementById('tabs').children].forEach(b=>b.classList.toggle('on',b.dataset.t===name));
-  ['progress','trend','rounds','clubs','maps','coach'].forEach(n=>document.getElementById('tab-'+n).classList.toggle('hide',n!==name));
+  ['progress','insights','trend','rounds','clubs','maps','coach'].forEach(n=>document.getElementById('tab-'+n).classList.toggle('hide',n!==name));
+  if(name==="insights")renderInsights();
   if(name==="trend")renderTrend();
   if(name==="rounds")renderRoundsList();
   if(name==="maps")showMap();
@@ -1039,7 +1159,7 @@ document.getElementById('roundDetail').addEventListener('click',e=>{
   const s=e.target.closest('.exp-share');if(s){sharePack(DATA.rounds[detailRound]);return;}});
 
 renderOutcome();renderProgress();renderProcess();renderRoundsList();renderClubs();
-let _rz;window.addEventListener('resize',()=>{clearTimeout(_rz);_rz=setTimeout(()=>{renderOutcome();if(!document.getElementById('tab-trend').classList.contains('hide'))renderTrend();},200);});
+let _rz;window.addEventListener('resize',()=>{clearTimeout(_rz);_rz=setTimeout(()=>{renderOutcome();if(!document.getElementById('tab-trend').classList.contains('hide'))renderTrend();if(!document.getElementById('tab-insights').classList.contains('hide'))renderInsights();},200);});
 </script>
 </body>
 </html>

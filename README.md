@@ -58,6 +58,7 @@ better the "why" gets.
 | `python -m src.annotate [id] [--structure/--confirm]` | The annotation flow |
 | `python -m src.analyze` | Build `club_stats.{json,md}` (per-club distances) |
 | `python -m src.progress` | Build `progress.{json,md}` (the dashboard data) |
+| `python -m src.insights` | Build `insights.{json,md}` (Performance Cone + ranked insights) |
 | `python -m src.site` | Generate the static site → `site/index.html` |
 | `python -m tools.parity` | Self-consistency gate: exported docs vs the DB |
 | `pytest` (`-m slow` for parity) | The test suite |

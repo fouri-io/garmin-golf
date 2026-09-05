@@ -61,6 +61,7 @@ gitignored because it is reproducible — git durability lives with the raw file
 | `annotate.py` | Narrative scaffold → LLM tag proposal → validate/confirm loop. |
 | `export_rounds.py` | DB → round documents (schema v2, faithful superset + annotations). |
 | `analyze.py` | Cross-round `club_stats` (per physical clubId; excludes phantom/suspect/non-stock shots). |
+| `insights.py` | Deterministic development intelligence: Performance Cone (rolling p20/p50/p80 of score vs rating), ranked insight cards, floor drivers, priorities → `insights.{json,md}`. |
 | `progress.py` | Dashboard data: 5 windows (this/5/10/20/all), SG, baselines, fine putting bands, priority metrics. |
 | `site.py` | Static site generator → `site/index.html` (data inlined, no fetch). |
 | `coach.py` | AI round report (Anthropic/OpenAI) + the living golfer spec + the player's own notes. |
