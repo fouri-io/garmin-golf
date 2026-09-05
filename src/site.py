@@ -471,7 +471,7 @@ TEMPLATE = r"""<!doctype html>
     <div class="card"><h2>Performance cone<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">rolling 16 rounds · score vs rating /18 · lower is better</span></h2>
       <div class="ochartwrap"><svg id="conesvg" viewBox="0 0 880 320" width="100%"></svg><div class="otip" id="conetip"></div></div>
       <div class="mixlegend"><span><i class="cl-ceil"></i>ceiling (best 20%)</span><span><i class="cl-med"></i>median</span><span><i class="cl-floor"></i>floor (worst 20%)</span><span><i class="cl-dot"></i>rounds</span></div>
-      <div class="foot" id="conefoot" style="margin-top:4px">Improvement moves the cone down. Mastery narrows it. Dashed = forming estimate (under 16 rounds, percentiles run narrow); solid = full evidence.</div></div>
+      <div class="foot" id="conefoot" style="margin-top:4px">Improvement moves the cone down. Mastery narrows it. Dashed = forming estimate (under 16 rounds); solid = full evidence. Target cones on the right are modeled reference shapes (median ≈ handicap over rating, spread narrowing with skill), not measurements.</div></div>
     <div class="card"><h2>What changed</h2><div id="inscards"></div></div>
     <div class="card"><h2>Why your floor is moving<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">last 10 vs previous 10</span></h2>
       <div id="insdrivers" style="overflow-x:auto"></div></div>
@@ -1061,12 +1061,15 @@ function drawCone(I){
   const pts=I.cone.points, rds=I.cone.rounds;
   if(!pts.length){svg.innerHTML='';return;}
   const cw=(svg.parentNode&&svg.parentNode.clientWidth)||880,K=cw&&cw<560?2.0:1;
-  const W=880,H=320+(K>1?24:0),L=46,Rm=16,T=24,B=40;
+  const bm=I.benchmarks||[];
+  const BZ=bm.length?(K>1?150:128):0;
+  const W=880,H=320+(K>1?24:0),L=46,Rm=16+BZ,T=24,B=40;
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   // time axis from the FIRST tracked round — sparse early history spreads out
   // honestly instead of being crushed into the left edge by a round-index axis
   const T0=Date.parse(rds[0].date),TN=Date.parse(rds[rds.length-1].date);
-  const allv=rds.map(r=>r.v).concat(pts.flatMap(p=>[p.p20,p.p80]));
+  const allv=rds.map(r=>r.v).concat(pts.flatMap(p=>[p.p20,p.p80]),
+    bm.flatMap(b=>[b.ceiling,b.floor]));
   let mn=Math.min(...allv)-2,mx=Math.max(...allv)+2;
   const Xd=d=>L+(W-L-Rm)*((Date.parse(d)-T0)/Math.max(1,TN-T0));
   // natural score axis: worse (higher over-rating) plots higher, so improving = cone descends
@@ -1106,6 +1109,20 @@ function drawCone(I){
     g+=`<line x1="${Xd(full[0].date)}" y1="${T}" x2="${Xd(full[0].date)}" y2="${H-B}" stroke="#c3c9c3" stroke-dasharray="2 4"/>`
       +`<text x="${Xd(full[0].date)-5}" y="${T+12*K}" font-size="${9.5*K}" fill="#6d7269" text-anchor="end">forming</text>`
       +`<text x="${Xd(full[0].date)+5}" y="${T+12*K}" font-size="${9.5*K}" fill="#6d7269">16-round window full</text>`;}
+  if(bm.length){
+    const zx=W-BZ-6;
+    g+=`<line x1="${zx}" y1="${T}" x2="${zx}" y2="${H-B}" stroke="#c3c9c3" stroke-dasharray="2 4"/>`
+      +`<text x="${zx+BZ/2+6}" y="${T+10*K}" font-size="${9.5*K}" fill="#6d7269" text-anchor="middle">targets (modeled)</text>`;
+    bm.forEach((b,bi)=>{
+      const cx=zx+((bi+0.5)*BZ/bm.length)+6, hw=13;
+      // natural axis: the floor (worse) plots ABOVE the ceiling
+      const yTop=Yv(b.floor),yBot=Yv(b.ceiling),hgt=yBot-yTop;
+      g+=`<rect x="${cx-hw}" y="${yTop}" width="${2*hw}" height="${hgt}" rx="6" fill="#1f4a36" opacity="0.13"/>`
+        +`<rect x="${cx-hw}" y="${yTop}" width="${2*hw}" height="${hgt}" rx="6" fill="none" stroke="#1f4a36" opacity="0.45"/>`
+        +`<line x1="${cx-hw}" x2="${cx+hw}" y1="${Yv(b.median)}" y2="${Yv(b.median)}" stroke="#1a1c19" stroke-width="2.5"/>`
+        +`<text x="${cx}" y="${yTop-7}" font-size="${10.5*K}" font-weight="800" fill="#1f4a36" text-anchor="middle">${b.median>0?'+':''}${Math.round(b.median)}</text>`
+        +`<text x="${cx}" y="${yBot+13*K}" font-size="${9.5*K}" fill="#6d7269" text-anchor="middle">${b.label}</text>`;});
+  }
   svg.innerHTML=g;
   const tip=document.getElementById('conetip');
   svg.querySelectorAll('circle').forEach(el=>{

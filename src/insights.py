@@ -21,6 +21,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from .config import sg_target
 from .constants import SG_LABELS
 
 OUT_JSON = Path("data/processed/insights.json")
@@ -310,6 +311,18 @@ def build(write: bool = True) -> dict:
                         f"3–5 makes them trendable."})
     priorities = priorities[:3]
 
+    # Aspirational benchmark cones (MODELED, labeled as such): median ~= handicap
+    # over rating (the app's existing scratch-relative convention); spread narrows
+    # with skill (gap ~= 5 + 0.2*H, skewed slightly toward the floor like real
+    # score distributions). These are reference shapes, not measurements.
+    def _bench(h: float, label: str) -> dict:
+        gap = 5 + 0.2 * h
+        return {"label": label, "handicap": h, "median": round(h, 1),
+                "ceiling": round(h - 0.4 * gap, 1), "floor": round(h + 0.6 * gap, 1),
+                "modeled": True}
+    tgt_h = sg_target()["targetHandicap"]
+    benchmarks = [_bench(tgt_h, f"target {tgt_h}"), _bench(0, "scratch")]
+
     doc = {
         "generatedFromRounds": n_rounds,
         "basis": "score vs course rating, per 18 (all rated rounds, every source)",
@@ -323,6 +336,7 @@ def build(write: bool = True) -> dict:
             "points": [{"date": rounds[p["i"]]["date"], **{k: p[k] for k in
                         ("i", "p20", "p50", "p80", "full")}} for p in series],
         },
+        "benchmarks": benchmarks,
         "insights": insights,
         "floorDrivers": drivers,
         "priorities": priorities,
