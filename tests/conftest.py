@@ -16,6 +16,25 @@ FIXTURE_SCORECARD_ID = 999000111
 
 
 @pytest.fixture()
+def db(tmp_path):
+    """A bootstrapped, empty DuckDB in a temp file (schema from sql/schema/)."""
+    from src.db import connect
+    con = connect(tmp_path / "test.duckdb")
+    yield con
+    con.close()
+
+
+@pytest.fixture()
+def ingested_db(db):
+    """The test DB with the 2-hole fixture round ingested and geometry derived."""
+    from src.derive import derive_geom
+    from src.ingest import ingest_round
+    ingest_round(db, FIXTURE_SCORECARD_ID, raw_dir=FIXTURES / "raw")
+    derive_geom(db)
+    return db
+
+
+@pytest.fixture()
 def fixture_detail() -> dict:
     return json.loads((FIXTURES / "raw" / f"scorecard_{FIXTURE_SCORECARD_ID}_detail.json")
                       .read_text())

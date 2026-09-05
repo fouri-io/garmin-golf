@@ -21,12 +21,12 @@ _Average − potential = ~9 strokes of volatility (your blow-up tax — fewer do
 
 | Bucket | This round | Last 5 | All-time |
 |---|--:|--:|--:|
-| Off-the-Tee | -4.9 | -4.8 | -4.5 |
+| Off-the-Tee | -4.9 | -4.8 | -4.4 |
 | Long approach (150+) | -2.0 | -5.6 | -6.2 |
-| Mid approach (50–150) | -4.0 | -6.8 | -7.3 |
+| Mid approach (50–150) | -4.0 | -6.8 | -7.2 |
 | Inside 50 | +0.7 | -6.3 | -7.0 |
 | Putting | -1.7 | -3.0 | -3.5 |
-| **Total** | -11.9 | -26.5 | -28.5 |
+| **Total** | -11.9 | -26.5 | -28.3 |
 
 _Read across: **This vs Last 5** = was this round above/below your form (signal vs noise). **Last 5 vs All-time** = are you trending up. Putting is count-based (authoritative putts); other buckets are GPS-based; the absolute total runs a few strokes hot — trust the ranking._
 
@@ -54,7 +54,7 @@ _vsRtg = score over rating per 18 (authoritative). SG per 18; ⚠ = over-recorde
 | 2026-07-03 | Avery Ranch Golf C | 98 | 18 | +30.2 | -5.5 | -12.4 | -6.5 | -4.5 | -2.9 | |
 | 2026-07-05 | Harvey Penick Golf | 36 | 9 | +12.4 | -5.2 | -3.7 | -17.9 | -9.1 | +2.5 | ⚠ |
 | 2026-07-06 | Harvey Penick Golf | 41 | 9 | +22.4 | -3.2 | -1.3 | -11.5 | -6.1 | -3.8 | |
-| 2026-07-08 | Riverside Golf Cou | 97 | 18 | +29.8 | -3.9 | -8.5 | -9.4 | -13.0 | +0.8 | |
+| 2026-07-08 | Riverside Golf Cou | 97 | 18 | +29.8 | -3.9 | -8.5 | -6.5 | -13.0 | +0.8 | |
 | 2026-07-10 | Riverside Golf Cou | 98 | 18 | +30.8 | -4.0 | -7.9 | -9.5 | -11.1 | -2.5 | |
 | 2026-07-13 | Harvey Penick Golf | 33 | 9 | +6.4 | -5.0 | +0.0 | -7.8 | -3.8 | +6.2 | |
 | 2026-07-22 | Harvey Penick Golf | 35 | 9 | +10.4 | -2.1 | -1.6 | -6.2 | -0.9 | -3.8 | |
@@ -64,7 +64,7 @@ _vsRtg = score over rating per 18 (authoritative). SG per 18; ⚠ = over-recorde
 | 2026-08-03 | Harvey Penick Golf | 40 | 9 | +19.4 | -1.8 | -4.8 | -5.6 | -3.0 | -4.6 | |
 | 2026-08-06 | Riverside Golf Cou | 92 | 18 | +24.8 | -2.9 | -5.4 | -7.8 | -10.8 | -3.4 | |
 | 2026-08-07 | Harvey Penick Golf | 34 | 9 | +8.4 | -1.9 | +0.2 | -8.5 | -6.3 | +3.7 | |
-| 2026-08-09 | Harvey Penick Golf | 40 | 9 | +20.4 | -3.2 | +0.0 | -5.1 | -5.8 | -10.4 | |
+| 2026-08-09 | Harvey Penick Golf | 40 | 9 | +20.4 | -1.5 | +0.0 | -5.1 | -5.8 | -10.4 | |
 | 2026-08-10 | Harvey Penick Golf | 41 | 9 | +22.4 | -3.3 | -1.4 | -7.3 | -2.9 | -7.8 | |
 | 2026-08-12 | Riverside Golf Cou | 95 | 18 | +27.8 | -4.8 | -5.7 | -8.5 | -8.8 | +0.0 | |
 | 2026-08-14 | Riverside Golf Cou | 93 | 18 | +25.8 | -6.3 | -7.2 | -4.5 | -10.2 | -2.7 | |

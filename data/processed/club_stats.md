@@ -9,7 +9,7 @@ _Full-swing shots only (putts & chips excluded); unknown-club and suspect-hole s
 | 4 Hybrid | 43 | 164 | 138–171 | 214 |
 | 7 Iron | 158 | 140 | 124–153 | 203 |
 | 8 Iron | 86 | 129 | 117–148 | 170 |
-| 9 Iron | 88 | 117 | 90–132 | 162 |
+| 9 Iron | 86 | 118 | 91–132 | 162 |
 | 6 Iron | 30 | 104 | 69–155 | 188 |
 | PW | 130 | 95 | 70–111 | 136 |
 | 50° GW | 47 | 65 | 41–77 | 112 |
