@@ -858,8 +858,11 @@ document.getElementById('trendMetric').innerHTML=Object.entries(gs).map(([g,ms])
 document.getElementById('trendMetric').onchange=e=>{trendMetric=e.target.value;renderTrend();};
 function slope(ys){const n=ys.length;if(n<2)return 0;const mx=(n-1)/2,my=ys.reduce((a,b)=>a+b,0)/n;
   let nu=0,de=0;ys.forEach((y,i)=>{nu+=(i-mx)*(y-my);de+=(i-mx)**2;});return de?nu/de:0;}
-function dir(ys,low){const s=slope(ys);if(Math.abs(s)<0.3)return{t:'→ flat',c:'flat'};
-  return (low?-s:s)>0?{t:'↑ improving',c:'up'}:{t:'↓ slipping',c:'down'};}
+function dir(ys,low){const n=ys.length,ch=slope(ys)*(n-1);   // fitted change over the window
+  if(Math.abs(ch)<1.5)return{t:`→ flat (${ch>0?'+':''}${ch.toFixed(1)})`,c:'flat'};
+  const good=(low?-ch:ch)>0;
+  return{t:`${good?'↑ improving':'↓ slipping'} · ${ch>0?'+':''}${ch.toFixed(1)} over window`,
+         c:good?'up':'down'};}
 function roll(ys,n){return ys.map((_,i)=>{const a=ys.slice(Math.max(0,i-n+1),i+1);
   return a.reduce((x,y)=>x+y,0)/a.length;});}
 function chart(pts,zero){
