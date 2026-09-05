@@ -17,12 +17,23 @@ CREATE TABLE IF NOT EXISTS derived.shot_geom (
   lateral_yds DOUBLE
 );
 
--- Per-shot SG (Phase 2+; written by derive.py from canon + shot_geom + sg_core).
+-- Per-shot SG (written by derive.py from canon + shot_geom + sg_core). Phantom shots
+-- get no row — they aren't strokes.
 CREATE TABLE IF NOT EXISTS derived.shot_sg (
   shot_id BIGINT PRIMARY KEY,
   sg_category TEXT,                     -- offTee|longApproach|midApproach|inside50|putting
   strokes_gained DOUBLE,                -- NULL for putts (count-based) and ungradeable shots
   sg_version INTEGER NOT NULL
+);
+
+-- Per-hole putting expectation (written by derive.py; needs baseline interpolation).
+-- Putting SG for a hole = expected_putts - actual putts (authoritative count).
+CREATE TABLE IF NOT EXISTS derived.hole_putting (
+  round_id BIGINT NOT NULL,
+  hole_number INTEGER NOT NULL,
+  first_putt_ft DOUBLE NOT NULL,
+  expected_putts DOUBLE NOT NULL,
+  PRIMARY KEY (round_id, hole_number)
 );
 
 -- Confidence layer, per shot. Phantom = between-hole transit logged as a stroke; the
