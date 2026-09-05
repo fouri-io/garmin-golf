@@ -108,8 +108,6 @@ def pull_all(api, *, skip_existing: bool = True) -> dict:
     already-pulled rounds are skipped so a re-run resumes where it left off. With
     skip_existing=True this is an incremental sync — only new rounds hit the network.
     Returns {pulled, skipped, failed}."""
-    from .parse import parse_scorecard  # local import: parse reads only from data/raw
-
     summaries = pull_summary(api)
     since = analysis_start_date()
     ids = real_round_ids(summaries, since_date=since)
@@ -121,14 +119,12 @@ def pull_all(api, *, skip_existing: bool = True) -> dict:
     for i, scorecard_id in enumerate(ids, 1):
         if skip_existing and _raw_exists(scorecard_id):
             print(f"[{i}/{len(ids)}] {scorecard_id} already pulled — skipping")
-            parse_scorecard(scorecard_id)  # ensure processed doc is fresh
             skipped += 1
             continue
         print(f"[{i}/{len(ids)}] pulling {scorecard_id}...")
         try:
             time.sleep(PAUSE_SECONDS)
             pull_one(api, scorecard_id)
-            parse_scorecard(scorecard_id)
             pulled += 1
         except Exception as e:  # noqa: BLE001 — one bad round shouldn't abort the batch
             print(f"  FAILED {scorecard_id}: {type(e).__name__}: {e}")

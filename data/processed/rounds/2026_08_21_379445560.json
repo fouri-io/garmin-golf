@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "scorecardId": 379445560,
   "source": "garminconnect",
   "round": {
@@ -11,7 +11,7 @@
     "teeBox": "Middle",
     "teeBoxRating": 67.2,
     "teeBoxSlope": 113,
-    "playerHandicap": 16,
+    "playerHandicap": 16.0,
     "sensorOnPutter": true,
     "distanceWalkedMeters": null,
     "stepsTaken": null
@@ -150,6 +150,7 @@
     "emptyShotHoles": [],
     "note": "Score is authoritative. The sensor shot layer is imperfect: it can under-record (un-sensed short shots; penalties carry no position) or over-record (phantom/practice strokes). Treat shot counts as spatial detail, not stroke truth; discount suspectHoles for club/distance stats. Counts here EXCLUDE phantomShots (between-hole transit logged as strokes); those shots stay in `holes[].shots` flagged with phantom=true."
   },
+  "annotations": null,
   "holes": [
     {
       "number": 1,
@@ -178,6 +179,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854976,
           "shotNumber": 1,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -212,13 +214,15 @@
             "side": "right",
             "lateralYds": 6.1
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.491
+          "strokesGained": -0.491,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615854930,
           "shotNumber": 2,
           "club": "Putter",
           "clubTypeId": 23,
@@ -253,13 +257,15 @@
             "side": "left",
             "lateralYds": 9.4
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         },
         {
+          "shotId": 10615854938,
           "shotNumber": 3,
           "club": "Putter",
           "clubTypeId": 23,
@@ -294,13 +300,15 @@
             "side": "right",
             "lateralYds": 14.2
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         },
         {
+          "shotId": 10615854946,
           "shotNumber": 4,
           "club": "PW",
           "clubTypeId": 19,
@@ -335,13 +343,15 @@
             "side": "straight",
             "lateralYds": 0.7
           },
-          "resultCategory": "short",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -1.11
+          "strokesGained": -1.11,
+          "confidence": "authoritative",
+          "resultCategory": "short"
         },
         {
+          "shotId": 10615854940,
           "shotNumber": 5,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -376,11 +386,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": 0.565
+          "strokesGained": 0.565,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         }
       ]
     },
@@ -411,6 +422,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854993,
           "shotNumber": 1,
           "club": "5 Wood",
           "clubTypeId": 3,
@@ -445,13 +457,15 @@
             "side": "right",
             "lateralYds": 28.3
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.391
+          "strokesGained": -0.391,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615854967,
           "shotNumber": 2,
           "club": "unknown",
           "clubTypeId": 0,
@@ -486,13 +500,15 @@
             "side": "right",
             "lateralYds": 5.0
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.062
+          "strokesGained": -0.062,
+          "confidence": "inferred",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615855007,
           "shotNumber": 3,
           "club": "Putter",
           "clubTypeId": 23,
@@ -527,11 +543,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -562,6 +579,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854937,
           "shotNumber": 1,
           "club": "PW",
           "clubTypeId": 19,
@@ -596,13 +614,15 @@
             "side": "right",
             "lateralYds": 5.0
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.342
+          "strokesGained": -0.342,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615854983,
           "shotNumber": 2,
           "club": "PW",
           "clubTypeId": 19,
@@ -637,13 +657,15 @@
             "side": "right",
             "lateralYds": 8.9
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.707
+          "strokesGained": -0.707,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615854991,
           "shotNumber": 3,
           "club": "Putter",
           "clubTypeId": 23,
@@ -678,13 +700,15 @@
             "side": "right",
             "lateralYds": 7.1
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         },
         {
+          "shotId": 10615854979,
           "shotNumber": 4,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -719,13 +743,15 @@
             "side": "straight",
             "lateralYds": 2.8
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.561
+          "strokesGained": -0.561,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615854960,
           "shotNumber": 5,
           "club": "Putter",
           "clubTypeId": 23,
@@ -760,11 +786,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -795,6 +822,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854959,
           "shotNumber": 1,
           "club": "Driver",
           "clubTypeId": 1,
@@ -829,13 +857,15 @@
             "side": "right",
             "lateralYds": 10.3
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.365
+          "strokesGained": -0.365,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615854933,
           "shotNumber": 2,
           "club": "5 Wood",
           "clubTypeId": 3,
@@ -870,13 +900,15 @@
             "side": "right",
             "lateralYds": 14.9
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -0.465
+          "strokesGained": -0.465,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615854987,
           "shotNumber": 3,
           "club": "Putter",
           "clubTypeId": 23,
@@ -911,13 +943,15 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "short",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.845
+          "strokesGained": -0.845,
+          "confidence": "authoritative",
+          "resultCategory": "short"
         },
         {
+          "shotId": 10615854945,
           "shotNumber": 4,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -952,13 +986,15 @@
             "side": "straight",
             "lateralYds": 0.4
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": 0.406
+          "strokesGained": 0.406,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615854984,
           "shotNumber": 5,
           "club": "Putter",
           "clubTypeId": 23,
@@ -993,13 +1029,15 @@
             "side": "straight",
             "lateralYds": 1.2
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         },
         {
+          "shotId": 10615854948,
           "shotNumber": 6,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -1034,11 +1072,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -1069,6 +1108,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854985,
           "shotNumber": 1,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -1103,13 +1143,15 @@
             "side": "left",
             "lateralYds": 62.7
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -0.568
+          "strokesGained": -0.568,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854972,
           "shotNumber": 2,
           "club": "6 Iron",
           "clubTypeId": 15,
@@ -1144,13 +1186,15 @@
             "side": "right",
             "lateralYds": 33.0
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -0.75
+          "strokesGained": -0.75,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615855006,
           "shotNumber": 3,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -1185,13 +1229,15 @@
             "side": "straight",
             "lateralYds": 1.9
           },
-          "resultCategory": "bunker",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.746
+          "strokesGained": -0.746,
+          "confidence": "authoritative",
+          "resultCategory": "bunker"
         },
         {
+          "shotId": 10615854994,
           "shotNumber": 4,
           "club": "unknown",
           "clubTypeId": 22,
@@ -1226,13 +1272,15 @@
             "side": "straight",
             "lateralYds": 2.4
           },
-          "resultCategory": "long",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -1.178
+          "strokesGained": -1.178,
+          "confidence": "authoritative",
+          "resultCategory": "long"
         },
         {
+          "shotId": 10615855019,
           "shotNumber": 5,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -1267,11 +1315,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": 0.664
+          "strokesGained": 0.664,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         }
       ]
     },
@@ -1302,6 +1351,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854989,
           "shotNumber": 1,
           "club": "Driver",
           "clubTypeId": 1,
@@ -1336,13 +1386,15 @@
             "side": "left",
             "lateralYds": 7.0
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": 0.089
+          "strokesGained": 0.089,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854947,
           "shotNumber": 2,
           "club": "9 Iron",
           "clubTypeId": 18,
@@ -1377,13 +1429,15 @@
             "side": "right",
             "lateralYds": 11.2
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.843
+          "strokesGained": -0.843,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615854962,
           "shotNumber": 3,
           "club": "50\u00b0 GW",
           "clubTypeId": 20,
@@ -1418,13 +1472,15 @@
             "side": "straight",
             "lateralYds": 3.3
           },
-          "resultCategory": "long",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.77
+          "strokesGained": -0.77,
+          "confidence": "authoritative",
+          "resultCategory": "long"
         },
         {
+          "shotId": 10615854963,
           "shotNumber": 4,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -1459,11 +1515,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": 0.452
+          "strokesGained": 0.452,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         }
       ]
     },
@@ -1494,6 +1551,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854999,
           "shotNumber": 1,
           "club": "Driver",
           "clubTypeId": 1,
@@ -1528,13 +1586,15 @@
             "side": "right",
             "lateralYds": 12.9
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.33
+          "strokesGained": -0.33,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615855016,
           "shotNumber": 2,
           "club": "unknown",
           "clubTypeId": 0,
@@ -1569,13 +1629,15 @@
             "side": "right",
             "lateralYds": 22.3
           },
-          "resultCategory": "off-map",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.561
+          "strokesGained": -0.561,
+          "confidence": "approximate",
+          "resultCategory": "off-map"
         },
         {
+          "shotId": 10615855014,
           "shotNumber": 3,
           "club": "PW",
           "clubTypeId": 19,
@@ -1610,13 +1672,15 @@
             "side": "left",
             "lateralYds": 22.8
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.99
+          "strokesGained": -0.99,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615855002,
           "shotNumber": 4,
           "club": "50\u00b0 GW",
           "clubTypeId": 20,
@@ -1651,13 +1715,15 @@
             "side": "left",
             "lateralYds": 5.0
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.205
+          "strokesGained": -0.205,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615854995,
           "shotNumber": 5,
           "club": "Putter",
           "clubTypeId": 23,
@@ -1692,13 +1758,15 @@
             "side": "right",
             "lateralYds": 5.2
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         },
         {
+          "shotId": 10615854952,
           "shotNumber": 6,
           "club": "Putter",
           "clubTypeId": 23,
@@ -1733,11 +1801,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -1768,6 +1837,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854944,
           "shotNumber": 1,
           "club": "5 Wood",
           "clubTypeId": 3,
@@ -1802,13 +1872,15 @@
             "side": "left",
             "lateralYds": 76.1
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.161
+          "strokesGained": -0.161,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854992,
           "shotNumber": 2,
           "club": "4 Hybrid",
           "clubTypeId": 7,
@@ -1843,13 +1915,15 @@
             "side": "right",
             "lateralYds": 6.5
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -0.665
+          "strokesGained": -0.665,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615855003,
           "shotNumber": 3,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -1884,13 +1958,15 @@
             "side": "straight",
             "lateralYds": 2.7
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": 0.17
+          "strokesGained": 0.17,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615855012,
           "shotNumber": 4,
           "club": "Putter",
           "clubTypeId": 23,
@@ -1925,11 +2001,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -1960,6 +2037,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854954,
           "shotNumber": 1,
           "club": "Driver",
           "clubTypeId": 1,
@@ -1994,13 +2072,15 @@
             "side": "right",
             "lateralYds": 93.7
           },
-          "resultCategory": "off-map",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.415
+          "strokesGained": -0.415,
+          "confidence": "approximate",
+          "resultCategory": "off-map"
         },
         {
+          "shotId": 10615854943,
           "shotNumber": 2,
           "club": "7 Iron",
           "clubTypeId": 16,
@@ -2035,13 +2115,15 @@
             "side": "right",
             "lateralYds": 19.1
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -0.826
+          "strokesGained": -0.826,
+          "confidence": "inferred",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615854971,
           "shotNumber": 3,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -2076,13 +2158,15 @@
             "side": "right",
             "lateralYds": 8.7
           },
-          "resultCategory": "bunker",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.722
+          "strokesGained": -0.722,
+          "confidence": "authoritative",
+          "resultCategory": "bunker"
         },
         {
+          "shotId": 10615854970,
           "shotNumber": 4,
           "club": "unknown",
           "clubTypeId": 22,
@@ -2117,11 +2201,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": 0.495
+          "strokesGained": 0.495,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         }
       ]
     },
@@ -2152,6 +2237,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615855005,
           "shotNumber": 1,
           "club": "4 Hybrid",
           "clubTypeId": 7,
@@ -2186,13 +2272,15 @@
             "side": "left",
             "lateralYds": 49.5
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -0.911
+          "strokesGained": -0.911,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854936,
           "shotNumber": 2,
           "club": "PW",
           "clubTypeId": 19,
@@ -2227,13 +2315,15 @@
             "side": "left",
             "lateralYds": 14.0
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.759
+          "strokesGained": -0.759,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854977,
           "shotNumber": 3,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -2268,13 +2358,15 @@
             "side": "straight",
             "lateralYds": 3.1
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": 0.054
+          "strokesGained": 0.054,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615854958,
           "shotNumber": 4,
           "club": "Putter",
           "clubTypeId": 23,
@@ -2309,13 +2401,15 @@
             "side": "straight",
             "lateralYds": 3.1
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         },
         {
+          "shotId": 10615854955,
           "shotNumber": 5,
           "club": "Putter",
           "clubTypeId": 23,
@@ -2350,11 +2444,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -2385,6 +2480,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854965,
           "shotNumber": 1,
           "club": "7 Iron",
           "clubTypeId": 16,
@@ -2419,13 +2515,15 @@
             "side": "right",
             "lateralYds": 6.7
           },
-          "resultCategory": "bunker",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.538
+          "strokesGained": -0.538,
+          "confidence": "inferred",
+          "resultCategory": "bunker"
         },
         {
+          "shotId": 10615855018,
           "shotNumber": 2,
           "club": "unknown",
           "clubTypeId": 22,
@@ -2460,13 +2558,15 @@
             "side": "right",
             "lateralYds": 5.8
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.925
+          "strokesGained": -0.925,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615854953,
           "shotNumber": 3,
           "club": "unknown",
           "clubTypeId": 22,
@@ -2501,13 +2601,15 @@
             "side": "straight",
             "lateralYds": 2.2
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.089
+          "strokesGained": -0.089,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615854939,
           "shotNumber": 4,
           "club": "Putter",
           "clubTypeId": 23,
@@ -2542,11 +2644,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -2577,6 +2680,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615855009,
           "shotNumber": 1,
           "club": "Driver",
           "clubTypeId": 1,
@@ -2611,13 +2715,15 @@
             "side": "left",
             "lateralYds": 6.7
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.73
+          "strokesGained": -0.73,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854990,
           "shotNumber": 2,
           "club": "5 Wood",
           "clubTypeId": 3,
@@ -2652,13 +2758,15 @@
             "side": "right",
             "lateralYds": 6.3
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": 0.048
+          "strokesGained": 0.048,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615854998,
           "shotNumber": 3,
           "club": "5 Wood",
           "clubTypeId": 3,
@@ -2693,13 +2801,15 @@
             "side": "left",
             "lateralYds": 31.3
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -0.792
+          "strokesGained": -0.792,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854969,
           "shotNumber": 4,
           "club": "50\u00b0 GW",
           "clubTypeId": 20,
@@ -2734,13 +2844,15 @@
             "side": "straight",
             "lateralYds": 1.1
           },
-          "resultCategory": "long",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.619
+          "strokesGained": -0.619,
+          "confidence": "authoritative",
+          "resultCategory": "long"
         },
         {
+          "shotId": 10615855001,
           "shotNumber": 5,
           "club": "unknown",
           "clubTypeId": 22,
@@ -2775,13 +2887,15 @@
             "side": "straight",
             "lateralYds": 2.0
           },
-          "resultCategory": "short",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.797
+          "strokesGained": -0.797,
+          "confidence": "authoritative",
+          "resultCategory": "short"
         },
         {
+          "shotId": 10615854996,
           "shotNumber": 6,
           "club": "Putter",
           "clubTypeId": 23,
@@ -2816,11 +2930,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": 0.34
+          "strokesGained": 0.34,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         }
       ]
     },
@@ -2851,6 +2966,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854981,
           "shotNumber": 1,
           "club": "Driver",
           "clubTypeId": 1,
@@ -2885,13 +3001,15 @@
             "side": "right",
             "lateralYds": 90.3
           },
-          "resultCategory": "off-map",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.07
+          "strokesGained": -0.07,
+          "confidence": "approximate",
+          "resultCategory": "off-map"
         },
         {
+          "shotId": 10615854929,
           "shotNumber": 2,
           "club": "5 Wood",
           "clubTypeId": 3,
@@ -2926,13 +3044,15 @@
             "side": "right",
             "lateralYds": 30.3
           },
-          "resultCategory": "long-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -0.497
+          "strokesGained": -0.497,
+          "confidence": "authoritative",
+          "resultCategory": "long-right"
         },
         {
+          "shotId": 10615854934,
           "shotNumber": 3,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -2967,13 +3087,15 @@
             "side": "left",
             "lateralYds": 27.8
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -1.097
+          "strokesGained": -1.097,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854973,
           "shotNumber": 4,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -3008,13 +3130,15 @@
             "side": "straight",
             "lateralYds": 0.2
           },
-          "resultCategory": "short",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.403
+          "strokesGained": -0.403,
+          "confidence": "authoritative",
+          "resultCategory": "short"
         },
         {
+          "shotId": 10615855010,
           "shotNumber": 5,
           "club": "Putter",
           "clubTypeId": 23,
@@ -3049,13 +3173,15 @@
             "side": "straight",
             "lateralYds": 3.4
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.545
+          "strokesGained": -0.545,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615854975,
           "shotNumber": 6,
           "club": "Putter",
           "clubTypeId": 23,
@@ -3090,11 +3216,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -3125,6 +3252,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854997,
           "shotNumber": 1,
           "club": "Driver",
           "clubTypeId": 1,
@@ -3159,13 +3287,15 @@
             "side": "straight",
             "lateralYds": 1.0
           },
-          "resultCategory": "short",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.743
+          "strokesGained": -0.743,
+          "confidence": "authoritative",
+          "resultCategory": "short"
         },
         {
+          "shotId": 10615854966,
           "shotNumber": 2,
           "club": "unknown",
           "clubTypeId": 0,
@@ -3200,13 +3330,15 @@
             "side": "straight",
             "lateralYds": 1.4
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": 0.136
+          "strokesGained": 0.136,
+          "confidence": "inferred",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615854935,
           "shotNumber": 3,
           "club": "Putter",
           "clubTypeId": 23,
@@ -3241,11 +3373,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -3276,6 +3409,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854931,
           "shotNumber": 1,
           "club": "Driver",
           "clubTypeId": 1,
@@ -3310,13 +3444,15 @@
             "side": "right",
             "lateralYds": 45.5
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.107
+          "strokesGained": -0.107,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615854986,
           "shotNumber": 2,
           "club": "5 Wood",
           "clubTypeId": 3,
@@ -3351,13 +3487,15 @@
             "side": "right",
             "lateralYds": 39.3
           },
-          "resultCategory": "long-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -0.642
+          "strokesGained": -0.642,
+          "confidence": "authoritative",
+          "resultCategory": "long-right"
         },
         {
+          "shotId": 10615854932,
           "shotNumber": 3,
           "club": "PW",
           "clubTypeId": 19,
@@ -3392,13 +3530,15 @@
             "side": "straight",
             "lateralYds": 4.6
           },
-          "resultCategory": "short",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.794
+          "strokesGained": -0.794,
+          "confidence": "authoritative",
+          "resultCategory": "short"
         },
         {
+          "shotId": 10615854980,
           "shotNumber": 4,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -3433,13 +3573,15 @@
             "side": "right",
             "lateralYds": 7.1
           },
-          "resultCategory": "long-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.788
+          "strokesGained": -0.788,
+          "confidence": "authoritative",
+          "resultCategory": "long-right"
         },
         {
+          "shotId": 10615855013,
           "shotNumber": 5,
           "club": "Putter",
           "clubTypeId": 23,
@@ -3474,13 +3616,15 @@
             "side": "straight",
             "lateralYds": 3.8
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.312
+          "strokesGained": -0.312,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615855020,
           "shotNumber": 6,
           "club": "Putter",
           "clubTypeId": 23,
@@ -3515,13 +3659,15 @@
             "side": "straight",
             "lateralYds": 1.6
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         },
         {
+          "shotId": 10615854942,
           "shotNumber": 7,
           "club": "Putter",
           "clubTypeId": 23,
@@ -3556,11 +3702,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -3591,6 +3738,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615855011,
           "shotNumber": 1,
           "club": "Driver",
           "clubTypeId": 1,
@@ -3625,13 +3773,15 @@
             "side": "right",
             "lateralYds": 15.5
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.026
+          "strokesGained": -0.026,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615855000,
           "shotNumber": 2,
           "club": "4 Hybrid",
           "clubTypeId": 7,
@@ -3666,13 +3816,15 @@
             "side": "straight",
             "lateralYds": 4.1
           },
-          "resultCategory": "bunker",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -0.5
+          "strokesGained": -0.5,
+          "confidence": "authoritative",
+          "resultCategory": "bunker"
         },
         {
+          "shotId": 10615854974,
           "shotNumber": 3,
           "club": "unknown",
           "clubTypeId": 22,
@@ -3707,13 +3859,15 @@
             "side": "left",
             "lateralYds": 6.6
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.719
+          "strokesGained": -0.719,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854951,
           "shotNumber": 4,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -3748,13 +3902,15 @@
             "side": "straight",
             "lateralYds": 0.4
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.472
+          "strokesGained": -0.472,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615854950,
           "shotNumber": 5,
           "club": "Putter",
           "clubTypeId": 23,
@@ -3789,13 +3945,15 @@
             "side": "straight",
             "lateralYds": 1.1
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         },
         {
+          "shotId": 10615854957,
           "shotNumber": 6,
           "club": "Putter",
           "clubTypeId": 23,
@@ -3830,13 +3988,15 @@
             "side": "straight",
             "lateralYds": 0.2
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         },
         {
+          "shotId": 10615854964,
           "shotNumber": 7,
           "club": "Putter",
           "clubTypeId": 23,
@@ -3871,11 +4031,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -3906,6 +4067,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615855008,
           "shotNumber": 1,
           "club": "Driver",
           "clubTypeId": 1,
@@ -3940,13 +4102,15 @@
             "side": "right",
             "lateralYds": 47.8
           },
-          "resultCategory": "off-map",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.181
+          "strokesGained": -0.181,
+          "confidence": "approximate",
+          "resultCategory": "off-map"
         },
         {
+          "shotId": 10615854949,
           "shotNumber": 2,
           "club": "PW",
           "clubTypeId": 19,
@@ -3981,13 +4145,15 @@
             "side": "right",
             "lateralYds": 12.9
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.885
+          "strokesGained": -0.885,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615855015,
           "shotNumber": 3,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -4022,13 +4188,15 @@
             "side": "right",
             "lateralYds": 6.2
           },
-          "resultCategory": "short-right",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.887
+          "strokesGained": -0.887,
+          "confidence": "authoritative",
+          "resultCategory": "short-right"
         },
         {
+          "shotId": 10615854968,
           "shotNumber": 4,
           "club": "PW",
           "clubTypeId": 19,
@@ -4063,13 +4231,15 @@
             "side": "straight",
             "lateralYds": 1.2
           },
-          "resultCategory": "short",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.776
+          "strokesGained": -0.776,
+          "confidence": "authoritative",
+          "resultCategory": "short"
         },
         {
+          "shotId": 10615855004,
           "shotNumber": 5,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -4104,13 +4274,15 @@
             "side": "straight",
             "lateralYds": 2.7
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.751
+          "strokesGained": -0.751,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615854982,
           "shotNumber": 6,
           "club": "Putter",
           "clubTypeId": 23,
@@ -4145,11 +4317,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     },
@@ -4180,6 +4353,7 @@
       "phantomShots": 0,
       "shots": [
         {
+          "shotId": 10615854956,
           "shotNumber": 1,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -4214,13 +4388,15 @@
             "side": "left",
             "lateralYds": 43.5
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -1.231
+          "strokesGained": -1.231,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854961,
           "shotNumber": 2,
           "club": "5 Wood",
           "clubTypeId": 3,
@@ -4255,13 +4431,15 @@
             "side": "left",
             "lateralYds": 8.9
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "offTee",
-          "strokesGained": -0.621
+          "strokesGained": -0.621,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854988,
           "shotNumber": 3,
           "club": "4 Hybrid",
           "clubTypeId": 7,
@@ -4296,13 +4474,15 @@
             "side": "left",
             "lateralYds": 9.2
           },
-          "resultCategory": "short-left",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "longApproach",
-          "strokesGained": -0.222
+          "strokesGained": -0.222,
+          "confidence": "authoritative",
+          "resultCategory": "short-left"
         },
         {
+          "shotId": 10615854941,
           "shotNumber": 4,
           "club": "PW",
           "clubTypeId": 19,
@@ -4337,13 +4517,15 @@
             "side": "straight",
             "lateralYds": 0.7
           },
-          "resultCategory": "short",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "midApproach",
-          "strokesGained": -0.896
+          "strokesGained": -0.896,
+          "confidence": "inferred",
+          "resultCategory": "short"
         },
         {
+          "shotId": 10615854978,
           "shotNumber": 5,
           "club": "54\u00b0 SW",
           "clubTypeId": 21,
@@ -4378,13 +4560,15 @@
             "side": "straight",
             "lateralYds": 1.8
           },
-          "resultCategory": "green",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "inside50",
-          "strokesGained": -0.251
+          "strokesGained": -0.251,
+          "confidence": "authoritative",
+          "resultCategory": "green"
         },
         {
+          "shotId": 10615855017,
           "shotNumber": 6,
           "club": "Putter",
           "clubTypeId": 23,
@@ -4419,11 +4603,12 @@
             "side": "straight",
             "lateralYds": 0.0
           },
-          "resultCategory": "putt",
           "phantom": false,
           "phantomReason": null,
           "sgCategory": "putting",
-          "strokesGained": null
+          "strokesGained": null,
+          "confidence": "authoritative",
+          "resultCategory": "putt"
         }
       ]
     }

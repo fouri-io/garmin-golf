@@ -35,7 +35,7 @@ SG_BASELINE_CONFIG = Path("config/sg_baseline.json")
 
 # Bump when the normalization below changes meaning; `python -m src.db rebuild`
 # then re-ingests every round under the new logic.
-LOADER_VERSION = 1
+LOADER_VERSION = 2   # v2: + course street/zip, per-endpoint lie sources
 
 
 def _sha256(path: Path) -> str:
@@ -169,7 +169,7 @@ def ingest_round(con: duckdb.DuckDBPyConnection, scorecard_id: int,
 
     con.execute("""
         INSERT INTO canon.round VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
-                                        ?,?,?,?,?,?,?,?,?,?,?)
+                                        ?,?,?,?,?,?,?,?,?,?,?,?,?)
     """, [
         sc["id"], (sc.get("startTime") or "")[:10] or None,
         sc.get("startTime"), sc.get("endTime"),
@@ -179,7 +179,8 @@ def ingest_round(con: duckdb.DuckDBPyConnection, scorecard_id: int,
         sc.get("sensorOnPutter"), sc.get("distanceWalked"), sc.get("stepsTaken"),
         course.get("courseGlobalId"), course.get("courseSnapshotId"),
         course.get("name"), course.get("city"), course.get("state"),
-        course.get("country"), _deg(course.get("lat")), _deg(course.get("lon")),
+        course.get("country"), course.get("street"), course.get("zip"),
+        _deg(course.get("lat")), _deg(course.get("lon")),
         course.get("roundPar"), course.get("frontNinePar"), course.get("backNinePar"),
         course.get("holePars"),
         sum(h.get("strokes", 0) for h in sc["holes"]),
@@ -210,15 +211,18 @@ def ingest_round(con: duckdb.DuckDBPyConnection, scorecard_id: int,
             for s in hs["shots"]:
                 start, end = s.get("startLoc") or {}, s.get("endLoc") or {}
                 con.execute(
-                    "INSERT INTO canon.shot VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    "INSERT INTO canon.shot VALUES "
+                    "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     [
                         s["id"], scorecard_id, s["holeNumber"], s["shotOrder"],
                         s.get("shotTime"), s.get("shotTimeZoneOffset"),
                         s.get("clubId"), club_type_by_id.get(s["clubId"]),
                         s.get("shotType"), s.get("autoShotType"), s.get("shotSource"),
                         s.get("meters"),
-                        _deg(start.get("lat")), _deg(start.get("lon")), start.get("lie"),
-                        _deg(end.get("lat")), _deg(end.get("lon")), end.get("lie"),
+                        _deg(start.get("lat")), _deg(start.get("lon")),
+                        start.get("lie"), start.get("lieSource"),
+                        _deg(end.get("lat")), _deg(end.get("lon")),
+                        end.get("lie"), end.get("lieSource"),
                         s.get("excludeFromStats"),
                     ])
 

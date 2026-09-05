@@ -2,29 +2,31 @@
 
 Buckets each hole's first putt by its (GPS-estimated) distance and summarizes the
 ACTUAL putt counts in that bucket: how many first putts, the average putts to hole
-out, and the make rate (1-putts). This is intentionally separate from Strokes
-Gained — it does not model expected putts or compare to scratch. Putt *counts* are
-authoritative (from the scorecard); first-putt *distance* is GPS-derived, so the
-shortest bucket is the least reliable (flagged in the UI).
+out, and the make rate (1-putts). Putt *counts* are authoritative (from the
+scorecard); first-putt *distance* is GPS-derived, so the shortest band is the least
+reliable (flagged in the UI).
 
-Used by both progress.py (Overview, aggregated over a window) and site.py (per
-round) so the two views always bucket identically.
+Bands are the vNext fine bands — cleanup / short conversion / scoring conversion /
+make-or-speed / lag / long lag — mirrored by derived.putting_bands in the DB, so the
+per-round view (this module, over round-document holes) and the windowed dashboard
+view (progress.py, over the DB) always bucket identically.
 """
 
 from __future__ import annotations
 
 # (label, low_ft_inclusive, high_ft_exclusive)
 PUTT_BUCKETS = [
-    ("0–10 ft", 0.0, 10.0),
+    ("0–3 ft", 0.0, 3.0),
+    ("3–6 ft", 3.0, 6.0),
+    ("6–10 ft", 6.0, 10.0),
     ("10–20 ft", 10.0, 20.0),
-    ("20–30 ft", 20.0, 30.0),
-    ("30–50 ft", 30.0, 50.0),
-    ("50+ ft", 50.0, float("inf")),
+    ("20–40 ft", 20.0, 40.0),
+    ("40+ ft", 40.0, float("inf")),
 ]
 
 
 def putt_buckets(holes: list[dict]) -> list[dict]:
-    """Summarize authoritative putt counts by first-putt distance bucket.
+    """Summarize authoritative putt counts by first-putt distance band.
 
     Each returned bucket: {label, n, avg, makePct} where n = first putts in the
     bucket, avg = mean putts to hole out (None if empty), makePct = % holed in one.

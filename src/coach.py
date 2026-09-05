@@ -160,7 +160,7 @@ def _fmt_buckets(buckets: list[dict]) -> str:
 def putting_summary(stem: str, progress: dict) -> str:
     """This round's putting bucketed by first-putt distance, plus all-time for context."""
     lines = ["Authoritative putt counts bucketed by first-putt distance. Distance is GPS to "
-             "green CENTER (edge-of-green putts read short); 0–10 ft bucket is unreliable.", ""]
+             "green CENTER (edge-of-green putts read short); the 0–3 ft band is unreliable.", ""]
     rjson = ROUNDS_DIR / f"{stem}.json"
     if rjson.exists():
         doc = json.loads(rjson.read_text())

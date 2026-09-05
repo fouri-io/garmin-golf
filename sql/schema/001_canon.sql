@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS canon.round (
   course_city TEXT,
   course_state TEXT,
   course_country TEXT,
+  course_street TEXT,
+  course_zip TEXT,
   course_lat DOUBLE,
   course_lon DOUBLE,
   round_par INTEGER,
@@ -81,8 +83,8 @@ CREATE TABLE IF NOT EXISTS canon.shot (
   auto_shot_type TEXT,
   shot_source TEXT,                     -- SENSOR (CT10) | DEVICE_AUTO (watch)
   meters DOUBLE,
-  start_lat DOUBLE, start_lon DOUBLE, start_lie TEXT,
-  end_lat DOUBLE,   end_lon DOUBLE,   end_lie TEXT,   -- lieSource is always CARTOGRAPHY
+  start_lat DOUBLE, start_lon DOUBLE, start_lie TEXT, start_lie_source TEXT,
+  end_lat DOUBLE,   end_lon DOUBLE,   end_lie TEXT,   end_lie_source TEXT,
   exclude_from_stats BOOLEAN
 );
 

@@ -6,16 +6,17 @@ with optional publish/deploy. The everyday command — no round id needed.
     python -m src.update --no-pull       # rebuild only, no network (offline)
     python -m src.update 365394854       # pull just this one round
     python -m src.update --all           # force re-pull every real round (ignore the cache)
-    python -m src.update --reparse       # re-parse all tracked rounds (apply config changes)
+    python -m src.update --rebuild       # rebuild the DB + re-export all rounds (schema changes)
 
 Default is an incremental sync: local raw is the cache, so only rounds you haven't pulled
 hit the network. The coach runs automatically when new rounds are pulled (--coach forces
 it, --no-coach suppresses). --publish copies the site to config publish.targetDir.
 
 --push does three things, and exits 2 if any of them fails to land:
-  1. ARCHIVE — commits data/processed + site/index.html in THIS repo and pushes. The
-     deploy target only ever receives index.html, so without this the processed rounds
-     and coach reports exist nowhere but the laptop (data/raw is gitignored too).
+  1. ARCHIVE — commits data/{raw,processed,annotations} + site/index.html in THIS repo
+     and pushes. The deploy target only ever receives index.html, so without this the
+     raw pulls, round documents, annotations and coach reports exist nowhere but the
+     laptop.
   2. DEPLOY — commits+pushes the built site to the publish repo, whose Action syncs it
      to S3. Note this is a *different repo*; pushing this one deploys nothing.
   3. VERIFY — fetches publish.verifyUrl until it serves the bytes we just built. A green
@@ -26,9 +27,7 @@ it, --no-coach suppresses). --publish copies the site to config publish.targetDi
 from __future__ import annotations
 
 import argparse
-import glob
 import hashlib
-import json
 import shutil
 import subprocess
 import time
@@ -38,7 +37,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from . import analyze, coach, db, derive, ingest, parse, progress, pull, site
+from . import analyze, coach, db, derive, export_rounds, ingest, progress, pull, site
 from .config import publish_target, publish_verify_url
 
 SITE_FILE = Path("site/index.html")
@@ -50,14 +49,6 @@ ARCHIVE_PATHS = ["data/processed", "data/raw", "data/annotations", "site/index.h
 
 DEPLOY_POLL_SECONDS = 480   # Action + S3 sync + CloudFront invalidation, generously
 DEPLOY_POLL_INTERVAL = 20
-
-
-def _tracked_ids() -> list[int]:
-    """Scorecard ids we currently keep processed docs for (the analysis set)."""
-    ids = []
-    for f in sorted(glob.glob("data/processed/rounds/*.json")):
-        ids.append(json.loads(Path(f).read_text())["scorecardId"])
-    return ids
 
 
 def _git(root: str, *args: str, check: bool = True) -> subprocess.CompletedProcess:
@@ -80,8 +71,8 @@ def _archive(push: bool) -> bool:
     """Commit (and optionally push) the regenerated data + built site in THIS repo.
 
     The deploy target only ever receives index.html, so without this the processed
-    rounds live nowhere but the laptop — data/raw is gitignored, so a disk loss takes
-    the coach reports and parsed rounds with it. Returns False on a real failure.
+    rounds, raw pulls and annotations live nowhere but the laptop, and a disk loss
+    takes them with it. Returns False on a real failure.
     """
     root = _git(".", "rev-parse", "--show-toplevel").stdout.strip()
     _git(root, "add", "--", *ARCHIVE_PATHS)
@@ -203,8 +194,9 @@ def main() -> None:
                     help="rebuild only from local data; no network (offline)")
     ap.add_argument("--all", action="store_true",
                     help="force re-pull EVERY real round, ignoring the local cache")
-    ap.add_argument("--reparse", action="store_true",
-                    help="re-parse all tracked rounds (apply parser/config changes)")
+    ap.add_argument("--rebuild", action="store_true",
+                    help="drop and rebuild the DuckDB spine from committed inputs, then "
+                         "re-export every round document (apply schema/loader/config changes)")
     ap.add_argument("--publish", action="store_true", help="copy built site to publish.targetDir")
     ap.add_argument("--push", action="store_true",
                     help="publish AND git commit+push that repo (auto-deploys), commit "
@@ -228,7 +220,6 @@ def main() -> None:
         api = pull.garmin_client.login()
         if a.scorecard:
             pull.pull_scorecard(api, a.scorecard)
-            parse.parse_scorecard(a.scorecard)
             pulled_new = 1
         else:
             # Incremental sync: skip_existing=True pulls only rounds not already cached.
@@ -236,25 +227,27 @@ def main() -> None:
             res = pull.pull_all(api, skip_existing=not a.all)
             pulled_new = res["pulled"]
 
-    if a.reparse:
-        ids = _tracked_ids()
-        for sid in ids:
-            parse.parse_scorecard(sid)
-        print(f"re-parsed {len(ids)} tracked rounds")
-
-    # Sync the DuckDB spine: incremental ingest (sha-gated per round), then re-derive
-    # just the changed rounds. A fresh/empty derived layer triggers a full derive.
+    # Sync the DuckDB spine: incremental ingest (sha-gated per round; annotations fully
+    # reloaded), re-derive changed rounds, then re-export every round document — the
+    # export is byte-idempotent, so unchanged rounds produce no diff, while annotation
+    # edits always flow through. --rebuild drops the DB first (schema/loader changes).
     print("Syncing database...")
-    con = db.connect()
-    res = ingest.ingest_all(con)
-    if res["ingestedIds"]:
-        derive.derive_all(con, res["ingestedIds"])
-        print(f"  db: ingested {res['ingested']} rounds, derived updates applied")
-    elif con.execute("SELECT count(*) FROM derived.shot_sg").fetchone()[0] == 0:
-        derive.derive_all(con)
-        print("  db: derived layer rebuilt")
+    if a.rebuild:
+        con = db.rebuild()
+        print("  db: rebuilt from committed inputs")
     else:
-        print(f"  db: up to date ({res['skipped']} rounds unchanged)")
+        con = db.connect()
+        res = ingest.ingest_all(con)
+        if res["ingestedIds"]:
+            derive.derive_all(con, res["ingestedIds"])
+            print(f"  db: ingested {res['ingested']} rounds")
+        elif con.execute("SELECT count(*) FROM derived.shot_sg").fetchone()[0] == 0:
+            derive.derive_all(con)
+            print("  db: derived layer rebuilt")
+        else:
+            print(f"  db: up to date ({res['skipped']} rounds unchanged)")
+    n = export_rounds.export_all(con)
+    print(f"  exported {n} round documents")
 
     print("Building aggregates...")
     analyze.build_club_stats()
