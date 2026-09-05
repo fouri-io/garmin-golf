@@ -277,6 +277,9 @@ TEMPLATE = r"""<!doctype html>
   .secdiv b{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
   .secdiv span{font-size:11.5px;color:var(--muted)}
   .secdiv:after{content:"";flex:1;height:1px;background:#d5d8d3}
+  .wchip{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    background:#e9efe7;color:var(--accent);border-radius:4px;padding:2px 8px;
+    margin:0 8px;vertical-align:1px;white-space:nowrap;display:inline-block}
   .osub{font-size:12px;margin-top:2px;color:var(--muted)}
   @media(max-width:540px){
     .ohero .v{font-size:22px}
@@ -295,8 +298,10 @@ TEMPLATE = r"""<!doctype html>
     padding:6px 9px;border-radius:8px;opacity:0;transition:opacity .12s;white-space:nowrap;
     transform:translate(-50%,-115%)}
   .otip small{display:block;color:#c8d2dc;font-size:10.5px}
-  table.otab{min-width:560px}
-  table.otab td,table.otab th{white-space:nowrap}
+  table.otab{width:auto;min-width:100%}
+  table.otab td,table.otab th{white-space:nowrap;padding-left:16px}
+  table.otab th:first-child,table.otab td:first-child{padding-left:0;position:sticky;left:0;
+    background:var(--card);z-index:2;box-shadow:2px 0 0 var(--line)}
   table.otab td.now,table.otab th.now{background:#eef2ea}
   .mixgrid{display:flex;flex-direction:column;gap:7px}
   .mixrow{display:flex;align-items:center;gap:10px}
@@ -468,8 +473,8 @@ TEMPLATE = r"""<!doctype html>
     <div class="mlegend"><span><i style="background:#218a54"></i>gained</span>
       <span><i style="background:#b97e39"></i>~even</span>
       <span><i style="background:#b3312d"></i>lost</span>
-      <span><i style="background:#9aa098"></i>putt</span>
-      <span>· tap a shot for detail · GPS-approximate</span></div></div>
+      <span><i style="background:#9aa098"></i>putt / final spot</span>
+      <span>· dot = where the shot was hit from · tap for detail · GPS-approximate</span></div></div>
 </div>
 
 <div class="tabbar" id="tabs">
@@ -861,12 +866,13 @@ function drawHole(){
   h.shots.forEach(s=>{if(!s.start||!s.end)return;
     L.polyline([s.start,s.end],{color:'#fff',weight:2,opacity:.65}).addTo(mlayer);pts.push(s.start,s.end);
     const yd=s.yards!=null?Math.round(s.yards):'';
-    const m=L.marker(s.end,{icon:dot(sgColor(s.sg))});
-    m.bindPopup(`<b>#${s.n} ${s.club}</b> ${yd}y<br>${s.from} → ${s.to}`+(s.sg!=null?` · SG ${s.sg>0?'+':''}${s.sg.toFixed(1)}`:''));
+    // dot + label sit where the shot was PLAYED FROM; the line shows where it went
+    const m=L.marker(s.start,{icon:dot(sgColor(s.sg))});
+    m.bindPopup(`<b>#${s.n} ${s.club}</b> ${yd}y from here<br>${s.from} → ${s.to}`+(s.sg!=null?` · SG ${s.sg>0?'+':''}${s.sg.toFixed(1)}`:''));
     if(s.type!=='PUTT')m.bindTooltip(`${abbr(s.club)} ${yd}`,{permanent:true,direction:'right',className:'tag',offset:[8,0]});
     m.addTo(mlayer);});
-  const first=h.shots.find(s=>s.start);
-  if(first)L.marker(first.start,{icon:dot('#218a54')}).bindTooltip('Tee',{permanent:true,direction:'left',className:'tag',offset:[-8,0]}).addTo(mlayer);
+  const lastS=[...h.shots].reverse().find(x=>x.end);
+  if(lastS)L.marker(lastS.end,{icon:dot('#9aa098')}).bindPopup('Ball finished here').addTo(mlayer);
   if(h.pin){L.marker(h.pin).bindPopup('Pin').addTo(mlayer);pts.push(h.pin);}
   if(pts.length)lmap.fitBounds(pts,{padding:[45,45]});
 }
@@ -935,7 +941,7 @@ function renderTrend(){
   const all=TS.filter(r=>m.clean?r.clean:(m.get(r)!=null));
   lastPts=all.slice(-20).map(r=>({label:r.date.slice(5).replace('-','/'),date:r.date,y:m.get(r),clean:r.clean}));
   const d=lastPts.length>=2?dir(lastPts.map(p=>p.y),m.low):{t:'',c:'flat'};
-  document.getElementById('trendhead').innerHTML=`<b>${m.label}</b><span class="tpill ${d.c}">${d.t}</span>`;
+  document.getElementById('trendhead').innerHTML=`<b>${m.label}</b><span class="wchip">last ${lastPts.length} rounds</span><span class="tpill ${d.c}">${d.t}</span>`;
   document.getElementById('trendchart').innerHTML=chart(lastPts,m.k!=='over');
   document.getElementById('trendfoot').textContent=
     `last ${lastPts.length} of ${all.length} ${m.clean?'clean ':''}rounds · dots = rounds, line = 5-round average · tap a dot for its date`;
