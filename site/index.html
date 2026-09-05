@@ -14,6 +14,7 @@
   :root{--bg:#f6f7f5;--card:#fff;--ink:#1a1c19;--muted:#6d7269;--line:#e4e6e2;
     --good:#218a54;--bad:#b3312d;--accent:#1f4a36;--warn:#b97e39;}
   *{box-sizing:border-box}
+  html,body{overflow-x:clip}
   body{margin:0;background:var(--bg);color:var(--ink);
     font:15px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
   .app{max-width:920px;margin:0 auto;min-height:100vh;
@@ -155,11 +156,13 @@
   table.putt tr.pmt td{color:var(--muted);font-weight:400}
   table.putt tr.pnoisy td{color:var(--muted)}
   table.proc td.pmna{color:var(--muted)}
-  table.proc .pmn{font-size:10px;color:var(--muted)}
-  table.proc td:first-child{white-space:nowrap}
+  table.proc .pmn{font-size:9.5px;line-height:1.2;color:var(--muted);font-weight:400}
+  table.proc td{white-space:nowrap;vertical-align:top}
+  table.proc td:first-child{white-space:normal;min-width:96px}
+  table.proc th{white-space:nowrap}
   /* Outcome layer */
   .ohero{background:linear-gradient(135deg,#1b1d1a,#1f4a36);color:#fff;border-radius:8px;
-    display:grid;grid-template-columns:repeat(3,1fr);padding:13px 4px;margin-bottom:12px}
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:13px 4px;margin-bottom:12px}
   .ohero>div{padding:0 14px;min-width:0}
   .ohero>div+div{border-left:1px solid rgba(255,255,255,.16)}
   .ohero .lab{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.65)}
@@ -182,6 +185,12 @@
   .secdiv span{font-size:11.5px;color:var(--muted)}
   .secdiv:after{content:"";flex:1;height:1px;background:#d5d8d3}
   .osub{font-size:12px;margin-top:2px;color:var(--muted)}
+  @media(max-width:540px){
+    .ohero .v{font-size:22px}
+    .ohero>div{padding:0 9px}
+    .ohero .osub{font-size:10.5px}
+    .card h2 span[style*='float']{float:none!important;display:block;margin-top:2px}
+  }
   .osub .gd{color:var(--good);font-weight:700}
   .osub .bd{color:var(--bad);font-weight:700}
   .ochartwrap{position:relative;margin-top:4px}
@@ -261,7 +270,7 @@
   <div id="tab-progress">
     <div class="secdiv"><i class="n">1</i><b>Outcome</b><span>what did I score?</span></div>
     <div class="card"><h2>Am I improving?<span id="obasis" style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)"></span></h2>
-      <div class="ctl" style="margin:0 0 10px;flex-wrap:nowrap">
+      <div class="ctl" style="margin:0 0 10px">
         <div class="seg fit" id="oscope">
           <button class="on" data-s="h18">18-hole</button>
           <button data-s="h9">9-hole</button>
@@ -490,7 +499,7 @@ function renderOutcome(){
   // chart
   const pts=qs.map((q,i)=>({q,v:val(q),i})).filter(p=>p.v!=null);
   const svg=document.getElementById('osvg');
-  const cw=(svg.parentNode&&svg.parentNode.clientWidth)||880, K=cw&&cw<560?1.55:1;
+  const cw=(svg.parentNode&&svg.parentNode.clientWidth)||880, K=cw&&cw<560?2.0:1;
   svg.setAttribute('viewBox',`0 0 880 ${300+(K>1?26:0)}`);
   const goal=oLens==="raw"?sc.goal:P.scoring.break90OverRating;
   if(!pts.length){svg.innerHTML="";return;}
@@ -580,7 +589,7 @@ function renderProcess(){
       const c=PMX[w]&&PMX[w][key];
       if(!c||c.value==null)return `<td class="pmna">—</td>`;
       const v=kind==="pct"?`${c.value}%`:c.value.toFixed(1);
-      const n=kind==="pct"?` <span class="pmn">n${c.nObs}</span>`:"";
+      const n=kind==="pct"?`<div class="pmn">n=${c.nObs}</div>`:"";
       return `<td>${v}${n}</td>`;
     }).join("");
     return `<tr><td>${lab}</td>${tds}</tr>`;
@@ -801,7 +810,7 @@ function roll(ys,n){return ys.map((_,i)=>{const a=ys.slice(Math.max(0,i-n+1),i+1
   return a.reduce((x,y)=>x+y,0)/a.length;});}
 function chart(pts,zero){
   if(pts.length<2)return '<div class="foot">need ≥2 rounds to show a trend</div>';
-  const cw=document.getElementById('trendchart').clientWidth||880, K=cw&&cw<560?1.55:1;
+  const cw=document.getElementById('trendchart').clientWidth||880, K=cw&&cw<560?2.0:1;
   const W=880,H=290+(K>1?26:0),L=46,Rm=16,T=22,B=36*K,ys=pts.map(p=>p.y);
   let mn=Math.min(...ys),mx=Math.max(...ys);if(zero){mn=Math.min(mn,0);mx=Math.max(mx,0);}
   if(mn===mx){mn-=1;mx+=1;}const pd=(mx-mn)*0.15||1;mn-=pd;mx+=pd;
