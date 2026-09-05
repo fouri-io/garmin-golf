@@ -436,8 +436,9 @@ TEMPLATE = r"""<!doctype html>
       Miss bias covers approach shots only (pin = target line); tagged punches/layups/recoveries are excluded from all club stats.</div>
     <div class="card" style="overflow-x:auto"><table><thead><tr><th>Club</th><th>n</th><th>Median</th><th>p25–p75</th><th>Max</th><th>Miss bias · L/str/R</th></tr></thead>
       <tbody id="clubsbody"></tbody></table></div>
-    <div class="foot" style="padding:0 4px">Bias bar: share of approach misses left / straight / right of the pin line
-      (GPS-based, ±5y counts as straight). Text under it = short/long split. Needs 5+ approach shots.</div></div>
+    <div class="foot" style="padding:0 4px"><s class="sw dl"></s>left &nbsp;<s class="sw ds"></s>straight (±5y)
+      &nbsp;<s class="sw dr"></s>right — share of approach shots vs the pin line (GPS-based).
+      Hover a bar for the exact split. Needs 5+ approach shots.</div></div>
 
   <div id="tab-coach" class="hide">
     <div class="coachhdr"><span class="ai">AI COACH</span>
@@ -790,8 +791,13 @@ document.getElementById('roundsList').onclick=e=>{const c=e.target.closest('[dat
 function dbar(d){
   if(!d)return '<span class="mut">—</span>';
   const seg=(w,cls)=>w?`<span class="${cls}" style="width:${w}%"></span>`:'';
-  return `<div class="dwrap"><div class="dbar">${seg(d.leftPct,'dl')}${seg(d.straightPct,'ds')}${seg(d.rightPct,'dr')}</div>
-    <div class="dtxt">${d.leftPct}·${d.straightPct}·${d.rightPct}% &nbsp; sh ${d.shortPct}/lg ${d.longPct}%</div></div>`;
+  const side=d.straightPct>=50?'mostly straight'
+    :d.leftPct>d.rightPct?`misses left ${d.leftPct}%`:`misses right ${d.rightPct}%`;
+  const depth=d.shortPct>=60?`short ${d.shortPct}%`:d.longPct>=60?`long ${d.longPct}%`:'depth mixed';
+  const full=`left ${d.leftPct}% · straight ${d.straightPct}% · right ${d.rightPct}% — `+
+    `short ${d.shortPct}% / long ${d.longPct}% · median offline ${d.medianLateralYds}y · n=${d.approachShots}`;
+  return `<div class="dwrap" title="${full}"><div class="dbar">${seg(d.leftPct,'dl')}${seg(d.straightPct,'ds')}${seg(d.rightPct,'dr')}</div>
+    <div class="dtxt">${side} · ${depth}</div></div>`;
 }
 function renderClubs(){
   const ex=DATA.clubs.generatedFrom.annotatedShotsExcluded;
