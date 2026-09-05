@@ -285,13 +285,30 @@ def confirm(con, stem: str, rid: int) -> Path:
     return final
 
 
+def set_narrative(stem: str, text: str, force: bool = False) -> Path:
+    """Headless narrative input (e.g. piped from a Telegram bot). Refuses to clobber a
+    narrative the player already wrote, unless forced; an unfilled scaffold is fair game."""
+    ANN_DIR.mkdir(parents=True, exist_ok=True)
+    path = ANN_DIR / f"{stem}.md"
+    if path.exists() and "<!-- Write freely" not in path.read_text() and not force:
+        raise SystemExit(f"{path} already has a narrative — pass --force to replace it")
+    if not text.strip():
+        raise SystemExit("empty narrative on stdin — nothing written")
+    path.write_text(f"# Post-round notes — {stem}\n\n{text.strip()}\n")
+    return path
+
+
 def main() -> None:
     args = [a for a in sys.argv[1:]]
     flags = {a for a in args if a.startswith("--")}
     ident = next((a for a in args if not a.startswith("--")), None)
     con = _connect()
     stem, rid = _resolve_stem(con, ident)
-    if "--structure" in flags:
+    if "--narrative" in flags:
+        path = set_narrative(stem, sys.stdin.read(), force="--force" in flags)
+        print(f"  narrative -> {path}")
+        print(f"  next: python -m src.annotate {rid} --structure")
+    elif "--structure" in flags:
         structure(con, stem, rid)
     elif "--confirm" in flags:
         confirm(con, stem, rid)

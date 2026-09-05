@@ -240,7 +240,10 @@ def main() -> None:
         res = ingest.ingest_all(con)
         if res["ingestedIds"]:
             derive.derive_all(con, res["ingestedIds"])
-            print(f"  db: ingested {res['ingested']} rounds")
+            stems = [f"{str(d).replace('-', '_')}_{rid}" for rid, d in con.execute(
+                "SELECT round_id, round_date FROM canon.round WHERE round_id IN "
+                "(SELECT unnest(?)) ORDER BY round_date", [res["ingestedIds"]]).fetchall()]
+            print(f"  db: ingested {res['ingested']} rounds — {', '.join(stems)}")
         elif con.execute("SELECT count(*) FROM derived.shot_sg").fetchone()[0] == 0:
             derive.derive_all(con)
             print("  db: derived layer rebuilt")

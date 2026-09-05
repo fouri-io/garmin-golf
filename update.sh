@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
 # Post-round update + deploy, for invoking from a server/Telegram process executor.
-# Incremental sync (pulls only NEW rounds), runs the AI coach on them, rebuilds the
-# dashboard, and pushes -> auto-deploys to colbyward.io.
+# Incremental sync (pulls only NEW rounds), ingests into the DuckDB spine, re-derives
+# analytics, exports round docs, runs the AI coach on new rounds, rebuilds the
+# dashboard, and pushes -> auto-deploys to colbyward.io. Annotations already confirmed
+# under data/annotations/ are loaded and archived automatically on every run.
 #
 # Point your Telegram command at the ABSOLUTE path of this script, e.g.:
 #   /Users/colby/dev/garmin-golf/update.sh
 # The LAST line of output is a one-line, Telegram-friendly summary (relay `tail -1`).
+#
+# Post-round annotation from the bot (all headless):
+#   1. narrative in :  <bot text> | ./.venv/bin/python -m src.annotate <id|latest> --narrative
+#   2. propose tags :  ./.venv/bin/python -m src.annotate <id> --structure   (LLM call)
+#      relay data/annotations/<stem>.tags.proposed.json back to the player for review
+#   3. confirm      :  ./.venv/bin/python -m src.annotate <id> --confirm    (validates+loads)
+#   4. re-run this script to rebuild metrics/coach/site with the annotations + archive them.
 #
 # Requirements for an unattended run:
 #   - Run on the HOME machine (Garmin rate-limits/blocks datacenter IPs).
