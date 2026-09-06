@@ -127,9 +127,13 @@ def _diff18(d: dict) -> float | None:
 
 
 def _handicap_index(rounds: list[dict]) -> float | None:
-    """WHS-style index estimate: average of the lowest-N 18-hole differentials with the
-    small-sample adjustment (no 0.96 — current WHS). Labeled an estimate in the UI."""
-    diffs = sorted(v for v in (_diff18(d) for d in rounds) if v is not None)
+    """WHS-style index estimate over 18-HOLE ROUNDS ONLY: average of the lowest-N
+    differentials with the small-sample adjustment (no 0.96 — current WHS). Doubled
+    9-hole rounds are excluded — they carry extra noise and (at this player's 9-hole
+    course) a course-fit skew that faked an index ~6 strokes low. Labeled an estimate;
+    may read HIGHER than an official GHIN that counts posted 9-hole scores."""
+    reg = [d for d in rounds if _holes(d) >= 18]
+    diffs = sorted(v for v in (_diff18(d) for d in reg) if v is not None)
     n = len(diffs)
     if n < 3:
         return None
