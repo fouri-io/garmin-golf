@@ -1,0 +1,188 @@
+{
+  "source": {
+    "citation": "Broadie, M. (2008). Assessing Golfer Performance Using Golfmetrics. In Science and Golf V: Proceedings of the 2008 World Scientific Congress of Golf, pp. 253-262.",
+    "url": "http://www.columbia.edu/~mnb2/broadie/Assets/broadie_wscg_v_200804.pdf",
+    "retrieved": "2026-09-06",
+    "note": "Groups are SCORE-RANGE groups, not exact handicaps: Pro1 64-71, Pro2 72-79, Am1 70-83 (low-handicap ams), Am2 84-97 (middle), Am3 98-120 (high). ~40,000 shots, 500 rounds, 130+ golfers, 2005-2007. Values transcribed verbatim from Tables 1-4 and Eq. 2."
+  },
+  "generated": "2026-09-06",
+  "avgScore18": 96.6,
+  "nScoreRounds": 10,
+  "yourGroup": "Am2",
+  "yourGroupScoreRange": [
+    84,
+    97
+  ],
+  "nextGroup": "Am1",
+  "nextGroupScoreRange": [
+    70,
+    83
+  ],
+  "stepUpStrokes": {
+    "longGame": 7.1,
+    "shortGame": 2.6,
+    "putting": 1.5,
+    "sandGame": 0.4,
+    "total": 11.5
+  },
+  "metrics": [
+    {
+      "key": "green100to150Fwy",
+      "label": "Approach 100-150y (fairway lie): green hit %",
+      "yours": 26,
+      "n": 70,
+      "unit": "%",
+      "groups": {
+        "Am1": 63,
+        "Am2": 46,
+        "Am3": 25
+      },
+      "betterIs": "higher",
+      "placement": "between Am3 and Am2 (nearer Am3)"
+    },
+    {
+      "key": "prox100to150Fwy",
+      "label": "Approach 100-150y (fairway): median leave, % of start",
+      "yours": 17.3,
+      "n": 70,
+      "unit": "% of start distance",
+      "groups": {
+        "Am1": 8.7,
+        "Am2": 12.0,
+        "Am3": 17.3
+      },
+      "betterIs": "lower",
+      "placement": "between Am3 and Am2 (nearer Am3)",
+      "note": "from 125y that is a 65ft leave vs 45ft (Am2) and 33ft (Am1)"
+    },
+    {
+      "key": "green100to150Rough",
+      "label": "Approach 100-150y (rough lie): green hit %",
+      "yours": 15,
+      "n": 75,
+      "unit": "%",
+      "groups": {
+        "Am1": 53,
+        "Am2": 34,
+        "Am3": 25
+      },
+      "betterIs": "higher",
+      "placement": "below Am3"
+    },
+    {
+      "key": "green20to60Fwy",
+      "label": "Pitch 20-60y (fairway lie): on green %",
+      "yours": 58,
+      "n": 89,
+      "unit": "%",
+      "groups": {
+        "Am1": 93,
+        "Am2": 81,
+        "Am3": 75
+      },
+      "betterIs": "higher",
+      "placement": "below Am3"
+    },
+    {
+      "key": "prox20to60Fwy",
+      "label": "Pitch 20-60y (fairway): median leave, % of start",
+      "yours": 33.9,
+      "n": 89,
+      "unit": "% of start distance",
+      "groups": {
+        "Am1": 13.8,
+        "Am2": 16.9,
+        "Am3": 20.3
+      },
+      "betterIs": "lower",
+      "placement": "below Am3",
+      "note": "from 40y that is a 41ft leave vs 20ft (Am2) and 17ft (Am1)"
+    },
+    {
+      "key": "green20to60Rough",
+      "label": "Pitch 20-60y (rough lie): on green %",
+      "yours": 61,
+      "n": 335,
+      "unit": "%",
+      "groups": {
+        "Am1": 86,
+        "Am2": 72,
+        "Am3": 64
+      },
+      "betterIs": "higher",
+      "placement": "below Am3"
+    },
+    {
+      "key": "sandSave",
+      "label": "Sand save % (greenside bunker, up-and-in)",
+      "yours": 9,
+      "n": 35,
+      "unit": "%",
+      "groups": {
+        "Am1": 26,
+        "Am2": 17,
+        "Am3": 7
+      },
+      "betterIs": "higher",
+      "placement": "between Am3 and Am2 (nearer Am3)"
+    },
+    {
+      "key": "onePutt50",
+      "label": "Distance you hole 50% of putts (ft)",
+      "yours": 4.5,
+      "n": 530,
+      "unit": "ft",
+      "groups": {
+        "Am1": 5.8,
+        "Am2": 5.1,
+        "Am3": 3.8
+      },
+      "betterIs": "higher",
+      "placement": "between Am3 and Am2 (nearer Am2)",
+      "note": "GPS-to-green-center distances; directional, not exact"
+    },
+    {
+      "key": "twoPuttDist",
+      "label": "Average 2-putt distance (ft)",
+      "yours": 24.0,
+      "n": 371,
+      "unit": "ft",
+      "groups": {
+        "Am1": 25,
+        "Am2": 19,
+        "Am3": 12
+      },
+      "betterIs": "higher",
+      "placement": "between Am2 and Am1 (nearer Am1)"
+    },
+    {
+      "key": "driverP75",
+      "label": "Tee-shot distance, 75th percentile (yds)",
+      "yours": 228,
+      "n": null,
+      "unit": "yds",
+      "groups": {
+        "Am1": 248,
+        "Am2": 237,
+        "Am3": 216
+      },
+      "betterIs": "higher",
+      "placement": "between Am3 and Am2 (nearer Am2)"
+    },
+    {
+      "key": "awfulShots",
+      "label": "Awful shots per 18 (shot value < -0.8, no putts)",
+      "yours": 8.8,
+      "n": 42,
+      "unit": "/round",
+      "groups": {
+        "Am1": 1.9,
+        "Am2": 4.1,
+        "Am3": 9.3
+      },
+      "betterIs": "lower",
+      "placement": "between Am3 and Am2 (nearer Am3)",
+      "note": "clean rounds only; benchmark for your scoring average: A = 0.24*96.6 - 17.1 = 6.1"
+    }
+  ]
+}
