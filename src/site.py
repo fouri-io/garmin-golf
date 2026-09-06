@@ -572,7 +572,7 @@ function renderProgress(){
   const sc=AU[win];
   document.getElementById('score').textContent=sc.overRating18===null?"—":"+"+sc.overRating18;
   document.getElementById('scoresub').textContent=
-    `potential +${P.scoring.potentialOverRating18} · Break 90 = +${P.scoring.break90OverRating} · authoritative`;
+    `good-day avg +${P.scoring.potentialOverRating18} · best +${P.scoring.bestOverRating18} · Break 90 = +${P.scoring.break90OverRating}`;
   document.getElementById('hdiff').textContent=sc.handicapDiff==null?"—":sc.handicapDiff.toFixed(1);
   document.getElementById('hdiffsub').textContent=
     P.scoring.handicapIndexEst==null?"":`est. 18-hole handicap index ${P.scoring.handicapIndexEst}`;
