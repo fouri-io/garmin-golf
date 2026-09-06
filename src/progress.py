@@ -163,7 +163,9 @@ def _auth_window(rounds: list[dict]) -> dict:
     rated = [d for d in rounds if d["round"].get("teeBoxRating")]
     rated_holes = sum(_holes(d) for d in rated)
     sgp = [d["strokesGained"]["putting"] for d in rounds]
-    diffs = [v for v in (_diff18(d) for d in rounds) if v is not None]
+    # differential is a GHIN-units metric: 18-hole rounds only, matching the est.
+    # index beneath it — doubled 9-hole rounds carry a course-fit discount here
+    diffs = [v for v in (_diff18(d) for d in rounds if _holes(d) >= 18) if v is not None]
     return {
         "overRating18": round(sum(d["score"]["strokes"] - d["round"]["teeBoxRating"]
                                   for d in rated) / rated_holes * 18, 1) if rated_holes else None,
