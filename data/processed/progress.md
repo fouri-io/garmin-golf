@@ -4,8 +4,8 @@ _From 40 rounds since 2026-05-01. Latest round: 2026-09-04. Re-run `python -m sr
 > **Reading the signs:** two different conventions. Section 1 (score vs rating) is "over par" style — **+ = strokes OVER scratch, lower is better**. Section 3 (Strokes Gained) is analytics style — **− = strokes LOST to scratch, toward 0 is better**. They're mirror images: +29 over ≈ −29 gained = "~30 strokes from a pro."
 
 ## 1 · Scoring level — strokes OVER scratch (lower is better, 0 = scratch)
-**Average +25.4/18** · Potential (better half ≈ handicap) **+27.5** · best +24.8 · Garmin handicap 23.6 · **Break-90 ≈ +22**.
-_Average − potential = ~-2 strokes of volatility (your blow-up tax — fewer doubles closes it)._
+**Average +30.1/18** · Potential (better half ≈ handicap) **+27.5** · best +24.8 · Garmin handicap 23.6 · **Break-90 ≈ +22**.
+_Average − potential = ~3 strokes of volatility (your blow-up tax — fewer doubles closes it)._
 
 ## 2 · Review first (authoritative — count these before anything else)
 | Metric /18 | This round | Last 5 | All-time |

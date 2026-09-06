@@ -391,7 +391,9 @@ def build(through_scorecard_id: int | None = None, write: bool = True) -> dict:
         "thisRoundClean": _is_clean(rounds[-1]) if rounds else None,
         "baselines": baselines,
         "scoring": {
-            "averageOverRating18": auth["allTime"]["overRating18"],
+            # regulation scope, matching potential/best — one coherent line
+            "averageOverRating18": round(sum(over_vals) / len(over_vals), 1)
+                                   if over_vals else None,
             "potentialOverRating18": round(sum(over_vals[:half]) / half, 1) if over_vals else None,
             "bestOverRating18": over_vals[0] if over_vals else None,
             "garminHandicap": GARMIN_HANDICAP,
