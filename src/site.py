@@ -434,7 +434,7 @@ TEMPLATE = r"""<!doctype html>
         <button data-w="last20">Last 20</button>
         <button data-w="allTime">All-time</button></div></div>
     <div class="hero">
-      <div class="herocol"><div class="lab">Scoring · over rating <span class="pill" id="winpill"></span></div>
+      <div class="herocol"><div class="lab">Scoring · over rating · 18-hole <span class="pill" id="winpill"></span></div>
         <div class="big" id="score">—</div><div class="sub" id="scoresub"></div></div>
       <div class="herocol hdcp"><div class="lab">Avg differential · 18-hole</div>
         <div class="big" id="hdiff">—</div><div class="sub" id="hdiffsub"></div></div></div>

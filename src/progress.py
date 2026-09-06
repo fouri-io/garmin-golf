@@ -160,7 +160,9 @@ def _sg_window(rounds: list[dict]) -> dict | None:
 def _auth_window(rounds: list[dict]) -> dict:
     """Authoritative per-18 metrics (no GPS) over ALL rounds in a window."""
     holes = sum(_holes(d) for d in rounds)
-    rated = [d for d in rounds if d["round"].get("teeBoxRating")]
+    # over-rating is a scoring-level unit -> regulation scope, like every other
+    # scoring-level claim (a window of Penick 9-holers otherwise reads ~8 flattering)
+    rated = [d for d in rounds if d["round"].get("teeBoxRating") and _holes(d) >= 18]
     rated_holes = sum(_holes(d) for d in rated)
     sgp = [d["strokesGained"]["putting"] for d in rounds]
     # differential is a GHIN-units metric: 18-hole rounds only, matching the est.

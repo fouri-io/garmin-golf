@@ -10,7 +10,7 @@ _Average − potential = ~3 strokes of volatility (your blow-up tax — fewer do
 ## 2 · Review first (authoritative — count these before anything else)
 | Metric /18 | This round | Last 5 | All-time |
 |---|--:|--:|--:|
-| Score vs rating | +34.2 | +25.3 | +25.4 |
+| Score vs rating | +34.2 | +29.6 | +30.1 |
 | Penalties | 5.0 | 1.2 | 2.4 |
 | Doubles+ | 10.0 | 5.8 | 6.6 |
 | Putts | 33 | 34 | 36 |
