@@ -91,7 +91,11 @@ SYSTEM = (
     "THOSE score ranges, never assume them. Unlike the modeled tier, this is real "
     "measured data — state comparisons plainly and concretely ('your 40-yard pitches "
     "finish 41 ft away; players who shoot what you shoot leave 24 ft'). Respect the n= "
-    "sample counts; never call the brackets handicaps.\n"
+    "sample counts; never call the brackets handicaps. The ladder is his SEASON profile "
+    "(all-time medians) — NEVER present it as this round's data. The block ends with "
+    "this round's actual shots in each bucket: anchor the read to those, and when a "
+    "bucket went untested this round, say so instead of implying the season figure "
+    "showed up today.\n"
     "- PLAIN WORDS ONLY: never let dataset shorthand reach the player. No 'Am1'/'Am2'/"
     "'Am3' (say 'players who shoot 84-97' / 'your bracket' / 'the next level'), no "
     "'pens' (say 'penalties'), no 'FRL', no internal metric keys. If a term needs a "
@@ -129,7 +133,10 @@ bracket (is he keeping pace with players who shoot what he shoots) AND the next 
 (the target). Lead with the block's climb read: what to close first (behind his own
 bracket) vs what to push to next-level numbers (already ahead of his bracket). Quote the
 numbers (leaves in feet, green %, awful shots) and name brackets in plain words with score
-ranges, never Am1/Am2 shorthand. Measured population data — no hedging about models.
+ranges, never Am1/Am2 shorthand. Measured population data — no hedging about models. The
+season ladder repeats every round by design — what changes is THIS round's shots in each
+bucket (listed at the block's end): tie the read to those specific shots, or say plainly
+the round didn't test that skill.
 **Next-round focus** — exactly 1-3 bullets. Each must cite a number from the data provided
 (course ledger, benchmark read, doubles anatomy, escalation chains, or putting bands). No
 generic advice. These bullets are tracked and graded in your next report — make each one
@@ -269,13 +276,23 @@ BENCHMARKS_MD = Path("data/processed/benchmarks.md")
 FOCUS_JSON = OUT_DIR / "focus.json"
 
 
-def _benchmark_block() -> str:
-    """Measured-vs-published comparison (src/benchmarks.py output, source-cited).
-    Fed whole: a truncated block once cost the report its entire Benchmark read —
-    the climb summary lives at the bottom."""
+def _benchmark_block(stem: str) -> str:
+    """Measured-vs-published comparison (src/benchmarks.py output, source-cited),
+    plus THIS round's shots in each benchmark bucket — without the per-round samples
+    the coach once presented season medians as round data in a round that never
+    tested them. Fed whole: a truncated block once cost the report its entire
+    Benchmark read — the climb summary lives at the bottom."""
     if not BENCHMARKS_MD.exists():
         return ""
-    return "\n" + BENCHMARKS_MD.read_text()[:4500]
+    block = "\n" + BENCHMARKS_MD.read_text()[:4500]
+    try:
+        from .benchmarks import render_round_samples, round_samples
+        from .db import connect
+        block += "\n" + render_round_samples(
+            round_samples(connect(), _rid_from_stem(stem))) + "\n"
+    except Exception as e:  # noqa: BLE001 — samples are an enrichment, never a blocker
+        print(f"  benchmark round samples skipped — {type(e).__name__}: {str(e)[:80]}")
+    return block
 
 
 def extract_focus(report: str) -> list[str]:
@@ -554,7 +571,7 @@ def build_context(stem: str, progress: dict | None = None) -> dict:
             "insights": _insights_block(),
             "course": _course_block(stem),
             "tier": _tier_block(progress),
-            "benchmark": _benchmark_block(),
+            "benchmark": _benchmark_block(stem),
             "anatomy": _double_anatomy(stem),
             "escalation": _escalation_block(stem),
             "prev_report": _prev_report_block(stem),

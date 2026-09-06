@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from src.benchmarks import (build_comparison, climb_split, load_cfg, measure, next_group,
-                            placement, render_md, user_group)
+                            placement, render_md, render_round_samples, round_samples,
+                            user_group)
+from tests.conftest import FIXTURE_SCORECARD_ID
 from src.coach import extract_focus
 from src.derive import derive_all
 
@@ -97,6 +99,23 @@ def test_bracket_assignment_levels_tee_rating():
     adj = raw - rating + std
     assert user_group(raw, cfg) == "Am2"
     assert user_group(adj, cfg) == "Am3"
+
+
+def test_round_samples_untested_buckets_say_so(ingested_db):
+    # A round with no shots in a bucket must render as untested, never crash —
+    # and the fairway-pitch caveat must appear when no fairway pitch was hit
+    # (the 9/2 Penick report once presented season medians as that round's data).
+    derive_all(ingested_db)
+    s = round_samples(ingested_db, FIXTURE_SCORECARD_ID)
+    md = render_round_samples(s)
+    assert "THIS ROUND'S SHOTS" in md
+    for key in ("pitch20to60", "approach100to150", "sand"):
+        assert isinstance(s[key], list)
+    if not s["pitch20to60"]:
+        assert "20-60y pitches: none this round — bucket untested" in md
+    if not any(x["lie"] == "Fairway" for x in s["pitch20to60"]):
+        assert "not tested today" in md
+    assert "Awful shots this round" in md
 
 
 def test_climb_split_directions():

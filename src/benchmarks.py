@@ -344,6 +344,65 @@ def climb_split(doc: dict) -> tuple[list[str], list[str]]:
     return behind, ahead
 
 
+def round_samples(con, round_id: int) -> dict:
+    """This round's shots in each benchmark bucket — the per-round companion to the
+    season profile, so a coach read can anchor to what actually happened (or say a
+    bucket went untested) instead of re-presenting all-time medians as round data."""
+    def bucket(lo, hi, bunker_only=False):
+        extra = "AND s.start_lie = 'Bunker'" if bunker_only else ""
+        rows = con.execute(f"""
+            SELECT s.hole_number, round(g.to_pin_before_yds), s.start_lie,
+                   round(g.remaining_yds * 3), s.end_lie
+            {_REAL_SHOT} {extra}
+              AND s.round_id = ? AND g.to_pin_before_yds BETWEEN ? AND ?
+            ORDER BY s.hole_number""", [round_id, lo, hi]).fetchall()
+        return [{"hole": h, "fromYds": d, "lie": lie, "leaveFt": lv, "end": end}
+                for h, d, lie, lv, end in rows]
+    clean = con.execute("SELECT clean FROM derived.round_recon WHERE round_id = ?",
+                        [round_id]).fetchone()
+    n_awful, awful_holes = con.execute("""
+        SELECT count(*) FILTER (WHERE sg.strokes_gained < -0.8),
+               list(DISTINCT s.hole_number) FILTER (WHERE sg.strokes_gained < -0.8)
+        FROM canon.shot s
+        JOIN derived.shot_sg sg USING (shot_id)
+        JOIN derived.shot_flags f USING (shot_id)
+        WHERE s.round_id = ? AND NOT f.phantom AND sg.sg_category <> 'putting'""",
+        [round_id]).fetchone()
+    return {"pitch20to60": bucket(20, 60), "approach100to150": bucket(100, 150),
+            "sand": bucket(0, 50, bunker_only=True),
+            "awful": {"n": n_awful, "holes": sorted(awful_holes or []),
+                      "clean": bool(clean and clean[0])}}
+
+
+def render_round_samples(samples: dict) -> str:
+    """The coach-facing per-round companion block."""
+    def fmt(shots):
+        if not shots:
+            return "none this round — bucket untested"
+        return "; ".join(f"H{s['hole']} {s['fromYds']:.0f}y ({(s['lie'] or '?').lower()}) "
+                         f"-> left {s['leaveFt']:.0f} ft ({(s['end'] or '?').lower()})"
+                         for s in shots)
+    lines = [
+        "THIS ROUND'S SHOTS IN THE BENCHMARK BUCKETS (the figures above are his SEASON "
+        "profile — anchor your read to these shots, or say the bucket went untested "
+        "this round):",
+        f"  20-60y pitches: {fmt(samples['pitch20to60'])}",
+        f"  100-150y approaches: {fmt(samples['approach100to150'])}",
+        f"  Greenside sand: {fmt(samples['sand'])}",
+    ]
+    if not any(s["lie"] == "Fairway" for s in samples["pitch20to60"]):
+        lines.append("  (no FAIRWAY pitches 20-60y this round — the season leave figure "
+                     "was not tested today)")
+    aw = samples["awful"]
+    if aw["clean"]:
+        holes = (" (holes " + ", ".join(f"H{h}" for h in aw["holes"]) + ")"
+                 if aw["holes"] else "")
+        lines.append(f"  Awful shots this round (< -0.8, no putts): {aw['n']}{holes}")
+    else:
+        lines.append("  Awful shots this round: not countable — round over-recorded")
+    return "\n".join(lines)
+
+
 def build(write: bool = True) -> dict:
     from .db import connect
     doc = build_comparison(connect())
