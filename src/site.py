@@ -582,9 +582,12 @@ function renderProgress(){
     v.textContent=fmt(lv);v.className="wv "+(lv===null?"mut":lv>=0?"pos":"neg");
     cell.classList.toggle('on',w===win);});
   const g=P.scoring;
-  const typ=(AU.last10&&AU.last10.overRating18!=null)?AU.last10.overRating18:g.averageOverRating18;
+  // ONE definition of "typical" app-wide: the cone's median (rolling 16 regulation rounds)
+  const _ic=DATA.insights&&DATA.insights.current;
+  const typ=_ic&&_ic.median!=null?_ic.median.toFixed(1)
+      :(AU.last10&&AU.last10.overRating18!=null?AU.last10.overRating18:g.averageOverRating18);
   document.getElementById('scoregauge').innerHTML=
-    `Reading a new 18-hole round (over rating): under <b>+${typ}</b> beats your recent typical (last 10) · `+
+    `Reading a new 18-hole round (over rating): under <b>+${typ}</b> beats your typical (median, matches the cone) · `+
     `under <b>+${g.potentialOverRating18}</b> = good day · under <b>+${g.bestOverRating18}</b> = new best.`;
   document.getElementById('putts').textContent=sc.putts18.toFixed(0);
   document.getElementById('pen').textContent=sc.penalties18.toFixed(1);
