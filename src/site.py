@@ -284,6 +284,7 @@ TEMPLATE = r"""<!doctype html>
   .cl-med{border-top-color:var(--accent)}
   .cl-floor{border-top-color:var(--bad)}
   .cl-dot{border-top:0;width:7px;height:7px;border-radius:50%;background:#c9cfc9}
+  .cl-tgt{border-top:2.5px dotted #d55181}
   .inscard{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;
     padding:10px 12px;margin-bottom:8px}
   .inscard .ic-top{display:flex;gap:8px;align-items:center;margin-bottom:4px;flex-wrap:wrap}
@@ -470,7 +471,7 @@ TEMPLATE = r"""<!doctype html>
       <div class="tiles" style="margin-bottom:0" id="instiles"></div></div>
     <div class="card"><h2>Performance cone<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">rolling 16 rounds · score vs rating /18 · lower is better</span></h2>
       <div class="ochartwrap"><svg id="conesvg" viewBox="0 0 880 320" width="100%"></svg><div class="otip" id="conetip"></div></div>
-      <div class="mixlegend"><span><i class="cl-ceil"></i>ceiling (best 20%)</span><span><i class="cl-med"></i>median</span><span><i class="cl-floor"></i>floor (worst 20%)</span><span><i class="cl-dot"></i>rounds</span></div>
+      <div class="mixlegend"><span><i class="cl-ceil"></i>ceiling (best 20%)</span><span><i class="cl-med"></i>median</span><span><i class="cl-floor"></i>floor (worst 20%)</span><span><i class="cl-dot"></i>rounds</span><span><i class="cl-tgt"></i>target path (modeled)</span></div>
       <div class="foot" id="conefoot" style="margin-top:4px">Improvement moves the cone down. Mastery narrows it. Dashed = forming estimate (under 16 rounds); solid = full evidence. Target cones on the right are modeled from real population data (Arccos scoring distributions by index — a golfer's typical round runs ~4–6 over their index, and spread narrows with skill), not measurements of you.</div></div>
     <div class="card"><h2>What changed</h2><div id="inscards"></div></div>
     <div class="card"><h2>Why your floor is moving<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">last 10 vs previous 10</span></h2>
@@ -1062,7 +1063,7 @@ function drawCone(I){
   if(!pts.length){svg.innerHTML='';return;}
   const cw=(svg.parentNode&&svg.parentNode.clientWidth)||880,K=cw&&cw<560?2.0:1;
   const bm=I.benchmarks||[];
-  const BZ=bm.length?(bm.length*(K>1?44:38)+28):0;
+  const BZ=bm.length?(bm.length*(K>1?48:42)+34):0;
   const W=880,H=320+(K>1?24:0),L=46,Rm=16+BZ,T=24,B=40;
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   // time axis from the FIRST tracked round — sparse early history spreads out
@@ -1113,15 +1114,18 @@ function drawCone(I){
     const zx=W-BZ-6;
     g+=`<line x1="${zx}" y1="${T}" x2="${zx}" y2="${H-B}" stroke="#c3c9c3" stroke-dasharray="2 4"/>`
       +`<text x="${zx+BZ/2+6}" y="${T+10*K}" font-size="${9.5*K}" fill="#6d7269" text-anchor="middle">targets (modeled)</text>`;
+    // one continuous funnel through the rungs: the cone keeps narrowing as skill rises
+    const bx=bi=>zx+20+(BZ-36)*(bm.length<2?0.5:bi/(bm.length-1));
+    const fb=bm.map((b,bi)=>`${bx(bi)},${Yv(b.floor)}`).join(' ')+' '+
+      [...bm].reverse().map((b)=>`${bx(bm.indexOf(b))},${Yv(b.ceiling)}`).join(' ');
+    g+=`<polygon points="${fb}" fill="#1f4a36" opacity="0.06" style="pointer-events:none"/>`;
+    const tline=(key,color)=>`<polyline points="${bm.map((b,bi)=>bx(bi)+','+Yv(b[key])).join(' ')}" fill="none" stroke="${color}" stroke-width="2" stroke-dasharray="4 5" opacity="0.55" stroke-linecap="round"/>`;
+    g+=tline('ceiling','#218a54')+tline('floor','#b3312d');
+    g+=`<polyline points="${bm.map((b,bi)=>bx(bi)+','+Yv(b.median)).join(' ')}" fill="none" stroke="#d55181" stroke-width="2.5" stroke-dasharray="1.5 6" stroke-linecap="round"/>`;
     bm.forEach((b,bi)=>{
-      const cx=zx+((bi+0.5)*BZ/bm.length)+6, hw=13;
-      // natural axis: the floor (worse) plots ABOVE the ceiling
-      const yTop=Yv(b.floor),yBot=Yv(b.ceiling),hgt=yBot-yTop;
-      g+=`<rect x="${cx-hw}" y="${yTop}" width="${2*hw}" height="${hgt}" rx="6" fill="#1f4a36" opacity="0.13"/>`
-        +`<rect x="${cx-hw}" y="${yTop}" width="${2*hw}" height="${hgt}" rx="6" fill="none" stroke="#1f4a36" opacity="0.45"/>`
-        +`<line x1="${cx-hw}" x2="${cx+hw}" y1="${Yv(b.median)}" y2="${Yv(b.median)}" stroke="#1a1c19" stroke-width="2.5"/>`
-        +`<text x="${cx}" y="${yTop-7}" font-size="${10.5*K}" font-weight="800" fill="#1f4a36" text-anchor="middle">${b.median>0?'+':''}${Math.round(b.median)}</text>`
-        +`<text x="${cx}" y="${yBot+13*K}" font-size="${9.5*K}" fill="#6d7269" text-anchor="middle">${b.label}</text>`;});
+      g+=`<circle cx="${bx(bi)}" cy="${Yv(b.median)}" r="3.5" fill="#d55181"/>`
+        +`<text x="${bx(bi)}" y="${Yv(b.median)-9}" font-size="${10.5*K}" font-weight="800" fill="#d55181" text-anchor="middle">${b.median>0?'+':''}${Math.round(b.median)}</text>`
+        +`<text x="${bx(bi)}" y="${H-14}" font-size="${10*K}" fill="#6d7269" text-anchor="middle">${b.label.replace(' hcp','')}</text>`;});
   }
   svg.innerHTML=g;
   const tip=document.getElementById('conetip');
