@@ -203,8 +203,8 @@ def build_comparison(con) -> dict:
                m["approach100to150Fwy"]["medianFrlPct"], m["approach100to150Fwy"]["n"],
                t2["medianFrl100to150FwyPct"], "lower", unit="% of start distance",
                note=f"from 125y that is a {_frl_ft(m['approach100to150Fwy']['medianFrlPct'], 125)}ft "
-                    f"leave vs {_frl_ft(t2['medianFrl100to150FwyPct']['Am2'], 125)}ft ({grp}) and "
-                    f"{_frl_ft(t2['medianFrl100to150FwyPct']['Am1'], 125)}ft (Am1)"),
+                    f"leave vs {_frl_ft(t2['medianFrl100to150FwyPct'][grp], 125)}ft (your bracket) "
+                    f"and {_frl_ft(t2['medianFrl100to150FwyPct'][nxt or grp], 125)}ft (next level)"),
         metric("green100to150Rough", "Approach 100-150y (rough lie): green hit %",
                m["approach100to150Rough"]["greenPct"], m["approach100to150Rough"]["n"],
                t2["green100to150RoughPct"], "higher"),
@@ -215,8 +215,8 @@ def build_comparison(con) -> dict:
                m["short20to60Fwy"]["medianFrlPct"], m["short20to60Fwy"]["n"],
                t2["medianFrl20to60FwyPct"], "lower", unit="% of start distance",
                note=f"from 40y that is a {_frl_ft(m['short20to60Fwy']['medianFrlPct'], 40)}ft leave "
-                    f"vs {_frl_ft(t2['medianFrl20to60FwyPct']['Am2'], 40)}ft ({grp}) and "
-                    f"{_frl_ft(t2['medianFrl20to60FwyPct']['Am1'], 40)}ft (Am1)"),
+                    f"vs {_frl_ft(t2['medianFrl20to60FwyPct'][grp], 40)}ft (your bracket) and "
+                    f"{_frl_ft(t2['medianFrl20to60FwyPct'][nxt or grp], 40)}ft (next level)"),
         metric("green20to60Rough", "Pitch 20-60y (rough lie): on green %",
                m["short20to60Rough"]["greenPct"], m["short20to60Rough"]["n"],
                t2["green20to60RoughPct"], "higher"),
@@ -248,41 +248,62 @@ def build_comparison(con) -> dict:
             "yourGroup": grp, "yourGroupScoreRange": cfg["groupScoreRanges"][grp],
             "nextGroup": nxt,
             "nextGroupScoreRange": cfg["groupScoreRanges"].get(nxt) if nxt else None,
+            "groupScoreRanges": {g: cfg["groupScoreRanges"][g] for g in AM_GROUPS},
             "stepUpStrokes": step_up, "metrics": metrics}
 
 
+def _group_labels(doc: dict) -> dict:
+    """Human names for the groups — the Am1/Am2/Am3 dataset shorthand must never
+    reach the player. Everything downstream speaks in score brackets."""
+    labels = {}
+    for g, (lo, hi) in doc["groupScoreRanges"].items():
+        if g == doc["yourGroup"]:
+            labels[g] = "your bracket"
+        elif g == doc["nextGroup"]:
+            labels[g] = "next level"
+        else:
+            labels[g] = f"{lo}-{hi} bracket"
+    return labels
+
+
 def render_md(doc: dict) -> str:
-    grp, nxt = doc["yourGroup"], doc["nextGroup"]
+    labels = _group_labels(doc)
     lo, hi = doc["yourGroupScoreRange"]
+    head = (f"Your scoring average {doc['avgScore18']} (last {doc['nScoreRounds']} "
+            f"regulation rounds) puts you in the {lo}-{hi} bracket.")
+    if doc["nextGroup"]:
+        nlo, nhi = doc["nextGroupScoreRange"]
+        head += f" The next level is the {nlo}-{nhi} bracket."
     lines = [
-        "=== BENCHMARK READ — you vs PUBLISHED skill-group tables (measured population "
+        "=== BENCHMARK READ — you vs PUBLISHED skill brackets (measured population "
         "data, not a model) ===",
         f"Source: {doc['source']['citation']}",
-        "Groups are score ranges: Am1 = 70-83 shooters, Am2 = 84-97, Am3 = 98-120.",
-        f"Your scoring average {doc['avgScore18']} (last {doc['nScoreRounds']} regulation "
-        f"rounds) puts you in {grp} ({lo}-{hi}). The next level is {nxt} "
-        f"({doc['nextGroupScoreRange'][0]}-{doc['nextGroupScoreRange'][1]})." if nxt else
-        f"Your scoring average {doc['avgScore18']} puts you in {grp} ({lo}-{hi}).",
+        "Brackets group golfers by what they SCORE, so 'your bracket' = players who "
+        "shoot what you shoot.",
+        head,
         "",
     ]
     for mt in doc["metrics"]:
         if mt["yours"] is None:
             continue
-        gs = " | ".join(f"{g} {mt['groups'][g]}" for g in ("Am3", "Am2", "Am1")
+        gs = " | ".join(f"{labels[g]} {mt['groups'][g]}" for g in ("Am3", "Am2", "Am1")
                         if g in mt["groups"])
         n = f", n={mt['n']}" if mt.get("n") else ""
-        lines.append(f"- {mt['label']}: YOU {mt['yours']}{n} vs {gs} "
-                     f"-> you sit {mt.get('placement', '?')}")
+        place = mt.get("placement", "?")
+        for g, lbl in labels.items():
+            place = place.replace(g, lbl)
+        lines.append(f"- {mt['label']}: YOU {mt['yours']}{n} vs {gs} -> you sit {place}")
         if mt.get("note"):
             lines.append(f"    ({mt['note']})")
     if doc["stepUpStrokes"]:
         s = doc["stepUpStrokes"]
         lines += ["",
-                  f"What separates {grp} from {nxt}, per Broadie's shot-value table "
-                  f"(strokes per round, of {s['total']} total): long game {s['longGame']}, "
-                  f"short game {s['shortGame']}, putting {s['putting']}, sand {s['sandGame']}.",
+                  f"What separates your bracket from the next level, per Broadie's "
+                  f"shot-value table (strokes per round, of {s['total']} total): long game "
+                  f"{s['longGame']}, short game {s['shortGame']}, putting {s['putting']}, "
+                  f"sand {s['sandGame']}.",
                   "Read: the long game is most of the gap for every amateur step-up — but "
-                  "coach to the specific rows above where this player lags his own group."]
+                  "coach to the specific rows above where this player lags his own bracket."]
     return "\n".join(lines) + "\n"
 
 

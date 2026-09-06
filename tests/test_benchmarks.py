@@ -70,10 +70,13 @@ def test_build_comparison_and_md(ingested_db):
     md = render_md(doc)
     assert "BENCHMARK READ" in md
     assert "Broadie" in md
-    # every rendered metric line carries the published ladder for context
+    # interpretability bar: the Am1/Am2/Am3 dataset shorthand must never reach the
+    # player-facing brief — brackets are named by score range in plain words
+    assert "Am1" not in md and "Am2" not in md and "Am3" not in md
+    assert "your bracket" in md
     for line in md.splitlines():
         if line.startswith("- "):
-            assert "Am2" in line and "YOU" in line
+            assert "YOU" in line
 
 
 def test_step_up_strokes_match_table4():
