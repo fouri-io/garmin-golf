@@ -438,6 +438,7 @@ TEMPLATE = r"""<!doctype html>
         <div class="big" id="score">—</div><div class="sub" id="scoresub"></div></div>
       <div class="herocol hdcp"><div class="lab">Avg differential · 18-hole</div>
         <div class="big" id="hdiff">—</div><div class="sub" id="hdiffsub"></div></div></div>
+    <div class="foot" id="scoregauge" style="margin:-4px 2px 10px"></div>
     <div class="card lever"><h2>SG 0–100 · leverage number
         <span class="mut" style="text-transform:none;font-weight:400;letter-spacing:0"> — 100yd &amp; in, no putts · where scores move</span></h2>
       <div class="lev3" id="lev3">
@@ -580,6 +581,10 @@ function renderProgress(){
     const lv=lever(w,base),cell=document.querySelector(`#lev3 [data-w="${w}"]`),v=cell.querySelector('.wv');
     v.textContent=fmt(lv);v.className="wv "+(lv===null?"mut":lv>=0?"pos":"neg");
     cell.classList.toggle('on',w===win);});
+  const g=P.scoring;
+  document.getElementById('scoregauge').innerHTML=
+    `Reading a new 18-hole round (over rating): under <b>+${g.averageOverRating18}</b> beats your typical · `+
+    `under <b>+${g.potentialOverRating18}</b> = good day · under <b>+${g.bestOverRating18}</b> = new best.`;
   document.getElementById('putts').textContent=sc.putts18.toFixed(0);
   document.getElementById('pen').textContent=sc.penalties18.toFixed(1);
   const db=document.getElementById('dbl');db.textContent=sc.doubles18.toFixed(1);
