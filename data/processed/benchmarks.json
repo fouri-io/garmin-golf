@@ -7,16 +7,18 @@
   },
   "generated": "2026-09-06",
   "avgScore18": 96.6,
+  "adjScore18": 100.7,
+  "standardCourseRating": 72.0,
   "nScoreRounds": 10,
-  "yourGroup": "Am2",
+  "yourGroup": "Am3",
   "yourGroupScoreRange": [
+    98,
+    120
+  ],
+  "nextGroup": "Am2",
+  "nextGroupScoreRange": [
     84,
     97
-  ],
-  "nextGroup": "Am1",
-  "nextGroupScoreRange": [
-    70,
-    83
   ],
   "groupScoreRanges": {
     "Am1": [
@@ -33,11 +35,11 @@
     ]
   },
   "stepUpStrokes": {
-    "longGame": 7.1,
-    "shortGame": 2.6,
-    "putting": 1.5,
-    "sandGame": 0.4,
-    "total": 11.5
+    "longGame": 8.2,
+    "shortGame": 3.9,
+    "putting": 2.8,
+    "sandGame": 0.5,
+    "total": 15.5
   },
   "metrics": [
     {
@@ -67,7 +69,7 @@
       },
       "betterIs": "lower",
       "placement": "between Am3 and Am2 (nearer Am3)",
-      "note": "from 125y that is a 65ft leave vs 45ft (your bracket) and 33ft (next level)"
+      "note": "from 125y that is a 65ft leave vs 65ft (your bracket) and 45ft (next level)"
     },
     {
       "key": "green100to150Rough",
@@ -110,7 +112,7 @@
       },
       "betterIs": "lower",
       "placement": "below Am3",
-      "note": "from 40y that is a 41ft leave vs 20ft (your bracket) and 17ft (next level)"
+      "note": "from 40y that is a 41ft leave vs 24ft (your bracket) and 20ft (next level)"
     },
     {
       "key": "green20to60Rough",
@@ -196,7 +198,7 @@
       },
       "betterIs": "lower",
       "placement": "between Am3 and Am2 (nearer Am3)",
-      "note": "clean rounds only; benchmark for your scoring average: A = 0.24*96.6 - 17.1 = 6.1"
+      "note": "clean rounds only; benchmark for your adjusted scoring level: A = 0.24*100.7 - 17.1 = 7.1"
     }
   ]
 }

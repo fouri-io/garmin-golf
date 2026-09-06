@@ -86,10 +86,11 @@ SYSTEM = (
     "you from a 15') but always call the tier modeled, never measured.\n"
     "- BENCHMARK READ: the benchmark block compares his MEASURED stats to published "
     "population tables (Broadie, Golfmetrics). The brackets group golfers by what they "
-    "SCORE — 'your bracket' means players who shoot what he shoots (84-97), 'next level' "
-    "means the bracket below that (70-83 shooters). Unlike the modeled tier, this is real "
+    "SCORE on a standard-rated course — the block levels his easier-tee scores before "
+    "assigning his bracket, and its header names his bracket and the next level; use "
+    "THOSE score ranges, never assume them. Unlike the modeled tier, this is real "
     "measured data — state comparisons plainly and concretely ('your 40-yard pitches "
-    "finish 41 ft away; players who shoot what you shoot leave 20 ft'). Respect the n= "
+    "finish 41 ft away; players who shoot what you shoot leave 24 ft'). Respect the n= "
     "sample counts; never call the brackets handicaps.\n"
     "- PLAIN WORDS ONLY: never let dataset shorthand reach the player. No 'Am1'/'Am2'/"
     "'Am3' (say 'players who shoot 84-97' / 'your bracket' / 'the next level'), no "
@@ -122,10 +123,11 @@ fixable part), by band; never judge on raw 3-putt count.
 provided, OPEN this section by grading each one against this round's evidence
 ("last time: X — this round says ..."); otherwise check the previous report's prescription.
 **Benchmark read** — ONLY if the published-benchmark block is provided: 2-4 sentences on
-where he most lags players who shoot what HE shoots (the 84-97 bracket) and what the next
-level (70-83 shooters) measurably does better. Quote the numbers (leaves in feet, green %,
-awful shots) and name the brackets in plain words — "players who shoot what you shoot",
-never Am1/Am2 shorthand. This is measured population data — no hedging about models.
+where he most lags players who shoot what HE shoots (his bracket, per the block's header)
+and what the next level measurably does better. Quote the numbers (leaves in feet, green %,
+awful shots) and name the brackets in plain words with their score ranges — "players who
+shoot what you shoot", never Am1/Am2 shorthand. This is measured population data — no
+hedging about models.
 **Next-round focus** — exactly 1-3 bullets. Each must cite a number from the data provided
 (course ledger, benchmark read, doubles anatomy, escalation chains, or putting bands). No
 generic advice. These bullets are tracked and graded in your next report — make each one

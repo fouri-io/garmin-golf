@@ -87,6 +87,18 @@ def test_step_up_strokes_match_table4():
     assert round(t4["longGame"]["Am1"] - t4["longGame"]["Am2"], 1) == 7.1
 
 
+def test_bracket_assignment_levels_tee_rating():
+    # A raw average earned on easy tees must not flatter the bracket (Colby's catch):
+    # 96.6 off 67.2-rated tees levels to ~101.4 on a standard course -> the 98-120
+    # bracket, even though the raw number reads as 84-97.
+    cfg = load_cfg()
+    std = cfg["standardCourseRating"]
+    raw, rating = 96.6, 67.2
+    adj = raw - rating + std
+    assert user_group(raw, cfg) == "Am2"
+    assert user_group(adj, cfg) == "Am3"
+
+
 def test_extract_focus_parses_bullets():
     bullets = extract_focus(REPORT)
     assert len(bullets) == 2

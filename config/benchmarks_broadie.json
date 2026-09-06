@@ -7,6 +7,8 @@
   },
   "groups": ["Pro1", "Pro2", "Am1", "Am2", "Am3"],
   "groupScoreRanges": {"Pro1": [64, 71], "Pro2": [72, 79], "Am1": [70, 83], "Am2": [84, 97], "Am3": [98, 120]},
+  "standardCourseRating": 72.0,
+  "_bracketNote": "The study population played ~standard-rated courses, so raw scores off easier-rated tees flatter the player. Bracket assignment levels each round to a standard course first: adjusted = score - tee_rating + standardCourseRating.",
   "table1": {
     "_desc": "Putting, sand game and long tee shots. Pro row combines Pro1+Pro2 (64-79).",
     "onePutt50PctDistanceFt": {"Pro": 8.2, "Am1": 5.8, "Am2": 5.1, "Am3": 3.8},

@@ -140,16 +140,22 @@ def _awful(con) -> dict:
     return {"perRound": round(sum(rates) / len(rates), 1), "nRounds": len(rows)}
 
 
-def _avg_score_18(con) -> tuple[float | None, int]:
-    """Scoring average over the last 10 regulation 18-hole rounds (any source) —
-    the number Broadie's score-range groups key on."""
+def _scoring_level(con, std_rating: float) -> tuple[float | None, float | None, int]:
+    """(raw avg, rating-adjusted avg, n) over the last 10 regulation 18-hole rounds.
+
+    Brackets are assigned on the ADJUSTED average: the benchmark population played
+    ~standard-rated courses, so a raw average off tees rated ~67 flatters the player
+    by the rating gap. Each round is leveled to a standard course first."""
     rows = con.execute("""
-        SELECT total_strokes FROM canon.round
+        SELECT total_strokes, tee_rating FROM canon.round
         WHERE holes_completed >= 18 AND total_strokes IS NOT NULL
         ORDER BY round_date DESC LIMIT 10""").fetchall()
     if not rows:
-        return None, 0
-    return round(sum(r[0] for r in rows) / len(rows), 1), len(rows)
+        return None, None, 0
+    raw = sum(r[0] for r in rows) / len(rows)
+    adj = sum(r[0] - (r[1] if r[1] is not None else std_rating) + std_rating
+              for r in rows) / len(rows)
+    return round(raw, 1), round(adj, 1), len(rows)
 
 
 def _driver_p75() -> int | None:
@@ -180,8 +186,8 @@ def _frl_ft(frl_pct: float | None, from_yds: int) -> int | None:
 
 def build_comparison(con) -> dict:
     cfg = load_cfg()
-    avg, n_sc = _avg_score_18(con)
-    grp = user_group(avg, cfg) if avg else "Am2"
+    raw, adj, n_sc = _scoring_level(con, cfg["standardCourseRating"])
+    grp = user_group(adj, cfg) if adj else "Am2"
     nxt = next_group(grp)
     m = measure(con)
     t1, t2, t3, t4 = cfg["table1"], cfg["table2"], cfg["table3"], cfg["table4"]
@@ -234,8 +240,8 @@ def build_comparison(con) -> dict:
         metric("awfulShots", "Awful shots per 18 (shot value < -0.8, no putts)",
                m["awful"]["perRound"], m["awful"]["nRounds"],
                t3["awfulShotsPerRound"], "lower", unit="/round",
-               note=("clean rounds only; benchmark for your scoring average: "
-                     f"A = 0.24*{avg} - 17.1 = {round(0.24 * avg - 17.1, 1)}" if avg else None)),
+               note=("clean rounds only; benchmark for your adjusted scoring level: "
+                     f"A = 0.24*{adj} - 17.1 = {round(0.24 * adj - 17.1, 1)}" if adj else None)),
     ]
 
     step_up = None
@@ -244,7 +250,8 @@ def build_comparison(con) -> dict:
                    for cat in ("longGame", "shortGame", "putting", "sandGame", "total")}
 
     return {"source": cfg["_source"], "generated": date.today().isoformat(),
-            "avgScore18": avg, "nScoreRounds": n_sc,
+            "avgScore18": raw, "adjScore18": adj,
+            "standardCourseRating": cfg["standardCourseRating"], "nScoreRounds": n_sc,
             "yourGroup": grp, "yourGroupScoreRange": cfg["groupScoreRanges"][grp],
             "nextGroup": nxt,
             "nextGroupScoreRange": cfg["groupScoreRanges"].get(nxt) if nxt else None,
@@ -269,8 +276,11 @@ def _group_labels(doc: dict) -> dict:
 def render_md(doc: dict) -> str:
     labels = _group_labels(doc)
     lo, hi = doc["yourGroupScoreRange"]
-    head = (f"Your scoring average {doc['avgScore18']} (last {doc['nScoreRounds']} "
-            f"regulation rounds) puts you in the {lo}-{hi} bracket.")
+    head = (f"You average {doc['avgScore18']} raw (last {doc['nScoreRounds']} regulation "
+            f"rounds), but on tees rated well below standard; leveled to a standard "
+            f"course (rating {doc['standardCourseRating']:.0f}, like the benchmark "
+            f"population's) that scoring plays as {doc['adjScore18']} — so your bracket "
+            f"is {lo}-{hi} shooters.")
     if doc["nextGroup"]:
         nlo, nhi = doc["nextGroupScoreRange"]
         head += f" The next level is the {nlo}-{nhi} bracket."
