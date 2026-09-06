@@ -122,18 +122,21 @@ fixable part), by band; never judge on raw 3-putt count.
 **Trend read** — improving / flat / slipping vs recent form. If previous focus bullets are
 provided, OPEN this section by grading each one against this round's evidence
 ("last time: X — this round says ..."); otherwise check the previous report's prescription.
-**Benchmark read** — ONLY if the published-benchmark block is provided: 2-4 sentences on
-where he most lags players who shoot what HE shoots (his bracket, per the block's header)
-and what the next level measurably does better. Quote the numbers (leaves in feet, green %,
-awful shots) and name the brackets in plain words with their score ranges — "players who
-shoot what you shoot", never Am1/Am2 shorthand. This is measured population data — no
-hedging about models.
+**Benchmark read** — REQUIRED whenever the published-benchmark block is present (omit the
+section only when there is no block; never drop it for length): 2-4 sentences with
+TWO reference points on every comparison, because he is climbing, not holding: his own
+bracket (is he keeping pace with players who shoot what he shoots) AND the next level up
+(the target). Lead with the block's climb read: what to close first (behind his own
+bracket) vs what to push to next-level numbers (already ahead of his bracket). Quote the
+numbers (leaves in feet, green %, awful shots) and name brackets in plain words with score
+ranges, never Am1/Am2 shorthand. Measured population data — no hedging about models.
 **Next-round focus** — exactly 1-3 bullets. Each must cite a number from the data provided
 (course ledger, benchmark read, doubles anatomy, escalation chains, or putting bands). No
 generic advice. These bullets are tracked and graded in your next report — make each one
 checkable against data.
 
-Keep it under ~400 words. No fluff. Speak to them directly.
+Keep it under ~450 words. No fluff. Speak to them directly. Every listed section that has
+data provided must appear — trim sentences, never sections.
 
 === PLAYER PROFILE ===
 {profile}
@@ -267,10 +270,12 @@ FOCUS_JSON = OUT_DIR / "focus.json"
 
 
 def _benchmark_block() -> str:
-    """Measured-vs-published comparison (src/benchmarks.py output, source-cited)."""
+    """Measured-vs-published comparison (src/benchmarks.py output, source-cited).
+    Fed whole: a truncated block once cost the report its entire Benchmark read —
+    the climb summary lives at the bottom."""
     if not BENCHMARKS_MD.exists():
         return ""
-    return "\n" + BENCHMARKS_MD.read_text()[:2600]
+    return "\n" + BENCHMARKS_MD.read_text()[:4500]
 
 
 def extract_focus(report: str) -> list[str]:

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from src.benchmarks import (build_comparison, load_cfg, measure, next_group, placement,
-                            render_md, user_group)
+from src.benchmarks import (build_comparison, climb_split, load_cfg, measure, next_group,
+                            placement, render_md, user_group)
 from src.coach import extract_focus
 from src.derive import derive_all
 
@@ -97,6 +97,21 @@ def test_bracket_assignment_levels_tee_rating():
     adj = raw - rating + std
     assert user_group(raw, cfg) == "Am2"
     assert user_group(adj, cfg) == "Am3"
+
+
+def test_climb_split_directions():
+    # higher-is-better behind, lower-is-better ahead — both directions must sort right,
+    # and 'ahead' entries must carry the next-level target
+    doc = {"yourGroup": "Am3", "nextGroup": "Am2", "metrics": [
+        {"label": "green %", "yours": 15, "groups": {"Am3": 25, "Am2": 34},
+         "betterIs": "higher"},
+        {"label": "awful shots", "yours": 8.8, "groups": {"Am3": 9.3, "Am2": 4.1},
+         "betterIs": "lower"},
+        {"label": "no data", "yours": None, "groups": {"Am3": 1}, "betterIs": "higher"},
+    ]}
+    behind, ahead = climb_split(doc)
+    assert behind == ["green % (15 vs bracket 25)"]
+    assert ahead == ["awful shots (8.8 -> next level 4.1)"]
 
 
 def test_extract_focus_parses_bullets():

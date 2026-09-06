@@ -305,6 +305,17 @@ def render_md(doc: dict) -> str:
         lines.append(f"- {mt['label']}: YOU {mt['yours']}{n} vs {gs} -> you sit {place}")
         if mt.get("note"):
             lines.append(f"    ({mt['note']})")
+    behind, ahead = climb_split(doc)
+    if behind or ahead:
+        lines += ["", "CLIMB READ — he has said he does not want to stay at his level: "
+                      "always pair both numbers (your bracket = keeping pace; next level "
+                      "= the target)."]
+        if behind:
+            lines.append("  Behind even your own bracket (close these first, they are "
+                         "table stakes): " + "; ".join(behind) + ".")
+        if ahead:
+            lines.append("  At/ahead of your bracket (these are how you climb — push to "
+                         "the next-level number): " + "; ".join(ahead) + ".")
     if doc["stepUpStrokes"]:
         s = doc["stepUpStrokes"]
         lines += ["",
@@ -315,6 +326,22 @@ def render_md(doc: dict) -> str:
                   "Read: the long game is most of the gap for every amateur step-up — but "
                   "coach to the specific rows above where this player lags his own bracket."]
     return "\n".join(lines) + "\n"
+
+
+def climb_split(doc: dict) -> tuple[list[str], list[str]]:
+    """Split measured metrics into (behind own bracket, at/ahead of own bracket).
+    The 'ahead' entries carry the next-level value — the aspirational target."""
+    grp, nxt = doc["yourGroup"], doc["nextGroup"]
+    behind, ahead = [], []
+    for mt in doc["metrics"]:
+        if mt["yours"] is None or grp not in mt["groups"]:
+            continue
+        sign = 1 if mt["betterIs"] == "higher" else -1
+        if sign * mt["yours"] < sign * mt["groups"][grp]:
+            behind.append(f"{mt['label']} ({mt['yours']} vs bracket {mt['groups'][grp]})")
+        elif nxt and nxt in mt["groups"]:
+            ahead.append(f"{mt['label']} ({mt['yours']} -> next level {mt['groups'][nxt]})")
+    return behind, ahead
 
 
 def build(write: bool = True) -> dict:

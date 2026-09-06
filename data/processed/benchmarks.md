@@ -19,5 +19,9 @@ You average 96.6 raw (last 10 regulation rounds), but on tees rated well below s
 - Awful shots per 18 (shot value < -0.8, no putts): YOU 8.8, n=42 vs your bracket 9.3 | next level 4.1 | 70-83 bracket 1.9 -> you sit between your bracket and next level (nearer your bracket)
     (clean rounds only; benchmark for your adjusted scoring level: A = 0.24*100.7 - 17.1 = 7.1)
 
+CLIMB READ — he has said he does not want to stay at his level: always pair both numbers (your bracket = keeping pace; next level = the target).
+  Behind even your own bracket (close these first, they are table stakes): Approach 100-150y (rough lie): green hit % (15 vs bracket 25); Pitch 20-60y (fairway lie): on green % (58 vs bracket 75); Pitch 20-60y (fairway): median leave, % of start (33.9 vs bracket 20.3); Pitch 20-60y (rough lie): on green % (61 vs bracket 64).
+  At/ahead of your bracket (these are how you climb — push to the next-level number): Approach 100-150y (fairway lie): green hit % (26 -> next level 46); Approach 100-150y (fairway): median leave, % of start (17.3 -> next level 12.0); Sand save % (greenside bunker, up-and-in) (9 -> next level 17); Distance you hole 50% of putts (ft) (4.5 -> next level 5.1); Average 2-putt distance (ft) (24.0 -> next level 19); Tee-shot distance, 75th percentile (yds) (228 -> next level 237); Awful shots per 18 (shot value < -0.8, no putts) (8.8 -> next level 4.1).
+
 What separates your bracket from the next level, per Broadie's shot-value table (strokes per round, of 15.5 total): long game 8.2, short game 3.9, putting 2.8, sand 0.5.
 Read: the long game is most of the gap for every amateur step-up — but coach to the specific rows above where this player lags his own bracket.
