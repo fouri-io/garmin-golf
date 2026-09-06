@@ -363,7 +363,10 @@ def build(through_scorecard_id: int | None = None, write: bool = True) -> dict:
     priority = {k: _priority_window(v) for k, v in horizons.items()}
 
     # Scoring "potential" = better half of rounds (≈ what a handicap measures).
-    over_vals = sorted(v for v in (_over_rating18(d) for d in rounds) if v is not None)
+    # 18-hole rounds only: cross-round scoring-level claims follow the regulation
+    # scope (doubled 9-holers carry a course-fit discount that faked potential ~+16).
+    over_vals = sorted(v for v in (_over_rating18(d) for d in rounds if _holes(d) >= 18)
+                       if v is not None)
     half = max(1, len(over_vals) // 2)
 
     baselines = _baselines(sg["allTime"])
