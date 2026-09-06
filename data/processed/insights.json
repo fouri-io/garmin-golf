@@ -658,19 +658,35 @@
   },
   "benchmarks": [
     {
-      "label": "target 15",
+      "label": "20 hcp",
+      "handicap": 20,
+      "median": 25.7,
+      "ceiling": 21.7,
+      "floor": 29.7,
+      "modeled": true
+    },
+    {
+      "label": "15 hcp",
       "handicap": 15,
-      "median": 15,
-      "ceiling": 11.8,
-      "floor": 19.8,
+      "median": 20.2,
+      "ceiling": 16.6,
+      "floor": 23.9,
+      "modeled": true
+    },
+    {
+      "label": "10 hcp",
+      "handicap": 10,
+      "median": 14.8,
+      "ceiling": 11.5,
+      "floor": 18.1,
       "modeled": true
     },
     {
       "label": "scratch",
       "handicap": 0,
-      "median": 0,
-      "ceiling": -2.0,
-      "floor": 3.0,
+      "median": 3.9,
+      "ceiling": 1.3,
+      "floor": 6.5,
       "modeled": true
     }
   ],

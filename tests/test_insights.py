@@ -82,7 +82,12 @@ def test_build_against_real_data():
     assert 1 <= len(doc["priorities"]) <= 3
     assert doc["floorDrivers"] and all(d["verdict"] in ("improving", "flat", "worse")
                                        for d in doc["floorDrivers"])
-    assert len(doc["benchmarks"]) == 2
+    assert len(doc["benchmarks"]) >= 3
     for b in doc["benchmarks"]:
         assert b["modeled"] and b["ceiling"] < b["median"] < b["floor"]
-    assert doc["benchmarks"][-1]["median"] == 0  # scratch
+    hs = [b["handicap"] for b in doc["benchmarks"]]
+    assert hs == sorted(hs, reverse=True) and hs[-1] == 0
+    scratch = doc["benchmarks"][-1]
+    assert 3 <= scratch["median"] <= 5      # a real scratch's typical round: ~+4 over rating
+    b20 = doc["benchmarks"][0]
+    assert b20["floor"] - b20["ceiling"] > scratch["floor"] - scratch["ceiling"]

@@ -471,7 +471,7 @@ TEMPLATE = r"""<!doctype html>
     <div class="card"><h2>Performance cone<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">rolling 16 rounds · score vs rating /18 · lower is better</span></h2>
       <div class="ochartwrap"><svg id="conesvg" viewBox="0 0 880 320" width="100%"></svg><div class="otip" id="conetip"></div></div>
       <div class="mixlegend"><span><i class="cl-ceil"></i>ceiling (best 20%)</span><span><i class="cl-med"></i>median</span><span><i class="cl-floor"></i>floor (worst 20%)</span><span><i class="cl-dot"></i>rounds</span></div>
-      <div class="foot" id="conefoot" style="margin-top:4px">Improvement moves the cone down. Mastery narrows it. Dashed = forming estimate (under 16 rounds); solid = full evidence. Target cones on the right are modeled reference shapes (median ≈ handicap over rating, spread narrowing with skill), not measurements.</div></div>
+      <div class="foot" id="conefoot" style="margin-top:4px">Improvement moves the cone down. Mastery narrows it. Dashed = forming estimate (under 16 rounds); solid = full evidence. Target cones on the right are modeled from real population data (Arccos scoring distributions by index — a golfer's typical round runs ~4–6 over their index, and spread narrows with skill), not measurements of you.</div></div>
     <div class="card"><h2>What changed</h2><div id="inscards"></div></div>
     <div class="card"><h2>Why your floor is moving<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">last 10 vs previous 10</span></h2>
       <div id="insdrivers" style="overflow-x:auto"></div></div>
@@ -1062,7 +1062,7 @@ function drawCone(I){
   if(!pts.length){svg.innerHTML='';return;}
   const cw=(svg.parentNode&&svg.parentNode.clientWidth)||880,K=cw&&cw<560?2.0:1;
   const bm=I.benchmarks||[];
-  const BZ=bm.length?(K>1?150:128):0;
+  const BZ=bm.length?(bm.length*(K>1?44:38)+28):0;
   const W=880,H=320+(K>1?24:0),L=46,Rm=16+BZ,T=24,B=40;
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   // time axis from the FIRST tracked round — sparse early history spreads out

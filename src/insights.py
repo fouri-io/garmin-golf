@@ -311,17 +311,23 @@ def build(write: bool = True) -> dict:
                         f"3–5 makes them trendable."})
     priorities = priorities[:3]
 
-    # Aspirational benchmark cones (MODELED, labeled as such): median ~= handicap
-    # over rating (the app's existing scratch-relative convention); spread narrows
-    # with skill (gap ~= 5 + 0.2*H, skewed slightly toward the floor like real
-    # score distributions). These are reference shapes, not measurements.
+    # Aspirational benchmark cones, fitted to REAL population data: Arccos "breaking
+    # N" probabilities by index (Lou Stagner, newsletter #97; par-72, rating ~71.5)
+    # invert to normal score distributions. Fit across indexes 0-20:
+    #   mean over-rating  mu(H)    ~= 3.9 + 1.09*H   (typical round runs ~4-6 over index
+    #                                                 — an index is best-8-of-20, not average)
+    #   round-to-round    sigma(H) ~= 3.13 + 0.08*H  (spread narrows with skill)
+    # ceiling/floor = p20/p80 = mu -/+ 0.8416*sigma. Normal fit slightly understates the
+    # blow-up tail at high indexes; labeled modeled, never mixed with measurements.
     def _bench(h: float, label: str) -> dict:
-        gap = 5 + 0.2 * h
-        return {"label": label, "handicap": h, "median": round(h, 1),
-                "ceiling": round(h - 0.4 * gap, 1), "floor": round(h + 0.6 * gap, 1),
-                "modeled": True}
+        mu = 3.9 + 1.09 * h
+        sigma = 3.13 + 0.08 * h
+        return {"label": label, "handicap": h, "median": round(mu, 1),
+                "ceiling": round(mu - 0.8416 * sigma, 1),
+                "floor": round(mu + 0.8416 * sigma, 1), "modeled": True}
     tgt_h = sg_target()["targetHandicap"]
-    benchmarks = [_bench(tgt_h, f"target {tgt_h}"), _bench(0, "scratch")]
+    ladder = sorted({20, tgt_h, 10, 0}, reverse=True)
+    benchmarks = [_bench(h, "scratch" if h == 0 else f"{h} hcp") for h in ladder]
 
     doc = {
         "generatedFromRounds": n_rounds,
