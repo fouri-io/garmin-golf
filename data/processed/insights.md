@@ -9,9 +9,9 @@ Cone (rolling 16 rounds, score vs course rating, per 18 (all rated rounds, every
 - [Development · High confidence] Your scoring floor (bad-but-normal golf) has improved 10 strokes — blow-up rounds now land near +28 instead of +38.
 - [Miss pattern · High confidence] Short-right is your dominant mid-iron miss: across 348 6i–9i approaches, 78% finish short and 44% miss right. One more club and a start line adjustment attack both.
 - [Development · High confidence] Your ceiling has improved 7 strokes — your best golf now runs about +14 vs rating.
+- [Reliability · Moderate confidence] Your raw 13-stroke gap overstates inconsistency: 7 of your last 16 rounds are 9-holers whose per-18 doubling doubles their noise. Noise-adjusted, your consistency gap is ~10 strokes — wider than typical for your scoring level (population: ~8).
 - [Scoring structure · High confidence] Penalties are down from 2.3 to 1.2 per 18 over your last 10 rounds — one of the cleanest floor-raisers there is.
 - [Scoring structure · High confidence] Bogey-or-better holes have risen from 67% to 73% over your last 10 rounds.
-- [Development · High confidence] Your typical scoring level has improved 6 strokes per 18 since tracking began (31 over rating → 25).
 
 ## Floor drivers (last 10 vs previous 10)
 - Penalties /18: 2.3 → 1.2 (improving)

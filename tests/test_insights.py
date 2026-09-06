@@ -91,3 +91,20 @@ def test_build_against_real_data():
     assert 3 <= scratch["median"] <= 5      # a real scratch's typical round: ~+4 over rating
     b20 = doc["benchmarks"][0]
     assert b20["floor"] - b20["ceiling"] > scratch["floor"] - scratch["ceiling"]
+
+
+def test_adjusted_gap_shrinks_nine_hole_noise():
+    from src.insights import adjusted_gap
+    import random
+    rng = random.Random(7)
+    # stable golfer, sigma ~4, but half the rounds are noisy doubled 9-holers
+    rounds = []
+    for i in range(CONE_WINDOW):
+        nine = i % 2 == 0
+        noise = rng.gauss(0, 4 * (2 ** 0.5)) if nine else rng.gauss(0, 4)
+        rounds.append({"over18": 25 + noise, "holes": 9 if nine else 18})
+    raw = [r["over18"] for r in rounds]
+    raw_gap = _pct(raw, .8) - _pct(raw, .2)
+    adj = adjusted_gap(rounds, CONE_WINDOW - 1)
+    assert adj is not None and adj < raw_gap          # correction shrinks the spread
+    assert adjusted_gap(rounds[:CONE_WINDOW - 1], CONE_WINDOW - 2) is None  # needs full window

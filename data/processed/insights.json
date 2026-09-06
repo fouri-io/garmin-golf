@@ -8,6 +8,7 @@
     "median": 25.3,
     "floor": 27.8,
     "gap": 13.4,
+    "gapAdjusted": 9.5,
     "date": "2026-09-04"
   },
   "start": {
@@ -15,6 +16,7 @@
     "median": 30.9,
     "floor": 37.8,
     "gap": 16.4,
+    "gapAdjusted": 10.8,
     "date": "2026-05-15"
   },
   "cone": {
@@ -710,6 +712,12 @@
       "score": 77
     },
     {
+      "cat": "Reliability",
+      "text": "Your raw 13-stroke gap overstates inconsistency: 7 of your last 16 rounds are 9-holers whose per-18 doubling doubles their noise. Noise-adjusted, your consistency gap is ~10 strokes \u2014 wider than typical for your scoring level (population: ~8).",
+      "confidence": "Moderate confidence",
+      "score": 72
+    },
+    {
       "cat": "Scoring structure",
       "text": "Penalties are down from 2.3 to 1.2 per 18 over your last 10 rounds \u2014 one of the cleanest floor-raisers there is.",
       "confidence": "High confidence",
@@ -720,12 +728,6 @@
       "text": "Bogey-or-better holes have risen from 67% to 73% over your last 10 rounds.",
       "confidence": "High confidence",
       "score": 51
-    },
-    {
-      "cat": "Development",
-      "text": "Your typical scoring level has improved 6 strokes per 18 since tracking began (31 over rating \u2192 25).",
-      "confidence": "High confidence",
-      "score": 49
     }
   ],
   "floorDrivers": [

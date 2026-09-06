@@ -62,6 +62,26 @@ def cone_series(over18: list[float], window: int = CONE_WINDOW) -> list[dict]:
     return out
 
 
+def adjusted_gap(rounds: list[dict], idx: int, window: int = CONE_WINDOW) -> float | None:
+    """Consistency gap with two honesty corrections the raw p80-p20 lacks:
+    residuals are taken against the rolling median (removes improvement drift), and
+    9-hole rounds' residuals shrink by 1/sqrt(2) — doubling a 9-hole score to per-18
+    doubles its noise, which otherwise inflates the measured spread."""
+    import math
+    win = list(range(max(0, idx - window + 1), idx + 1))
+    if len(win) < window:
+        return None
+    over = [r["over18"] for r in rounds]
+    resid = []
+    for i in win:
+        p50 = _pct(over[max(0, i - window + 1):i + 1], .5)
+        r = over[i] - p50
+        if rounds[i]["holes"] < 18:
+            r /= math.sqrt(2)
+        resid.append(r)
+    return round(_pct(resid, .8) - _pct(resid, .2), 1)
+
+
 def _conf(n: int) -> tuple[float, str]:
     """(score multiplier, label) from sample size."""
     if n >= 20:
@@ -97,11 +117,13 @@ def _load_rounds(con) -> list[dict]:
                  100.0*count(*) FILTER (WHERE score_to_par<=1)/count(*) AS bob_pct
           FROM derived.hole_facts GROUP BY round_id)
         SELECT r.round_date, (r.total_strokes-r.tee_rating)*18.0/r.holes_completed,
-               r.source, hf.pen18, hf.dbl18, hf.tp18, hf.gir_pct, hf.bob_pct
+               r.source, r.holes_completed, hf.pen18, hf.dbl18, hf.tp18, hf.gir_pct,
+               hf.bob_pct
         FROM canon.round r JOIN hf USING (round_id)
         WHERE r.tee_rating IS NOT NULL AND r.holes_completed > 0
         ORDER BY r.start_time""").fetchall()
-    keys = ["date", "over18", "source", "pen18", "dbl18", "tp18", "girPct", "bobPct"]
+    keys = ["date", "over18", "source", "holes", "pen18", "dbl18", "tp18",
+            "girPct", "bobPct"]
     return [dict(zip(keys, [str(r[0])] + [round(v, 1) if isinstance(v, float) else v
                                           for v in r[1:]])) for r in rows]
 
@@ -152,9 +174,13 @@ def build(write: bool = True) -> dict:
     current = start = None
     if cur and first:
         current = {"ceiling": cur["p20"], "median": cur["p50"], "floor": cur["p80"],
-                   "gap": round(cur["p80"] - cur["p20"], 1), "date": rounds[cur["i"]]["date"]}
+                   "gap": round(cur["p80"] - cur["p20"], 1),
+                   "gapAdjusted": adjusted_gap(rounds, cur["i"]),
+                   "date": rounds[cur["i"]]["date"]}
         start = {"ceiling": first["p20"], "median": first["p50"], "floor": first["p80"],
-                 "gap": round(first["p80"] - first["p20"], 1), "date": rounds[first["i"]]["date"]}
+                 "gap": round(first["p80"] - first["p20"], 1),
+                 "gapAdjusted": adjusted_gap(rounds, first["i"]),
+                 "date": rounds[first["i"]]["date"]}
 
     # ---- top-of-page summary (deterministic) ----
     summary = "Not enough rated rounds yet to judge the cone — keep playing."
@@ -262,6 +288,20 @@ def build(write: bool = True) -> dict:
                 f"{'s' if c['nRounds'] != 1 else ''} (n={c['nObs']}) — annotate more rounds "
                 f"to make this trendable.", 0.5, c["nRounds"], 0.7))
 
+    if current and current.get("gapAdjusted") is not None:
+        raw_g, adj_g = current["gap"], current["gapAdjusted"]
+        h_est = max(0.0, (current["median"] - 3.9) / 1.09)
+        pop_gap = round(1.683 * (3.13 + 0.08 * h_est), 1)
+        if raw_g - adj_g >= 2:
+            n9 = sum(1 for r in rounds[-CONE_WINDOW:] if r["holes"] < 18)
+            verdict = ("typical" if abs(adj_g - pop_gap) <= 1.5 else
+                       "tighter than typical" if adj_g < pop_gap else "wider than typical")
+            cands.append(_cand("Reliability",
+                f"Your raw {raw_g:.0f}-stroke gap overstates inconsistency: {n9} of your "
+                f"last {CONE_WINDOW} rounds are 9-holers whose per-18 doubling doubles "
+                f"their noise. Noise-adjusted, your consistency gap is ~{adj_g:.0f} strokes "
+                f"— {verdict} for your scoring level (population: ~{pop_gap:.0f}).",
+                (raw_g - adj_g) / 5, CONE_WINDOW, 1.15))
     cands.sort(key=lambda x: -x["score"])
     insights = cands[:6]
 
