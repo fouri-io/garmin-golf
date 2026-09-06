@@ -108,3 +108,19 @@ def test_validate_tags_catches_bad_references(ingested_db):
 def test_validate_tags_clean(ingested_db):
     problems = validate_tags(ingested_db, FIXTURE_SCORECARD_ID, TAGS)
     assert problems == []
+
+
+def test_course_ledger_and_first_time(ingested_db):
+    from src.coach import course_ledger
+    from src.derive import derive_all
+    derive_all(ingested_db)
+    ledger = course_ledger(ingested_db, 99999)      # fixture course
+    assert len(ledger) == 2
+    h1 = ledger[0]
+    assert h1["hole"] == 1 and h1["par"] == 4 and h1["plays"] == 1
+    assert h1["avgOver"] == 1.0 and h1["dblPct"] == 0
+    prior = ingested_db.execute(
+        "SELECT count(*) FROM canon.round WHERE course_global_id = 99999 "
+        "AND start_time < (SELECT start_time FROM canon.round WHERE round_id = 999000111)"
+    ).fetchone()[0]
+    assert prior == 0                                # first tracked round at the course

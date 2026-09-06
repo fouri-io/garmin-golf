@@ -64,7 +64,7 @@ gitignored because it is reproducible — git durability lives with the raw file
 | `insights.py` | Deterministic development intelligence: Performance Cone (rolling p20/p50/p80 of score vs rating), ranked insight cards, floor drivers, priorities → `insights.{json,md}`. |
 | `progress.py` | Dashboard data: 5 windows (this/5/10/20/all), SG, baselines, fine putting bands, priority metrics. |
 | `site.py` | Static site generator → `site/index.html` (data inlined, no fetch). |
-| `coach.py` | AI round report (Anthropic/OpenAI) + the living golfer spec + the player's own notes. |
+| `coach.py` | AI round report (Anthropic/OpenAI): golfer spec + player's notes + deterministic context — season insights brief, per-course hole ledger (with first-time detection), doubles anatomy, modeled tier gaps, and its own previous report for continuity. |
 | `update.py` | One-command pipeline (+ `--rebuild`/`--publish`/`--push`/`--coach`). |
 | `constants.py` | Single home for SG categories, quality gates, unit constants. |
 | `config.py` | Loaders for `config/*.json`. |

@@ -73,18 +73,40 @@ SYSTEM = (
     "- LEAD WITH WHAT HE CARES ABOUT: his #1 priority is the SCORING ZONE (SG 0–100, "
     "100yd & in). You are given this round's SG 0–100 vs his average — if it beat his "
     "average, SAY SO up front as real progress; if it lagged, that's the headline leak. "
-    "Tie 'Practice focus' to his stated 2026 Q-plan priorities in the profile, in order."
+    "Tie practice advice to his stated 2026 Q-plan priorities in the profile, in order.\n"
+    "- COURSE MEMORY: the course-history ledger is deterministic data across all his "
+    "tracked rounds there. Use it for hole-specific coaching (his trap holes, holes the "
+    "card rates easy but he bleeds on, holes he has conquered). If told it is his FIRST "
+    "tracked round at a course, you have NO history there — never imply otherwise.\n"
+    "- CONTINUITY: when a previous report is provided, you are a coach with a memory — "
+    "verify whether your last prescription showed up in this round's numbers before "
+    "issuing new advice. Changing advice every round with no follow-through reads as noise.\n"
+    "- TIER COMPARISON: the vs-target-handicap gaps are from a MODELED tier baseline "
+    "(clearly labeled). Use them to size opportunities ('this bucket is what separates "
+    "you from a 15') but always call the tier modeled, never measured.\n"
+    "- DOUBLES ANATOMY: the doubles list is authoritative. His #1 scoring lever is "
+    "converting doubles+ to bogeys — when doubles were absent or fewer, celebrate that "
+    "explicitly before anything else."
 )
 
 PROMPT = """Write a BRIEF round report for the player. Use these sections, short and tight:
 
 **Overall** — 2-3 sentences: how the round went vs their level/trend.
-**What cost strokes** — the 1-2 biggest leaks this round (worst SG bucket(s) + penalties/doubles), with the "why".
-**Putting by distance** — using the first-putt-distance buckets, say whether putting is genuinely a leak and WHERE: long-lag 3-putts (≈ expected, not a fault) vs weak short/mid-range conversion (the fixable part). Be specific with the distance bands; don't judge on raw 3-putt count.
-**Trend read** — improving / flat / slipping vs their recent form, in the categories that matter.
-**Practice focus** — 1-2 concrete things, tied to their stated priorities (short-game/54° calibration, driver dispersion, etc.).
+**What cost strokes** — the 1-2 biggest leaks this round (worst SG bucket(s) + the doubles
+anatomy), with the "why". Name the specific holes where the score got away.
+**Course read** — ONLY if course history is provided: 2-3 sentences connecting this round to
+their hole-by-hole pattern at this course (their trap holes, card-vs-you inversions, hole
+trends). If it was their first tracked round at the course, say so and note what to log for
+next time instead.
+**Putting by distance** — long-lag 3-putts (≈ expected) vs weak short/mid conversion (the
+fixable part), by band; never judge on raw 3-putt count.
+**Trend read** — improving / flat / slipping vs recent form. If a previous report is
+provided, OPEN this section by checking its prescription against this round's evidence
+("last time: X — this round says ...").
+**Next-round focus** — exactly 1-3 bullets. Each must cite a number from the data provided
+(course ledger, tier gaps, doubles anatomy, or putting bands). No generic advice.
 
-Keep it under ~280 words. No fluff. Speak to them directly.
+Keep it under ~340 words. No fluff. Speak to them directly.
 
 === PLAYER PROFILE ===
 {profile}
@@ -94,7 +116,7 @@ Keep it under ~280 words. No fluff. Speak to them directly.
 
 === PUTTING BY FIRST-PUTT DISTANCE (authoritative counts) ===
 {putting}
-
+{insights}{course}{tier}{anatomy}{prev_report}
 === THE ROUND JUST PLAYED ===
 {round_md}
 {annotations}"""
@@ -106,6 +128,167 @@ recovery/punch/layup was deliberate trouble management, NOT a bad swing — judg
 DECISION and whether it restored normal golf, and never treat its distance as a
 stock yardage.
 """
+
+
+INSIGHTS_MD = Path("data/processed/insights.md")
+
+
+def _rid_from_stem(stem: str) -> int:
+    return int(stem.rsplit("_", 1)[1])
+
+
+def course_ledger(con, course_global_id: int) -> list[dict]:
+    """Per-hole ledger across every 18-hole-scored visit to a course (deterministic).
+    Testable core of the coach's course memory."""
+    rows = con.execute("""
+        SELECT h.hole_number, any_value(h.par), any_value(h.stroke_index), count(*),
+               round(avg(h.strokes - h.par), 2),
+               round(100.0*count(*) FILTER (WHERE hf.double_plus)/count(*)),
+               coalesce(sum(h.penalties), 0)
+        FROM canon.hole h
+        JOIN derived.hole_facts hf ON hf.round_id=h.round_id AND hf.hole_number=h.hole_number
+        JOIN canon.round r ON r.round_id=h.round_id
+        WHERE r.course_global_id = ? AND h.strokes IS NOT NULL
+        GROUP BY h.hole_number ORDER BY h.hole_number""", [course_global_id]).fetchall()
+    keys = ["hole", "par", "si", "plays", "avgOver", "dblPct", "pens"]
+    return [dict(zip(keys, r)) for r in rows]
+
+
+def _hole_trends(con, course_global_id: int) -> list[str]:
+    """Holes clearly improving/worsening across visits (first half vs second half)."""
+    rows = con.execute("""
+        WITH plays AS (
+          SELECT h.hole_number, h.strokes - h.par AS over,
+                 row_number() OVER (PARTITION BY h.hole_number ORDER BY r.start_time) AS k,
+                 count(*) OVER (PARTITION BY h.hole_number) AS n
+          FROM canon.hole h JOIN canon.round r USING (round_id)
+          WHERE r.course_global_id = ? AND h.strokes IS NOT NULL)
+        SELECT hole_number,
+               round(avg(over) FILTER (WHERE k <= n/2), 2) AS early,
+               round(avg(over) FILTER (WHERE k > n/2), 2)  AS late, any_value(n)
+        FROM plays WHERE n >= 6 GROUP BY hole_number""", [course_global_id]).fetchall()
+    out = []
+    for hole, early, late, n in rows:
+        if early is None or late is None:
+            continue
+        d = late - early
+        if d <= -0.6:
+            out.append(f"H{hole}: improving ({early:+.1f} early visits -> {late:+.1f} recent)")
+        elif d >= 0.6:
+            out.append(f"H{hole}: worsening ({early:+.1f} early visits -> {late:+.1f} recent)")
+    return out
+
+
+def _course_block(stem: str) -> str:
+    from .db import connect
+    con = connect()
+    row = con.execute("""
+        SELECT course_global_id, course_name, start_time FROM canon.round
+        WHERE round_id = ?""", [_rid_from_stem(stem)]).fetchone()
+    if not row or row[0] is None:
+        return ""
+    cgid, cname, start = row
+    prior = con.execute("""
+        SELECT count(*) FROM canon.round
+        WHERE course_global_id = ? AND start_time < ?""", [cgid, start]).fetchone()[0]
+    if prior == 0:
+        return (f"\n=== COURSE CONTEXT ===\nFIRST TRACKED ROUND AT {cname}. You have no "
+                "history here — do NOT claim hole-specific patterns at this course. "
+                "Coach in scouting mode: judge decisions and process, and suggest what "
+                "to note for next time.\n")
+    ledger = course_ledger(con, cgid)
+    if not ledger:
+        return ""
+    hardest = sorted(ledger, key=lambda x: -(x["avgOver"] or 0))[:5]
+    easiest = min(ledger, key=lambda x: x["avgOver"] or 0)
+    # SI inversions: your rank differs sharply from the card's difficulty rank
+    ranked = sorted(ledger, key=lambda x: -(x["avgOver"] or 0))
+    n = len(ranked)
+    inversions = []
+    for yr, hrow in enumerate(ranked, 1):
+        if hrow["si"] is None:
+            continue
+        if yr <= 5 and hrow["si"] >= n - 5:
+            inversions.append(f"H{hrow['hole']} is the card's #{hrow['si']} handicap "
+                              f"(easy) but YOUR #{yr} hardest ({hrow['avgOver']:+.2f})")
+        if yr >= n - 4 and hrow["si"] <= 5:
+            inversions.append(f"H{hrow['hole']} is the card's #{hrow['si']} handicap "
+                              f"(hard) but you handle it ({hrow['avgOver']:+.2f})")
+    lines = [f"\n=== YOUR HISTORY AT {cname.upper()} (deterministic, "
+             f"{prior + 1} tracked rounds) ==="]
+    lines.append("Your hardest holes: " + " · ".join(
+        f"H{h['hole']} (par {h['par']}, SI {h['si']}): {h['avgOver']:+.2f}, "
+        f"{h['dblPct']:.0f}% doubles, {h['pens']} pens" for h in hardest))
+    lines.append(f"Your best hole: H{easiest['hole']} ({easiest['avgOver']:+.2f} avg).")
+    for iv in inversions[:3]:
+        lines.append("Card-vs-you: " + iv)
+    trends = _hole_trends(con, cgid)
+    if trends:
+        lines.append("Hole trends: " + " · ".join(trends[:4]))
+    return "\n".join(lines) + "\n"
+
+
+def _insights_block() -> str:
+    if not INSIGHTS_MD.exists():
+        return ""
+    txt = INSIGHTS_MD.read_text()[:2600]
+    return "\n=== SEASON INSIGHTS BRIEF (deterministic — trends, cone, priorities) ===\n" + txt
+
+
+def _prev_report_block(stem: str) -> str:
+    prior = sorted(f for f in OUT_DIR.glob("*.md")
+                   if f.stem not in ("context", "latest") and f.stem < stem)
+    if not prior:
+        return ""
+    f = prior[-1]
+    return (f"\n=== YOUR PREVIOUS REPORT ({f.stem[:10].replace('_', '-')}) — for continuity ===\n"
+            + f.read_text()[:1500])
+
+
+def _double_anatomy(stem: str) -> str:
+    rj = ROUNDS_DIR / f"{stem}.json"
+    if not rj.exists():
+        return ""
+    doc = json.loads(rj.read_text())
+    rows = []
+    for h in doc["holes"]:
+        if (h.get("scoreToPar") or 0) < 2:
+            continue
+        causes = []
+        if h.get("penalties"):
+            causes.append(f"{h['penalties']} penalty")
+        if (h.get("putts") or 0) >= 3:
+            causes.append(f"{h['putts']} putts")
+        if not h.get("gir") and not causes:
+            causes.append("missed green, no up-and-down")
+        rows.append(f"  H{h['number']} (par {h['par']}): {h['strokes']} "
+                    f"({h['scoreToPar']:+d}) — {', '.join(causes) or 'grind'}")
+    if not rows:
+        return "\n=== DOUBLES ANATOMY ===\nNo doubles-or-worse this round — say so, it matters.\n"
+    return ("\n=== DOUBLES ANATOMY (authoritative; where the blow-ups were) ===\n"
+            + "\n".join(rows) + "\n")
+
+
+def _tier_block(progress: dict) -> str:
+    """Deltas vs the MODELED target-handicap tier (existing app baseline convention)."""
+    bl = (progress.get("baselines") or {})
+    tgt = next(((k, v) for k, v in bl.items() if k.startswith("target")), None)
+    sg10 = ((progress.get("sg") or {}).get("last10") or {}).get("byCategory")
+    if not tgt or not sg10:
+        return ""
+    name, tv = tgt
+    gaps = sorted(((cat, round(sg10[cat] - tv["byCategory"].get(cat, 0), 1))
+                   for cat in sg10), key=lambda x: x[1])
+    lines = [f"\n=== VS A MODELED {name.replace('target', '')}-HANDICAP (labeled model, "
+             "not measured data) ==="]
+    for cat, gap in gaps[:3]:
+        if gap < -0.3:
+            lines.append(f"  {SG_LABELS[cat]}: {gap:+.1f} strokes/18 behind that tier "
+                         "(last 10 clean rounds)")
+    ahead = [f"{SG_LABELS[c]} ({g:+.1f})" for c, g in gaps if g > 0.3]
+    if ahead:
+        lines.append("  Already at/above tier: " + ", ".join(ahead))
+    return "\n".join(lines) + "\n" if len(lines) > 1 else ""
 
 
 def _latest_stem() -> str | None:
@@ -244,7 +427,12 @@ def build_context(stem: str, progress: dict | None = None) -> dict:
     (OUT_DIR / "context.md").write_text(state + "\n\n=== PUTTING BY DISTANCE ===\n" + putting)
     return {"profile": profile, "state": state, "putting": putting,
             "stem": stem, "round_md": _round_md(stem) or "",
-            "annotations": _annotations_block(stem)}
+            "annotations": _annotations_block(stem),
+            "insights": _insights_block(),
+            "course": _course_block(stem),
+            "tier": _tier_block(progress),
+            "anatomy": _double_anatomy(stem),
+            "prev_report": _prev_report_block(stem)}
 
 
 def _annotations_block(stem: str) -> str:
@@ -297,7 +485,7 @@ def _anthropic(key: str, model: str | None) -> "callable":  # noqa: F821
     mdl = model or os.environ.get("CLAUDE_MODEL", DEFAULT_ANTHROPIC_MODEL)
 
     def call(system, prompt):
-        msg = client.messages.create(model=mdl, max_tokens=1100, system=system,
+        msg = client.messages.create(model=mdl, max_tokens=1600, system=system,
                                      messages=[{"role": "user", "content": prompt}])
         return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text").strip()
     return call
@@ -309,7 +497,7 @@ def _openai(key: str, model: str | None) -> "callable":  # noqa: F821
     mdl = model or os.environ.get("OPENAI_MODEL", DEFAULT_OPENAI_MODEL)
 
     def call(system, prompt):
-        r = client.chat.completions.create(model=mdl, max_tokens=1100, messages=[
+        r = client.chat.completions.create(model=mdl, max_tokens=1600, messages=[
             {"role": "system", "content": system}, {"role": "user", "content": prompt}])
         return (r.choices[0].message.content or "").strip()
     return call
