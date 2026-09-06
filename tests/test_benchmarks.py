@@ -1,0 +1,95 @@
+"""Benchmark comparator (Broadie tables) + focus-card adherence plumbing."""
+
+from __future__ import annotations
+
+from src.benchmarks import (build_comparison, load_cfg, measure, next_group, placement,
+                            render_md, user_group)
+from src.coach import extract_focus
+from src.derive import derive_all
+
+REPORT = """**Overall** — fine.
+
+**Trend read** — flat.
+
+**Next-round focus**
+- Kill the tee-ball penalties: 4 of 5 doubles started off the tee.
+- Scoring zone: In50 -13.9 today.
+
+Some closing sentence.
+"""
+
+
+def test_user_group_by_score_range():
+    cfg = load_cfg()
+    assert user_group(80.0, cfg) == "Am1"
+    assert user_group(96.6, cfg) == "Am2"
+    assert user_group(97.0, cfg) == "Am2"
+    assert user_group(105.0, cfg) == "Am3"
+    assert user_group(150.0, cfg) == "Am3"
+
+
+def test_next_group_ladder():
+    assert next_group("Am3") == "Am2"
+    assert next_group("Am2") == "Am1"
+    assert next_group("Am1") is None
+
+
+def test_placement_higher_is_better():
+    groups = {"Am3": 25, "Am2": 46, "Am1": 63}
+    assert placement(20, groups, "higher") == "below Am3"
+    assert placement(26, groups, "higher") == "between Am3 and Am2 (nearer Am3)"
+    assert placement(45, groups, "higher") == "between Am3 and Am2 (nearer Am2)"
+    assert placement(50, groups, "higher") == "between Am2 and Am1 (nearer Am2)"
+    assert placement(70, groups, "higher") == "at/above Am1"
+
+
+def test_placement_lower_is_better():
+    groups = {"Am3": 9.3, "Am2": 4.1, "Am1": 1.9}
+    assert placement(12.0, groups, "lower") == "below Am3"
+    assert placement(8.8, groups, "lower") == "between Am3 and Am2 (nearer Am3)"
+    assert placement(1.0, groups, "lower") == "at/above Am1"
+
+
+def test_measure_runs_on_fixture(ingested_db):
+    derive_all(ingested_db)
+    m = measure(ingested_db)
+    # 2-hole fixture: sparse buckets must degrade to n=0 / None, never crash
+    for k in ("approach100to150Fwy", "short20to60Fwy"):
+        assert m[k]["n"] >= 0
+        if m[k]["n"] == 0:
+            assert m[k]["greenPct"] is None
+    assert m["awful"]["nRounds"] >= 0
+    assert "onePutt50PctFt" in m["putting"]
+
+
+def test_build_comparison_and_md(ingested_db):
+    derive_all(ingested_db)
+    doc = build_comparison(ingested_db)
+    assert doc["yourGroup"] in ("Am1", "Am2", "Am3")
+    assert doc["source"]["citation"].startswith("Broadie")
+    md = render_md(doc)
+    assert "BENCHMARK READ" in md
+    assert "Broadie" in md
+    # every rendered metric line carries the published ladder for context
+    for line in md.splitlines():
+        if line.startswith("- "):
+            assert "Am2" in line and "YOU" in line
+
+
+def test_step_up_strokes_match_table4():
+    # Am2 -> Am1 from the published shot-value table: 11.5 total strokes
+    cfg = load_cfg()
+    t4 = cfg["table4"]
+    assert round(t4["total"]["Am1"] - t4["total"]["Am2"], 1) == 11.5
+    assert round(t4["longGame"]["Am1"] - t4["longGame"]["Am2"], 1) == 7.1
+
+
+def test_extract_focus_parses_bullets():
+    bullets = extract_focus(REPORT)
+    assert len(bullets) == 2
+    assert bullets[0].startswith("Kill the tee-ball penalties")
+    assert "In50" in bullets[1]
+
+
+def test_extract_focus_absent_section():
+    assert extract_focus("**Overall** — fine.\n\n**Trend read** — flat.") == []

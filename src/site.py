@@ -75,7 +75,13 @@ def _coach_reports() -> dict:
             reports.append({"stem": f.stem, "date": f.stem[:10].replace("_", "-"),
                             "text": f.read_text()})
     reports.sort(key=lambda r: r["stem"], reverse=True)
-    return {"reports": reports}
+    focus = None
+    fj = cdir / "focus.json"
+    if fj.exists():
+        rounds = json.loads(fj.read_text()).get("rounds", {})
+        if rounds:
+            focus = rounds[max(rounds)]
+    return {"reports": reports, "focus": focus}
 
 
 def build() -> Path:
@@ -509,6 +515,7 @@ TEMPLATE = r"""<!doctype html>
   <div id="tab-coach" class="hide">
     <div class="coachhdr"><span class="ai">AI COACH</span>
       <select class="rsel" id="coachRound" style="margin:0;flex:1"></select></div>
+    <div class="card" id="focusCard" style="display:none"></div>
     <div class="card" id="coachReport"></div>
     <div class="foot" style="padding:0 4px">Generated at update time from your profile +
       this round + your trend. Honest about which numbers are GPS-approximate.</div>
@@ -1025,6 +1032,11 @@ function md(t){
   if(inList)out+='</ul>';return out;
 }
 function renderCoach(){
+  const fo=DATA.coach&&DATA.coach.focus,fc=document.getElementById('focusCard');
+  if(fo&&fo.bullets&&fo.bullets.length){fc.style.display='';
+    fc.innerHTML=`<h2>Current focus <span class="hint">set ${fo.date} · graded in the next report</span></h2>`+
+      '<ul style="margin:6px 0 0;padding-left:18px">'+
+      fo.bullets.map(b=>`<li style="margin:4px 0;font-size:14px">${md(b).replace(/^<p>|<\/p>$/g,'')}</li>`).join('')+'</ul>';}
   const reps=(DATA.coach&&DATA.coach.reports)||[],sel=document.getElementById('coachRound');
   if(!reps.length){sel.style.display='none';
     document.getElementById('coachReport').innerHTML=

@@ -84,6 +84,19 @@ SYSTEM = (
     "- TIER COMPARISON: the vs-target-handicap gaps are from a MODELED tier baseline "
     "(clearly labeled). Use them to size opportunities ('this bucket is what separates "
     "you from a 15') but always call the tier modeled, never measured.\n"
+    "- BENCHMARK READ: the benchmark block compares his MEASURED stats to published "
+    "population tables (Broadie, Golfmetrics — groups are SCORE ranges: Am2 = 84-97 "
+    "shooters is HIS group, Am1 = 70-83 is the next level). Unlike the modeled tier, "
+    "this is real measured data — state comparisons plainly and concretely ('your "
+    "40-yard pitches finish 41 ft away; players at your own scoring level leave 20 ft'). "
+    "Respect the n= sample counts; never call the groups handicaps.\n"
+    "- FOCUS ADHERENCE: when the previous report's next-round focus bullets are provided "
+    "separately, grade EACH one in the Trend read — followed, partly, or not — from this "
+    "round's numbers, before adding anything new.\n"
+    "- ESCALATION CHAINS: the escalation block is built from the player's OWN confirmed "
+    "hole tags. 'Compounded' means one bad shot became several through the follow-up "
+    "decision; 'preventable escalation' is his own admission the blow-up was avoidable. "
+    "These are decision leaks, not swing leaks — coach the decision.\n"
     "- DOUBLES ANATOMY: the doubles list is authoritative. His #1 scoring lever is "
     "converting doubles+ to bogeys — when doubles were absent or fewer, celebrate that "
     "explicitly before anything else."
@@ -100,13 +113,19 @@ trends). If it was their first tracked round at the course, say so and note what
 next time instead.
 **Putting by distance** — long-lag 3-putts (≈ expected) vs weak short/mid conversion (the
 fixable part), by band; never judge on raw 3-putt count.
-**Trend read** — improving / flat / slipping vs recent form. If a previous report is
-provided, OPEN this section by checking its prescription against this round's evidence
-("last time: X — this round says ...").
+**Trend read** — improving / flat / slipping vs recent form. If previous focus bullets are
+provided, OPEN this section by grading each one against this round's evidence
+("last time: X — this round says ..."); otherwise check the previous report's prescription.
+**Benchmark read** — ONLY if the published-benchmark block is provided: 2-4 sentences on
+where he most lags players at his OWN scoring level (Am2, 84-97 shooters) and what the
+next group up (Am1, 70-83) measurably does better. Quote the numbers (leaves in feet,
+green %, awful shots). This is measured population data — no hedging about models.
 **Next-round focus** — exactly 1-3 bullets. Each must cite a number from the data provided
-(course ledger, tier gaps, doubles anatomy, or putting bands). No generic advice.
+(course ledger, benchmark read, doubles anatomy, escalation chains, or putting bands). No
+generic advice. These bullets are tracked and graded in your next report — make each one
+checkable against data.
 
-Keep it under ~340 words. No fluff. Speak to them directly.
+Keep it under ~400 words. No fluff. Speak to them directly.
 
 === PLAYER PROFILE ===
 {profile}
@@ -116,7 +135,7 @@ Keep it under ~340 words. No fluff. Speak to them directly.
 
 === PUTTING BY FIRST-PUTT DISTANCE (authoritative counts) ===
 {putting}
-{insights}{course}{tier}{anatomy}{prev_report}
+{insights}{course}{tier}{benchmark}{anatomy}{escalation}{prev_report}{prev_focus}
 === THE ROUND JUST PLAYED ===
 {round_md}
 {annotations}"""
@@ -233,6 +252,97 @@ def _insights_block() -> str:
         return ""
     txt = INSIGHTS_MD.read_text()[:2600]
     return "\n=== SEASON INSIGHTS BRIEF (deterministic — trends, cone, priorities) ===\n" + txt
+
+
+BENCHMARKS_MD = Path("data/processed/benchmarks.md")
+FOCUS_JSON = OUT_DIR / "focus.json"
+
+
+def _benchmark_block() -> str:
+    """Measured-vs-published comparison (src/benchmarks.py output, source-cited)."""
+    if not BENCHMARKS_MD.exists():
+        return ""
+    return "\n" + BENCHMARKS_MD.read_text()[:2600]
+
+
+def extract_focus(report: str) -> list[str]:
+    """The next-round focus bullets from a written report (for adherence tracking)."""
+    bullets, in_focus = [], False
+    for line in report.splitlines():
+        s = line.strip()
+        if "next-round focus" in s.lower():
+            in_focus = True
+            continue
+        if in_focus:
+            if s.startswith(("-", "*", "•")):
+                bullets.append(s.lstrip("-*• ").strip())
+            elif s and bullets:      # a new section/paragraph after the bullets ends it
+                break
+    return bullets
+
+
+def _load_focus() -> dict:
+    if FOCUS_JSON.exists():
+        return json.loads(FOCUS_JSON.read_text())
+    return {"rounds": {}}
+
+
+def _save_focus(stem: str, report: str) -> None:
+    """Persist this report's focus bullets so the next report (and the site) can hold
+    the player — and the coach — to them."""
+    bullets = extract_focus(report)
+    if not bullets:
+        return
+    doc = _load_focus()
+    doc["rounds"][stem] = {"date": stem[:10].replace("_", "-"), "bullets": bullets}
+    FOCUS_JSON.parent.mkdir(parents=True, exist_ok=True)
+    FOCUS_JSON.write_text(json.dumps(doc, indent=2))
+
+
+def _prev_focus_block(stem: str) -> str:
+    """The focus bullets from the most recent report BEFORE this round, verbatim —
+    the prev-report excerpt is truncated and can lose them."""
+    rounds = _load_focus().get("rounds", {})
+    prior = sorted(k for k in rounds if k < stem)
+    if not prior:
+        return ""
+    prev = rounds[prior[-1]]
+    lines = [f"\n=== YOUR PREVIOUS NEXT-ROUND FOCUS (from the {prev['date']} report — "
+             "grade adherence on each) ==="]
+    lines += [f"  - {b}" for b in prev["bullets"]]
+    return "\n".join(lines) + "\n"
+
+
+def _escalation_block(stem: str) -> str:
+    """Escalation chains from the player's own confirmed hole tags: this round's
+    tagged blow-up causes + the season pattern across all annotated rounds."""
+    from .db import connect
+    con = connect()
+    rid = _rid_from_stem(stem)
+    this_rd = con.execute("""
+        SELECT hole_number, double_class, preventable_escalation, note
+        FROM annot.hole_context
+        WHERE round_id = ? AND (double_class IS NOT NULL OR preventable_escalation)
+        ORDER BY hole_number""", [rid]).fetchall()
+    season = con.execute("""
+        SELECT double_class, count(*), count(*) FILTER (WHERE preventable_escalation)
+        FROM annot.hole_context WHERE double_class IS NOT NULL
+        GROUP BY double_class ORDER BY count(*) DESC""").fetchall()
+    n_ann = con.execute("SELECT count(DISTINCT round_id) FROM annot.hole_context").fetchone()[0]
+    if not this_rd and not season:
+        return ""
+    lines = ["\n=== ESCALATION CHAINS (from your own confirmed hole tags) ==="]
+    for hole, dc, prev_esc, note in this_rd:
+        bits = [dc or "escalation"] + (["PREVENTABLE by his own admission"] if prev_esc else [])
+        if note:
+            bits.append(note)
+        lines.append(f"  This round H{hole}: " + " — ".join(bits))
+    if season:
+        parts = [f"{dc} {n}" + (f" ({p} preventable)" if p else "")
+                 for dc, n, p in season]
+        lines.append(f"  Season, across {n_ann} annotated round{'s' if n_ann != 1 else ''} "
+                     "— doubles by cause: " + ", ".join(parts) + ".")
+    return "\n".join(lines) + "\n"
 
 
 def _prev_report_block(stem: str) -> str:
@@ -431,8 +541,11 @@ def build_context(stem: str, progress: dict | None = None) -> dict:
             "insights": _insights_block(),
             "course": _course_block(stem),
             "tier": _tier_block(progress),
+            "benchmark": _benchmark_block(),
             "anatomy": _double_anatomy(stem),
-            "prev_report": _prev_report_block(stem)}
+            "escalation": _escalation_block(stem),
+            "prev_report": _prev_report_block(stem),
+            "prev_focus": _prev_focus_block(stem)}
 
 
 def _annotations_block(stem: str) -> str:
@@ -535,6 +648,7 @@ def coach_round(stem: str | None = None, model: str | None = None,
     out = OUT_DIR / f"{ctx['stem']}.md"
     out.write_text(report)
     (OUT_DIR / "latest.md").write_text(report)
+    _save_focus(ctx["stem"], report)
     print(f"  coach report ({provider}) -> {out}")
     return out
 

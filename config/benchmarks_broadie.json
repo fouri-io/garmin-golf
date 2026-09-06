@@ -1,0 +1,44 @@
+{
+  "_source": {
+    "citation": "Broadie, M. (2008). Assessing Golfer Performance Using Golfmetrics. In Science and Golf V: Proceedings of the 2008 World Scientific Congress of Golf, pp. 253-262.",
+    "url": "http://www.columbia.edu/~mnb2/broadie/Assets/broadie_wscg_v_200804.pdf",
+    "retrieved": "2026-09-06",
+    "note": "Groups are SCORE-RANGE groups, not exact handicaps: Pro1 64-71, Pro2 72-79, Am1 70-83 (low-handicap ams), Am2 84-97 (middle), Am3 98-120 (high). ~40,000 shots, 500 rounds, 130+ golfers, 2005-2007. Values transcribed verbatim from Tables 1-4 and Eq. 2."
+  },
+  "groups": ["Pro1", "Pro2", "Am1", "Am2", "Am3"],
+  "groupScoreRanges": {"Pro1": [64, 71], "Pro2": [72, 79], "Am1": [70, 83], "Am2": [84, 97], "Am3": [98, 120]},
+  "table1": {
+    "_desc": "Putting, sand game and long tee shots. Pro row combines Pro1+Pro2 (64-79).",
+    "onePutt50PctDistanceFt": {"Pro": 8.2, "Am1": 5.8, "Am2": 5.1, "Am3": 3.8},
+    "avgTwoPuttDistanceFt": {"Pro": 30, "Am1": 25, "Am2": 19, "Am3": 12},
+    "sandSavePct": {"Pro": 50, "Am1": 26, "Am2": 17, "Am3": 7},
+    "sandMedianFrlPct": {"Pro": 16, "Am1": 30, "Am2": 40, "Am3": 49},
+    "teeDistanceP75Yds": {"Pro": 297, "Am1": 248, "Am2": 237, "Am3": 216},
+    "teeDirectionStdevDeg": {"Pro": 4.0, "Am1": 5.4, "Am2": 6.4, "Am3": 8.1}
+  },
+  "table2": {
+    "_desc": "Short game (20-60 yds) and long game (100-150 yds).",
+    "green20to60FwyPct": {"Pro1": 96, "Pro2": 95, "Am1": 93, "Am2": 81, "Am3": 75},
+    "green20to60RoughPct": {"Pro1": 87, "Pro2": 80, "Am1": 86, "Am2": 72, "Am3": 64},
+    "medianFrl20to60FwyPct": {"Pro1": 7.3, "Pro2": 9.4, "Am1": 13.8, "Am2": 16.9, "Am3": 20.3},
+    "medianFrl20to60RoughPct": {"Pro1": 12.9, "Pro2": 15.3, "Am1": 15.4, "Am2": 21.0, "Am3": 25.6},
+    "green100to150FwyPct": {"Pro1": 85, "Pro2": 77, "Am1": 63, "Am2": 46, "Am3": 25},
+    "green100to150RoughPct": {"Pro1": 63, "Pro2": 46, "Am1": 53, "Am2": 34, "Am3": 25},
+    "medianFrl100to150FwyPct": {"Pro1": 5.4, "Pro2": 5.8, "Am1": 8.7, "Am2": 12.0, "Am3": 17.3},
+    "medianFrl100to150RoughPct": {"Pro1": 11.1, "Pro2": 12.8, "Am1": 10.4, "Am2": 13.5, "Am3": 18.4}
+  },
+  "table3": {
+    "_desc": "Exceptional shots per 18 holes, excluding putts. Awful: shot value < -0.8; great: > +0.8.",
+    "awfulShotsPerRound": {"Pro1": 0.1, "Pro2": 0.6, "Am1": 1.9, "Am2": 4.1, "Am3": 9.3},
+    "greatShotsPerRound": {"Pro1": 1.4, "Pro2": 0.7, "Am1": 0.6, "Am2": 0.3, "Am3": 0.2},
+    "awfulShotsBenchmarkEq": "A = 0.24 * score - 17.1"
+  },
+  "table4": {
+    "_desc": "Total shot value vs scratch per 18-hole round by game area. Long game = shots >100y to target; short game = <100y excl. sand; sand = <50y from sand.",
+    "putting": {"Pro1": 1.4, "Pro2": -0.4, "Am1": -0.8, "Am2": -2.3, "Am3": -5.1},
+    "longGame": {"Pro1": 7.1, "Pro2": 5.0, "Am1": -2.2, "Am2": -9.3, "Am3": -17.5},
+    "shortGame": {"Pro1": 0.6, "Pro2": -0.5, "Am1": -0.8, "Am2": -3.4, "Am3": -7.3},
+    "sandGame": {"Pro1": 0.5, "Pro2": 0.2, "Am1": -0.2, "Am2": -0.6, "Am3": -1.1},
+    "total": {"Pro1": 9.6, "Pro2": 4.3, "Am1": -4.0, "Am2": -15.5, "Am3": -31.0}
+  }
+}
