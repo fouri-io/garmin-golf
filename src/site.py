@@ -436,7 +436,7 @@ TEMPLATE = r"""<!doctype html>
     <div class="hero">
       <div class="herocol"><div class="lab">Scoring · over rating <span class="pill" id="winpill"></span></div>
         <div class="big" id="score">—</div><div class="sub" id="scoresub"></div></div>
-      <div class="herocol hdcp"><div class="lab">Handicap diff</div>
+      <div class="herocol hdcp"><div class="lab">Avg differential</div>
         <div class="big" id="hdiff">—</div><div class="sub" id="hdiffsub"></div></div></div>
     <div class="card lever"><h2>SG 0–100 · leverage number
         <span class="mut" style="text-transform:none;font-weight:400;letter-spacing:0"> — 100yd &amp; in, no putts · where scores move</span></h2>
