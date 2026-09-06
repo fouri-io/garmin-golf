@@ -1,17 +1,17 @@
 # Insights — how is my golf changing?
 
-Your scoring has improved primarily by raising your floor: bad rounds are 10 strokes better than when tracking began, your best golf is 7 strokes better, and your round-to-round range has narrowed from 16 to 13 strokes.
+Your scoring has improved primarily by raising your floor: bad rounds are 6 strokes better than when tracking began, your best golf is 3 strokes better, and your round-to-round range has narrowed from 7 to 5 strokes.
 
-Cone (rolling 16 rounds, score vs course rating, per 18 (all rated rounds, every source)):
-  ceiling 21.4 → 14.4 · median 30.9 → 25.3 · floor 37.8 → 27.8 · gap 16.4 → 13.4
+Cone (rolling 16 rounds, score vs course rating — 18-hole regulation rounds only (rate trends still use every round)):
+  ceiling 30.2 → 26.9 · median 31.8 → 29.5 · floor 37.5 → 31.8 · gap 7.3 → 4.9
 
 ## What changed
-- [Development · High confidence] Your scoring floor (bad-but-normal golf) has improved 10 strokes — blow-up rounds now land near +28 instead of +38.
 - [Miss pattern · High confidence] Short-right is your dominant mid-iron miss: across 348 6i–9i approaches, 78% finish short and 44% miss right. One more club and a start line adjustment attack both.
-- [Development · High confidence] Your ceiling has improved 7 strokes — your best golf now runs about +14 vs rating.
-- [Reliability · Moderate confidence] Your raw 13-stroke gap overstates inconsistency: 7 of your last 16 rounds are 9-holers whose per-18 doubling doubles their noise. Noise-adjusted, your consistency gap is ~10 strokes — wider than typical for your scoring level (population: ~8).
+- [Reliability · Moderate confidence] Your 18-hole consistency is a strength: drift-adjusted, your round-to-round gap is ~3 strokes vs ~8 for a typical golfer at your level. Improvement for you means moving the whole cone down, not narrowing it.
+- [Development · High confidence] Your scoring floor (bad-but-normal golf) has improved 6 strokes — blow-up rounds now land near +32 instead of +38.
 - [Scoring structure · High confidence] Penalties are down from 2.3 to 1.2 per 18 over your last 10 rounds — one of the cleanest floor-raisers there is.
 - [Scoring structure · High confidence] Bogey-or-better holes have risen from 67% to 73% over your last 10 rounds.
+- [Clubs · High confidence] Your on-course Driver median is 204 yards over 225 stock swings (typical window 174–228). Trust the median, not the best strike.
 
 ## Floor drivers (last 10 vs previous 10)
 - Penalties /18: 2.3 → 1.2 (improving)

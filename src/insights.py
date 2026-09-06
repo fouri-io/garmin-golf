@@ -165,7 +165,12 @@ def build(write: bool = True) -> dict:
     progress = json.loads(PROGRESS.read_text()) if PROGRESS.exists() else {}
     club_doc = json.loads(CLUB_STATS.read_text()) if CLUB_STATS.exists() else {"clubs": []}
 
-    over = [r["over18"] for r in rounds]
+    # The cone measures SCORING LEVEL, so it uses 18-hole regulation rounds only —
+    # matching the Outcome layer's headline scope. Doubled 9-hole scores carry ~1.4x
+    # the noise and (here) a course-fit skew that fakes the ceiling. Rate-based trend
+    # metrics below still use every round: 9-hole golf is real evidence for rates.
+    reg = [r for r in rounds if r["holes"] >= 18]
+    over = [r["over18"] for r in reg]
     series = cone_series(over)
     fulls = [p for p in series if p["full"]]
     cur = fulls[-1] if fulls else None
@@ -175,12 +180,12 @@ def build(write: bool = True) -> dict:
     if cur and first:
         current = {"ceiling": cur["p20"], "median": cur["p50"], "floor": cur["p80"],
                    "gap": round(cur["p80"] - cur["p20"], 1),
-                   "gapAdjusted": adjusted_gap(rounds, cur["i"]),
-                   "date": rounds[cur["i"]]["date"]}
+                   "gapAdjusted": adjusted_gap(reg, cur["i"]),
+                   "date": reg[cur["i"]]["date"]}
         start = {"ceiling": first["p20"], "median": first["p50"], "floor": first["p80"],
                  "gap": round(first["p80"] - first["p20"], 1),
-                 "gapAdjusted": adjusted_gap(rounds, first["i"]),
-                 "date": rounds[first["i"]]["date"]}
+                 "gapAdjusted": adjusted_gap(reg, first["i"]),
+                 "date": reg[first["i"]]["date"]}
 
     # ---- top-of-page summary (deterministic) ----
     summary = "Not enough rated rounds yet to judge the cone — keep playing."
@@ -203,7 +208,7 @@ def build(write: bool = True) -> dict:
 
     # ---- candidate insights ----
     cands: list[dict] = []
-    n_rounds = len(rounds)
+    n_rounds = len(reg)
     if current and start:
         lt = round(start["median"] - current["median"], 1)
         if abs(lt) >= 2:
@@ -292,16 +297,21 @@ def build(write: bool = True) -> dict:
         raw_g, adj_g = current["gap"], current["gapAdjusted"]
         h_est = max(0.0, (current["median"] - 3.9) / 1.09)
         pop_gap = round(1.683 * (3.13 + 0.08 * h_est), 1)
-        if raw_g - adj_g >= 2:
-            n9 = sum(1 for r in rounds[-CONE_WINDOW:] if r["holes"] < 18)
-            verdict = ("typical" if abs(adj_g - pop_gap) <= 1.5 else
-                       "tighter than typical" if adj_g < pop_gap else "wider than typical")
+        verdict = ("typical" if abs(adj_g - pop_gap) <= 1.5 else
+                   "tighter than typical" if adj_g < pop_gap else "wider than typical")
+        if adj_g <= pop_gap - 1.5:
             cands.append(_cand("Reliability",
-                f"Your raw {raw_g:.0f}-stroke gap overstates inconsistency: {n9} of your "
-                f"last {CONE_WINDOW} rounds are 9-holers whose per-18 doubling doubles "
-                f"their noise. Noise-adjusted, your consistency gap is ~{adj_g:.0f} strokes "
-                f"— {verdict} for your scoring level (population: ~{pop_gap:.0f}).",
-                (raw_g - adj_g) / 5, CONE_WINDOW, 1.15))
+                f"Your 18-hole consistency is a strength: drift-adjusted, your "
+                f"round-to-round gap is ~{adj_g:.0f} strokes vs ~{pop_gap:.0f} for a "
+                f"typical golfer at your level. Improvement for you means moving the "
+                f"whole cone down, not narrowing it.", (pop_gap - adj_g) / 4,
+                CONE_WINDOW, 1.15))
+        elif raw_g - adj_g >= 2:
+            cands.append(_cand("Reliability",
+                f"Your raw {raw_g:.0f}-stroke gap partly reflects improvement drift "
+                f"inside the window; detrended, your consistency gap is ~{adj_g:.0f} "
+                f"strokes — {verdict} for your scoring level (population: "
+                f"~{pop_gap:.0f}).", (raw_g - adj_g) / 5, CONE_WINDOW, 1.1))
     cands.sort(key=lambda x: -x["score"])
     insights = cands[:6]
 
@@ -371,15 +381,16 @@ def build(write: bool = True) -> dict:
 
     doc = {
         "generatedFromRounds": n_rounds,
-        "basis": "score vs course rating, per 18 (all rated rounds, every source)",
+        "basis": "score vs course rating — 18-hole regulation rounds only "
+                 "(rate trends still use every round)",
         "window": CONE_WINDOW,
         "summary": summary,
         "current": current,
         "start": start,
         "cone": {
             "rounds": [{"date": r["date"], "v": r["over18"], "src": r["source"]}
-                       for r in rounds],
-            "points": [{"date": rounds[p["i"]]["date"], **{k: p[k] for k in
+                       for r in reg],
+            "points": [{"date": reg[p["i"]]["date"], **{k: p[k] for k in
                         ("i", "p20", "p50", "p80", "full")}} for p in series],
         },
         "benchmarks": benchmarks,

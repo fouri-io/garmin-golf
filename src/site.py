@@ -469,10 +469,10 @@ TEMPLATE = r"""<!doctype html>
     <div class="card"><h2>Your game right now</h2>
       <div class="foot" id="inssum" style="font-size:13.5px;color:var(--ink);line-height:1.5;margin-bottom:10px"></div>
       <div class="tiles" style="margin-bottom:0" id="instiles"></div></div>
-    <div class="card"><h2>Performance cone<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">rolling 16 rounds · score vs rating /18 · lower is better</span></h2>
+    <div class="card"><h2>Performance cone<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">rolling 16 rounds · 18-hole rounds · score vs rating · lower is better</span></h2>
       <div class="ochartwrap"><svg id="conesvg" viewBox="0 0 880 320" width="100%"></svg><div class="otip" id="conetip"></div></div>
       <div class="mixlegend"><span><i class="cl-ceil"></i>ceiling (best 20%)</span><span><i class="cl-med"></i>median</span><span><i class="cl-floor"></i>floor (worst 20%)</span><span><i class="cl-dot"></i>rounds</span><span><i class="cl-tgt"></i>target path (modeled)</span></div>
-      <div class="foot" id="conefoot" style="margin-top:4px">Improvement moves the cone down. Mastery narrows it. Dashed = forming estimate (under 16 rounds); solid = full evidence. 9-hole rounds are doubled to per-18 and carry ~1.4× the noise — the gap tile also shows a noise-adjusted figure. Target cones on the right are modeled from real population data (Arccos scoring distributions by index — a golfer's typical round runs ~4–6 over their index, and spread narrows with skill), not measurements of you.</div></div>
+      <div class="foot" id="conefoot" style="margin-top:4px">Improvement moves the cone down. Mastery narrows it. Dashed = forming estimate (under 16 rounds); solid = full evidence. 18-hole regulation rounds only — 9-hole rounds still feed the rate trends below, but not the scoring cone. Target cones on the right are modeled from real population data (Arccos scoring distributions by index — a golfer's typical round runs ~4–6 over their index, and spread narrows with skill), not measurements of you.</div></div>
     <div class="card"><h2>What changed</h2><div id="inscards"></div></div>
     <div class="card"><h2>Why your floor is moving<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">last 10 vs previous 10</span></h2>
       <div id="insdrivers" style="overflow-x:auto"></div></div>
