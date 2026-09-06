@@ -941,9 +941,23 @@ function renderCoach(){
       '<div class="foot">No coach reports yet. Set <code>ANTHROPIC_API_KEY</code> in .env, then run <code>python -m src.update &lt;id&gt; --coach</code> (or just pull a round).</div>';
     return;}
   sel.style.display='';
-  if(!sel.dataset.init){sel.innerHTML=reps.map((r,i)=>`<option value="${i}">${r.date} round</option>`).join("");
-    sel.dataset.init=1;sel.onchange=e=>{document.getElementById('coachReport').innerHTML=md(reps[+e.target.value].text);};}
-  document.getElementById('coachReport').innerHTML=md(reps[0].text);
+  const RB={};(DATA.rounds||[]).forEach(r=>RB[r.stem]=r);
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const short=c=>c.split('~')[0].replace(/\s+Golf (Course|Club|Campus)\s*$/,'').trim();
+  const show=i=>{const rep=reps[i],rd=RB[rep.stem];let head;
+    if(rd){const o=rd.overRating18!=null?` · +${rd.overRating18.toFixed(1)}/18 vs rating`:'';
+      head=`<h2 style="margin:0 0 2px">${esc(rd.course)}</h2>`+
+        `<div class="foot" style="margin:0 0 12px">${rep.date} · ${rd.score}`+
+        `${rd.holes<18?` (${rd.holes} holes)`:''}${o}</div>`;}
+    else head=`<h2 style="margin:0 0 12px">${rep.date}</h2>`;
+    document.getElementById('coachReport').innerHTML=head+md(rep.text);};
+  if(!sel.dataset.init){
+    sel.innerHTML=reps.map((r,i)=>{const rd=RB[r.stem];
+      const lbl=rd?`${r.date} · ${esc(short(rd.course))} · ${rd.score}${rd.holes<18?' (9)':''}`
+                  :`${r.date} round`;
+      return `<option value="${i}">${lbl}</option>`;}).join("");
+    sel.dataset.init=1;sel.onchange=e=>show(+e.target.value);}
+  show(+sel.value||0);
 }
 
 
