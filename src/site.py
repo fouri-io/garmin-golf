@@ -575,7 +575,7 @@ function renderProgress(){
     `potential +${P.scoring.potentialOverRating18} · Break 90 = +${P.scoring.break90OverRating} · authoritative`;
   document.getElementById('hdiff').textContent=sc.handicapDiff==null?"—":sc.handicapDiff.toFixed(1);
   document.getElementById('hdiffsub').textContent=
-    P.scoring.handicapIndexEst==null?"":`est. 18-hole index ${P.scoring.handicapIndexEst}`;
+    P.scoring.handicapIndexEst==null?"":`est. 18-hole handicap index ${P.scoring.handicapIndexEst}`;
   ['thisRound','last5','allTime'].forEach(w=>{
     const lv=lever(w,base),cell=document.querySelector(`#lev3 [data-w="${w}"]`),v=cell.querySelector('.wv');
     v.textContent=fmt(lv);v.className="wv "+(lv===null?"mut":lv>=0?"pos":"neg");
