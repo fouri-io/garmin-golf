@@ -40,24 +40,49 @@ any code.*
   front, evolving from (not discarding) the current generator. The single-file
   inlined-data PWA remains the single-tenant mode.
 
-## The four hard problems (ranked — the analytics are NOT on this list)
-1. **Garmin acquisition.** Unofficial API: rate-limits datacenter IPs (pull-at-home is a
-   documented constraint), needs per-user credentials + MFA, and hosting it for others
-   is a different ToS/liability posture than personal use. NEVER take custody of other
-   users' Garmin passwords. Options: per-user edge/home puller agent; manual upload
-   (the 18Birdies screenshot backfill + validator is a working prototype of this);
-   official Garmin developer program (approval, limited golf endpoints). Decide this
-   FIRST; design manual upload as the universal fallback so the product works with zero
-   integrations.
-2. **Auth on a static-first product** (see architecture above).
-3. **LLM cost + coach identity.** Coach prompt is currently Colby-tuned (priorities,
+## Connector architecture (Colby's correction, 2026-09-12 — supersedes "Garmin
+## acquisition is the existential risk")
+The canonical layer already killed the Garmin dependency: Steve runs The Turn on data
+pulled directly from 18Birdies (less rich, fully operational). Data acquisition is a
+**connector model**, home-grown or first-class, all writing raw snapshots into the
+tenant's prefix:
+- **Garmin edge agent** — Colby's mac mini keeps pulling (home IP; rate limits and
+  creds stay at the user's edge), but its only job becomes uploading raw JSON to
+  `s3://<bucket>/users/<id>/raw/` (a per-user raw/snapshot inbox meant for processing).
+- **18Birdies connector** — Steve's path; second first-class connector.
+- **Manual upload** — universal fallback (the 18Birdies screenshot backfill + validator
+  is the working prototype). Product works with zero integrations.
+Rule stands: NEVER take custody of other users' source credentials server-side —
+connectors that need creds run at the user's edge.
+
+## Target runtime (decided: AWS, serverless, nearly-static)
+- **Compute:** "Generate" = a pipeline Lambda (container image — duckdb wheel) running
+  ingest → derive → export → per-user site JSON. Data is tiny; a full rebuild is
+  seconds. Triggers: S3 event on the tenant's raw/annotations prefix, or an
+  authenticated button invoke. The mac mini stops being the orchestrator.
+- **Write path without abandoning static:** annotation web form on the static site
+  POSTs to a Lambda Function URL / API Gateway that validates and writes the narrative
+  file to the tenant prefix — files-as-truth preserved; ~two Lambdas total
+  (submit-annotation, generate) is the whole dynamic surface at first.
+- **Durability:** per-tenant data moves from git to a VERSIONED S3 bucket — same
+  immutable-audit property, right tool for multi-tenant. (This repo's git history
+  remains the story for Colby's own data until migration.)
+- **Read path:** per-user generated JSON + shared responsive app shell behind
+  CloudFront with auth (Cognito or similar; signed cookies for per-user artifacts).
+
+## Remaining hard problems (analytics still not on the list)
+1. **Auth on a static-first product** (see target runtime above).
+2. **LLM cost + coach identity.** Coach prompt is currently Colby-tuned (priorities,
    pronouns, Q-plan). `golfer_profile.md` becomes each tenant's editable living spec
    driving personalization — that IS the flagship feature for Steve/Mike. Per-user cost
-   controls and key ownership from day one.
-4. **Annotation UX.** Move in-app but keep file-backed (web form writes the narrative
-   file to the tenant prefix — files-as-truth preserved). Practice plans = the
-   generalization of the existing focus-card adherence loop (focus.json → graded next
-   report → rendered card).
+   controls and key ownership from day one; the coach Lambda is the metering point.
+3. **Annotation UX.** Web-form → file (above). Practice plans = the generalization of
+   the existing focus-card adherence loop (focus.json → graded next report → rendered
+   card).
+4. **Connector richness tiers.** Canon must degrade gracefully by source richness
+   (Garmin: shot-level GPS; 18Birdies: hole-level) — coverage badges and metric
+   availability per source are already the house pattern; formalize per-connector
+   capability flags.
 
 ## Phasing
 - **A — multi-user before multi-tenant (pure refactor, no product risk):** parametrize
@@ -82,11 +107,18 @@ any code.*
 - Don't let per-tenant customization fork the analytics definitions (one SG model, one
   cone definition, one benchmark config — tenant config selects targets, not math).
 
+## Answered at pre-kickoff (2026-09-12)
+- ~~Garmin strategy~~ → connector model; Garmin = edge agent uploading to S3; 18Birdies
+  proven by Steve; manual upload as fallback. Not a limiting factor.
+- ~~Hosting~~ → AWS, serverless/nearly-static: pipeline Lambda + form-to-file Lambda;
+  mac mini demoted to a connector.
+
 ## Open questions for Colby (answer at vNext2 kickoff)
-1. Garmin strategy: edge agent vs manual upload vs official program — which first?
-2. Hosting/runtime preference (stay AWS/S3+CloudFront? add a small server? serverless?)
-3. Is Steve a design partner (his fork = migration test case #1)?
-4. Business posture: free for friends, or billing from the start (affects LLM cost
+1. Is Steve a design partner (his fork = migration test case #1, and his 18Birdies
+   puller = candidate first-class connector)?
+2. Business posture: free for friends, or billing from the start (affects LLM cost
    design and auth choice)?
-5. Practice plans: what does one look like on paper today? (Get a real example before
+3. Practice plans: what does one look like on paper today? (Get a real example before
    designing the feature.)
+4. Auth provider preference (Cognito vs a third party like Clerk/Auth0) — the one
+   remaining runtime choice that shapes Phase B.
