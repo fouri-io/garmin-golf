@@ -69,6 +69,26 @@ connectors that need creds run at the user's edge.
   remains the story for Colby's own data until migration.)
 - **Read path:** per-user generated JSON + shared responsive app shell behind
   CloudFront with auth (Cognito or similar; signed cookies for per-user artifacts).
+- **Mobile: PWA first, Capacitor wrap when accounts exist.** Phase B's app shell ships
+  as a proper PWA (manifest + service worker; installable, iOS push works since 16.4) —
+  zero store friction for Steve/Mike-scale testing. App Store presence = wrap the same
+  web app in Capacitor once auth exists (Apple guideline 4.2 needs it to be app-like:
+  offline support, push for "round processed / coach report ready", Sign in with
+  Apple). Design the shell for this from day one: same generated artifacts serve web,
+  PWA, and the native shell — the App Store is a packaging decision, not an
+  architecture one. Native (SwiftUI/RN) only if on-course use, Watch, or HealthKit
+  later earn it. Keep billing on the web; the app is a client.
+
+## Positioning (vs Arccos / Shot Scope — agreed 2026-09-13)
+They are measurement products (hardware capture, huge population benchmarks, polish);
+do not compete on measurement. The Turn is a longitudinal coaching system, and the
+moat is what their architecture can't copy: (1) a coach with memory + accountability
+(course memory, prescription grading, the adherence loop); (2) the player's own words
+as first-class data (intent-aware stats sensors can't have); (3) interpretability as a
+product value (honest scoping, rating-leveling, cited benchmarks); (4) source-agnostic,
+no hardware tax (the connector model — Steve onboarded with what he already had).
+One-liner: they tell you what happened; The Turn remembers who you are, tells you why
+it happened, and checks whether you did the work.
 
 ## Remaining hard problems (analytics still not on the list)
 1. **Auth on a static-first product** (see target runtime above).
