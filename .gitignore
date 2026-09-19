@@ -34,3 +34,6 @@ data/processed/coach/latest.md
 
 # Screenshot drop folder (inbox; curated copies live in data/raw/18birdies/screenshots)
 raw-input/
+
+# Agent worktrees (builder subagents work in isolated checkouts here) — disposable
+.claude/worktrees/
