@@ -63,10 +63,17 @@ analytics; explicitly do NOT adopt his weaknesses.
 3. **Extend range:** add 170-200 and 200-250 display bins (long approaches + par-5
    seconds; expect very low zone% — that IS the insight). 10y detail bins behind
    expand up to 200; 200-250 stays one bin.
-4. **Explicitly not adopted** (document, don't build): mean/avg columns (skew-poisoned
+4. **Table as the primary layout (adopt his tabular presentation):** replace the
+   heat-strip-first design with an always-visible compact table — Bin | Green Zone %
+   | n | median leave — with the Zone% cell heat-tinted (the strip's color gradient
+   moves INTO the table). Numbers visible without interaction, like Steve's. Only the
+   deep anatomy (miss directions, per-club rows, from-lie mix) stays behind
+   tap/expand per row.
+5. **Explicitly not adopted** (document, don't build): mean/avg columns (skew-poisoned
    — median only, house rule); last-N round window toggle (busy-ness; revisit in app
    shell v2 — we keep 90 days with rounds count visible).
-Gate: v1 gate plus the verdict line present in both card and md export.
+Gate: v1 gate plus the verdict line present in both card and md export, and the
+summary table rendering with visible numbers (no interaction required to read Zone%).
 
 ## Architecture rules
 - Derived layer only (SQL view derived.approach_ladder or insights.py compute —
