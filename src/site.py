@@ -313,7 +313,7 @@ TEMPLATE = r"""<!doctype html>
      svg.parentNode.clientWidth, which collapses under ~500px in headless Chrome. A
      flex strip never measures anything, so it renders the same at any width. Cell
      width is proportional to the bin's yardage span, so the strip is honest. */
-  .ladstrip{display:flex;gap:4px;min-width:460px}
+  .ladstrip{display:flex;gap:4px;min-width:420px}
   .ladcell{border-radius:6px;padding:8px 3px;text-align:center;cursor:pointer;
     border:1px solid transparent}
   .ladcell.on{border-color:var(--accent)}
@@ -322,9 +322,16 @@ TEMPLATE = r"""<!doctype html>
   .ladcell .ln{font-size:9.5px;color:var(--muted)}
   .ladcell.thin{background:#ecefe9}
   .ladcell.thin .lv{font-size:10.5px;font-weight:600;color:var(--muted)}
-  .laddet{display:flex;gap:3px;min-width:440px;margin:10px 0 4px}
+  .laddet{display:flex;gap:3px;min-width:260px;margin:10px 0 4px}
   .laddet .ladcell{padding:6px 2px}
   .laddet .ladcell .lv{font-size:13px}
+  /* The anatomy must never clip on a phone. dtab is nowrap by design (the floor-driver
+     table is short), but the lie mix and the per-club miss column are long sentences —
+     here they wrap and reflow instead. overflow-x is the backstop: whatever still can't
+     fit scrolls rather than disappearing. */
+  #ladanat{overflow-x:auto}
+  #ladanat table.dtab td{white-space:normal}
+  #ladanat table.dtab td:first-child{white-space:nowrap}
   .gzband{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin:0 0 10px;
     padding:10px 12px;border-radius:6px;background:#eef2ec}
   .gzband .gzl{font-size:10px;text-transform:uppercase;letter-spacing:.05em;
