@@ -50,6 +50,24 @@ Approach play into the green is the #1 measured leak (worst SG buckets; Green Zo
 - The cliff starts at 150 (not 160): zone 27%→10% across 150–170.
 - 110–120 is the mid-range hole (~27–29% zone); 100y is the best window (50%).
 
+## v1.1 — Presentation follow-up (approved 2026-09-19; adoptions from Steve's fork)
+Small job on top of the shipped v1. Adopt his presentation strengths, keep our
+analytics; explicitly do NOT adopt his weaknesses.
+1. **Verdict line** at the top of the card AND approach_ladder.md: one deterministic
+   sentence (computed template, never LLM): "{gz}% Green Zone — {up/down X pts vs
+   prior window}. {solid-range summary}; {weak-range summary}." The reading before
+   any table.
+2. **Trust-scope chip** on the card: "real pins · {pinCoveragePct}% of holes ·
+   n={n} · {rounds} rounds". Data-honesty label, per-connector-ready (a tenant on a
+   pinless source would see "green-hit only · no pin data" — vNext2 capability flags).
+3. **Extend range:** add 170-200 and 200-250 display bins (long approaches + par-5
+   seconds; expect very low zone% — that IS the insight). 10y detail bins behind
+   expand up to 200; 200-250 stays one bin.
+4. **Explicitly not adopted** (document, don't build): mean/avg columns (skew-poisoned
+   — median only, house rule); last-N round window toggle (busy-ness; revisit in app
+   shell v2 — we keep 90 days with rounds count visible).
+Gate: v1 gate plus the verdict line present in both card and md export.
+
 ## Architecture rules
 - Derived layer only (SQL view derived.approach_ladder or insights.py compute —
   architect's call); constants/config per house convention; no schema change to canon.
