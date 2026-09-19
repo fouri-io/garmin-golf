@@ -89,10 +89,12 @@ def build() -> Path:
     clubs = json.loads((PROCESSED / "club_stats.json").read_text())
     ins_p = PROCESSED / "insights.json"
     insights = json.loads(ins_p.read_text()) if ins_p.exists() else None
+    lad_p = PROCESSED / "approach_ladder.json"
+    ladder = json.loads(lad_p.read_text()) if lad_p.exists() else None
     rounds = sorted((_compact_round(Path(p)) for p in glob.glob(str(ROUNDS_DIR / "*.json"))),
                     key=lambda r: r["date"], reverse=True)
     data = {"progress": progress, "clubs": clubs, "rounds": rounds,
-            "insights": insights, "coach": _coach_reports()}
+            "insights": insights, "ladder": ladder, "coach": _coach_reports()}
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     html = TEMPLATE.replace("/*__DATA__*/null", json.dumps(data))
     out = OUT_DIR / "index.html"
@@ -307,6 +309,27 @@ TEMPLATE = r"""<!doctype html>
   table.dtab td,table.dtab th{white-space:nowrap;padding:6px 0 6px 18px;text-align:right;border-top:1px solid var(--line)}
   table.dtab th{border-top:0;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
   table.dtab td:first-child,table.dtab th:first-child{text-align:left;padding-left:0;font-weight:600}
+  /* Approach Ladder: flex DOM, deliberately NOT an SVG chart — the cone scales off
+     svg.parentNode.clientWidth, which collapses under ~500px in headless Chrome. A
+     flex strip never measures anything, so it renders the same at any width. Cell
+     width is proportional to the bin's yardage span, so the strip is honest. */
+  .ladstrip{display:flex;gap:4px;min-width:460px}
+  .ladcell{border-radius:6px;padding:8px 3px;text-align:center;cursor:pointer;
+    border:1px solid transparent}
+  .ladcell.on{border-color:var(--accent)}
+  .ladcell .lb{font-size:10px;color:var(--muted);letter-spacing:.03em;white-space:nowrap}
+  .ladcell .lv{font-size:17px;font-weight:700;margin:2px 0;font-variant-numeric:tabular-nums}
+  .ladcell .ln{font-size:9.5px;color:var(--muted)}
+  .ladcell.thin{background:#ecefe9}
+  .ladcell.thin .lv{font-size:10.5px;font-weight:600;color:var(--muted)}
+  .laddet{display:flex;gap:3px;min-width:440px;margin:10px 0 4px}
+  .laddet .ladcell{padding:6px 2px}
+  .laddet .ladcell .lv{font-size:13px}
+  .gzband{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin:0 0 10px;
+    padding:10px 12px;border-radius:6px;background:#eef2ec}
+  .gzband .gzl{font-size:10px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--accent);font-weight:700}
+  .gzband .gzv{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
   .wchip{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
     background:#e9efe7;color:var(--accent);border-radius:4px;padding:2px 8px;
     margin:0 8px;vertical-align:1px;white-space:nowrap;display:inline-block}
@@ -468,6 +491,7 @@ TEMPLATE = r"""<!doctype html>
       <div class="foot" id="puttfoot" style="margin-top:6px"></div></div>
     <div class="secdiv"><i class="n">3</i><b>Process</b><span>why — did I keep normal golf?</span></div>
     <div class="card"><h2>Priority metrics</h2>
+      <div id="gzband"></div>
       <div id="procbox" style="overflow-x:auto"></div>
       <div class="foot" style="margin-top:6px">Counts, not vibes: each cell shows the window value with its sample size. Clean-2nd-shot, recovery and normal-approach rows need annotated rounds — they fill in as post-round notes are added.</div></div>
   </div>
@@ -480,6 +504,11 @@ TEMPLATE = r"""<!doctype html>
       <div class="ochartwrap"><svg id="conesvg" viewBox="0 0 880 320" width="100%"></svg><div class="otip" id="conetip"></div></div>
       <div class="mixlegend"><span><i class="cl-ceil"></i>ceiling (best 20%)</span><span><i class="cl-med"></i>median</span><span><i class="cl-floor"></i>floor (worst 20%)</span><span><i class="cl-dot"></i>rounds</span><span><i class="cl-tgt"></i>target path (modeled)</span></div>
       <div class="foot" id="conefoot" style="margin-top:4px">Improvement moves the cone down. Mastery narrows it. Dashed = forming estimate (under 16 rounds); solid = full evidence. 18-hole regulation rounds only — 9-hole rounds still feed the rate trends below, but not the scoring cone. Target cones on the right are modeled from real population data (Arccos scoring distributions by index — a golfer's typical round runs ~4–6 over their index, and spread narrows with skill), not measurements of you.</div></div>
+    <div class="card" id="ladcard"><h2>Approach Ladder<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)" id="ladscope"></span></h2>
+      <div id="ladstrip" style="overflow-x:auto"></div>
+      <div class="foot" id="ladlegend" style="margin-top:6px"></div>
+      <div id="ladanat"></div>
+      <div class="foot" id="ladnote" style="margin-top:6px"></div></div>
     <div class="card"><h2>What changed</h2><div id="inscards"></div></div>
     <div class="card"><h2>Why your floor is moving<span style="float:right;text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">last 10 vs previous 10</span></h2>
       <div id="insdrivers" style="overflow-x:auto"></div></div>
@@ -745,6 +774,7 @@ const PM_ROWS=[
 const PM_WINS=["thisRound","last5","last10","last20","allTime"];
 const PM_WLAB={thisRound:"This",last5:"L5",last10:"L10",last20:"L20",allTime:"All"};
 function renderProcess(){
+  renderGreenZoneBand();
   const PMX=P.priorityMetrics; if(!PMX)return;
   const head=`<tr><th>Metric</th>${PM_WINS.map(w=>`<th>${PM_WLAB[w]}</th>`).join("")}</tr>`;
   const rows=PM_ROWS.map(([key,lab,kind])=>{
@@ -759,6 +789,22 @@ function renderProcess(){
   }).join("");
   document.getElementById('procbox').innerHTML=
     `<table class="putt proc"><thead>${head}</thead><tbody>${rows}</tbody></table>`;
+}
+/* Green Zone is the one priority metric whose window is DAYS, not rounds — it cannot
+   share the 5-round-window grid without silently claiming five windows it doesn't have,
+   so it gets its own scoped band above the table. */
+function renderGreenZoneBand(){
+  const el=document.getElementById('gzband'); if(!el)return;
+  const H=DATA.ladder&&DATA.ladder.headline;
+  if(!H||H.zone.pct==null){el.innerHTML='';return;}
+  const d=H.deltaPts, col=H.verdict==='improving'?'var(--good)':
+    H.verdict==='slipping'?'var(--bad)':'var(--muted)';
+  const arrow=H.verdict==='improving'?'▲':H.verdict==='slipping'?'▼':'→';
+  const trend=d==null?'':`<span style="color:${col};font-weight:700;font-size:12px">`+
+    `${arrow} ${d>0?'+':''}${d} pts vs ${H.prev.label} (${H.prev.pct}%, n=${H.prev.n})</span>`;
+  el.innerHTML=`<div class="gzband"><span class="gzl">${H.label}</span>`+
+    `<span class="foot">${H.scope}</span><span class="gzv">${H.zone.pct}%</span>`+
+    `<span class="foot">n=${H.zone.n}</span>${trend}</div>`;
 }
 function drawBars(vals){
   const host=document.getElementById('bars');host.querySelectorAll('.col').forEach(c=>c.remove());
@@ -1077,6 +1123,7 @@ function renderInsights(){
       (c.gapAdjusted!=null?` · ≈${c.gapAdjusted.toFixed(0)} noise-adj`:'')],
   ].map(([l,v,sub])=>`<div class="tile"><div class="lab">${l}</div><div class="v">${v}</div><div class="osub">${sub}</div></div>`).join('');
   drawCone(I);
+  renderLadder();
   document.getElementById('inscards').innerHTML=I.insights.map(x=>
     `<div class="inscard"><div class="ic-top"><span class="ic-cat">${x.cat}</span>`+
     `<span class="ic-conf${x.confidence==='Emerging signal'?' em':''}">${x.confidence}</span></div>`+
@@ -1092,6 +1139,74 @@ function renderInsights(){
   document.getElementById('inspri').innerHTML=I.priorities.map((x,i)=>
     `<div class="pri"><span class="n">${i+1}</span><div><b>${x.text}</b>`+
     `<div class="ev">${x.evidence}</div></div></div>`).join('');
+}
+/* ---- Approach Ladder (heat strip -> bin anatomy) ---- */
+const LAD_RAMP=['#f1d3d0','#f6e1cd','#edefdf','#d7e7d3','#bddfc2'];   /* bad -> good */
+function ladColor(p){
+  const t=Math.max(0,Math.min(0.999,(p-10)/35));   /* anchored on the observed range */
+  return LAD_RAMP[Math.floor(t*LAD_RAMP.length)];
+}
+function ladCell(b,cls){
+  const thin=b.provisional||b.zone.pct==null;
+  const bg=thin?'':`background:${ladColor(b.zone.pct)}`;
+  const val=thin?'too few<br>to rate':b.zone.pct+'%';
+  return `<div class="ladcell${thin?' thin':''} ${cls||''}" data-bin="${b.key}" `+
+    `style="flex:${b.hiYds-b.loYds};${bg}">`+
+    `<div class="lb">${b.label}</div><div class="lv">${val}</div>`+
+    `<div class="ln">n=${b.zone.n}</div></div>`;
+}
+let ladOpen=null;
+function renderLadder(){
+  const L=DATA.ladder, host=document.getElementById('ladstrip'); if(!host)return;
+  const card=document.getElementById('ladcard');
+  if(!L){card.style.display='none';return;}
+  card.style.display='';
+  document.getElementById('ladscope').textContent=L.scope;
+  document.getElementById('ladlegend').textContent=L.payoffAnchors.legend;
+  document.getElementById('ladnote').textContent=L.note;
+  host.innerHTML=`<div class="ladstrip">${L.bins.map(b=>ladCell(b)).join('')}</div>`;
+  host.onclick=e=>{const c=e.target.closest('.ladcell'); if(!c)return;
+    ladOpen=ladOpen===c.dataset.bin?null:c.dataset.bin;
+    host.querySelectorAll('.ladcell').forEach(x=>
+      x.classList.toggle('on',x.dataset.bin===ladOpen));
+    renderLadAnat();};
+  renderLadAnat();
+}
+function renderLadAnat(){
+  const el=document.getElementById('ladanat'), L=DATA.ladder;
+  const b=ladOpen&&L.bins.find(x=>x.key===ladOpen);
+  if(!b){el.innerHTML=`<div class="foot" style="margin-top:8px">Tap a bin for its `+
+    `anatomy — 10-yard detail, median leave, miss pattern, lies and clubs.</div>`;return;}
+  const m=b.miss, pay=b.payoffStrokes;
+  const row=(l,v)=>`<tr><td>${l}</td><td>${v}</td></tr>`;
+  const pc=v=>v==null?'—':v+'%';
+  const lies=b.fromLie.map(f=>`${f.lie} ${pc(f.zone.pct)} (n=${f.zone.n})`).join(' · ');
+  const clubs=b.clubs.map(c=>`<tr><td>${c.club}</td><td>${pc(c.zone.pct)} `+
+    `<span class="ln" style="color:var(--muted)">n=${c.zone.n}</span></td>`+
+    `<td>${c.medianLeaveYds==null?'—':c.medianLeaveYds.toFixed(1)+'y'}</td>`+
+    `<td>${pc(c.miss.shortPct)} short · ${pc(c.miss.rightPct)} right</td></tr>`).join('');
+  el.innerHTML=
+    `<div style="overflow-x:auto"><div class="laddet">`+
+      b.detail.map(d=>ladCell(d)).join('')+`</div></div>`+
+    `<table class="dtab" style="margin-top:6px"><tbody>`+
+      row('Green Zone',`${pc(b.zone.pct)} <span style="color:var(--muted)">n=${b.zone.n}</span>`)+
+      row('Inside 10 yards',`${pc(b.ring10.pct)} <span style="color:var(--muted)">n=${b.ring10.n}</span>`)+
+      row('Median leave',b.medianLeaveYds==null?'—':b.medianLeaveYds.toFixed(1)+'y')+
+      row('Cost to hole out',pay==null?'—':`${pay.strokes.toFixed(2)} strokes `+
+        `<span style="color:var(--muted)">n=${pay.n}</span>`)+
+      row('Miss (range)',`${pc(m.shortPct)} short · ${pc(m.longPct)} long `+
+        `<span style="color:var(--muted)">n=${m.n}</span>`)+
+      row('Miss (side)',`${pc(m.leftPct)} left · ${pc(m.rightPct)} right · `+
+        `${pc(m.straightPct)} straight`)+
+      row('From',lies||'—')+
+    `</tbody></table>`+
+    (clubs?`<table class="dtab" style="margin-top:8px"><thead><tr><th>Club</th>`+
+      `<th>Green Zone</th><th>Median leave</th><th>Miss</th></tr></thead>`+
+      `<tbody>${clubs}</tbody></table>`:'')+
+    `<div class="foot" style="margin-top:6px">${b.clubsBelowMin.shots} shot`+
+      `${b.clubsBelowMin.shots===1?'':'s'} from clubs with too few swings to rate `+
+      `(under n=${b.clubsBelowMin.minN}) or no club logged — counted in the bin, not `+
+      `broken out.</div>`;
 }
 function drawCone(I){
   const svg=document.getElementById('conesvg');

@@ -54,3 +54,19 @@ def sg_target() -> dict:
         "targetHandicap": sg.get("targetHandicap", 15),
         "weights": sg.get("handicapBucketWeights", _DEFAULT_WEIGHTS),
     }
+
+
+_LADDER_DEFAULTS = {"windowDays": 90, "bandYds": [60, 170],
+                    "displayBinEdges": [60, 80, 100, 125, 150, 170],
+                    "detailBinWidthYds": 10, "zoneRadiusYds": 15, "ringYds": [10, 15],
+                    "leaveClassEdgesYds": [15, 25], "excludeEndLie": ["TeeBox"],
+                    "minClubRowN": 5, "minBinN": 8, "minAnchorN": 8}
+
+
+def approach_ladder() -> dict:
+    """Approach Ladder / Green Zone tunables (window, bin edges, radii, coverage floors).
+    Defaults inline so a missing config block never breaks the pipeline."""
+    cfg = dict(_LADDER_DEFAULTS)
+    cfg.update({k: v for k, v in (_analysis_config().get("approachLadder") or {}).items()
+                if not k.startswith("_")})
+    return cfg

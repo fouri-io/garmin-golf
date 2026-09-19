@@ -108,3 +108,25 @@ def test_adjusted_gap_shrinks_nine_hole_noise():
     adj = adjusted_gap(rounds, CONE_WINDOW - 1)
     assert adj is not None and adj < raw_gap          # correction shrinks the spread
     assert adjusted_gap(rounds[:CONE_WINDOW - 1], CONE_WINDOW - 2) is None  # needs full window
+
+
+def test_ladder_candidates_are_scored_like_any_other():
+    from src.insights import _ladder_candidates
+    doc = {"findings": [
+        {"cat": "Approach ladder", "key": "cliff", "n": 82, "magnitude": 0.88,
+         "weight": 1.2, "text": "Your approach game falls off a cliff at 150 yards."},
+        {"cat": "Approach ladder", "key": "reach-swing", "n": 6, "magnitude": 0.2,
+         "text": "PW from 110-120 yards is a reach swing."}]}
+    cands = _ladder_candidates(doc)
+    assert [c["cat"] for c in cands] == ["Approach ladder"] * 2
+    # n drives confidence through the shared scorer — a thin finding stays emerging.
+    assert cands[0]["confidence"] == "High confidence"
+    assert cands[1]["confidence"] == "Emerging signal"
+    assert cands[0]["score"] == round(0.88 * _conf(82)[0] * 1.2 * 100)
+    assert cands[1]["score"] == round(0.2 * _conf(6)[0] * 1.0 * 100)   # weight defaults
+
+
+def test_ladder_candidates_no_op_without_a_ladder():
+    from src.insights import _ladder_candidates
+    assert _ladder_candidates(None) == []
+    assert _ladder_candidates({}) == []

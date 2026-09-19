@@ -7,6 +7,20 @@
     "_verifyNote": "After pushing, --push polls this URL until the live bytes match the build. A green git push only proves the Action was triggered, not that it deployed. Set to null to skip the check.",
     "verifyUrl": "https://colbyward.io/golf/index.html"
   },
+  "approachLadder": {
+    "_note": "Green Zone / Approach Ladder. windowDays scopes EVERY ladder stat (the 112-era golfer is not this golfer; all-time pollutes). zoneRadiusYds is the behaviorally-validated 15y circle — the player's own putter-next rate matches zone15 and his median fringe putt is ~14y, so his putter draws the circle. excludeEndLie drops next-tee GPS artifacts that shot_flags does not catch. This block is SHARED analytics definition, not per-tenant selection — vNext2 must not fork it per user. Changing any value rewrites history's interpretation the same way an SG bucket change does — flag it before editing.",
+    "windowDays": 90,
+    "bandYds": [60, 170],
+    "displayBinEdges": [60, 80, 100, 125, 150, 170],
+    "detailBinWidthYds": 10,
+    "zoneRadiusYds": 15,
+    "ringYds": [10, 15],
+    "leaveClassEdgesYds": [15, 25],
+    "excludeEndLie": ["TeeBox"],
+    "minClubRowN": 5,
+    "minBinN": 8,
+    "minAnchorN": 8
+  },
   "strokesGained": {
     "_note": "Distance cuts (yards to pin, off the green) for the non-tee, non-putt shot buckets: longApproach >= longApproachMinYds; midApproach between insideMaxYds and longApproachMinYds; inside50 <= insideMaxYds. headlineMaxYds defines the 'SG 0-100' leverage metric (everything that distance and in, excluding putts). Tune to how YOU think about your game.",
     "longApproachMinYds": 150,

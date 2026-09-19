@@ -62,6 +62,7 @@ gitignored because it is reproducible — git durability lives with the raw file
 | `export_rounds.py` | DB → round documents (schema v2, faithful superset + annotations). |
 | `analyze.py` | Cross-round `club_stats` (per physical clubId; excludes phantom/suspect/non-stock shots). |
 | `insights.py` | Deterministic development intelligence: Performance Cone (rolling p20/p50/p80 of score vs rating), ranked insight cards, floor drivers, priorities → `insights.{json,md}`. |
+| `ladder.py` | Approach Ladder & Green Zone (ADR #19): windowed approaches 60–170y binned by yardage over `derived.shot_play`, with payoff anchors, coverage badges and insight candidates → `approach_ladder.{json,md}`. Every cut is config, never DDL. |
 | `progress.py` | Dashboard data: 5 windows (this/5/10/20/all), SG, baselines, fine putting bands, priority metrics. |
 | `benchmarks.py` | Deterministic benchmark read: the player's DB-measured skills vs Broadie's published Golfmetrics skill-group tables (`config/benchmarks_broadie.json`, source-cited, transcribed verbatim) → `benchmarks.{json,md}`. |
 | `site.py` | Static site generator → `site/index.html` (data inlined, no fetch). |

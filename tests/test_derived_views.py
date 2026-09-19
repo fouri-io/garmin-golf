@@ -88,3 +88,34 @@ def test_putting_bands(ingested_db):
         "ORDER BY hole_number").fetchall()
     assert len(rows) == 2
     assert all(made is False for _, _, made in rows)  # both holes 2-putted
+
+
+def test_shot_play_holds_only_strokes_in_play(ingested_db):
+    rows = ingested_db.execute(
+        "SELECT shot_id, hole_number, play_order, hole_shot_count, to_pin_yds, "
+        "leave_yds, end_lie, next_club_type_id, strokes_to_finish, holed, has_pin "
+        "FROM derived.shot_play ORDER BY hole_number, play_order").fetchall()
+    # Putts and the 890m phantom transit are not strokes in play.
+    assert [r[0] for r in rows] == [90000000001, 90000000002, 90000000005]
+    assert rows[1][1:4] == (1, 2, 2)                  # the approach is the 2nd in play
+    assert rows[1][8] == 3 and rows[2][8] == 3        # scorecard strokes minus ordinal
+    assert all(r[9] is False for r in rows)           # both holes were 2-putted
+    assert all(r[10] is True for r in rows)           # both fixture holes have pins
+
+
+def test_shot_play_next_club_sees_the_putter(ingested_db):
+    # The putter-next diagnostic keys on club, so the sequence must span green putts —
+    # Garmin marks shot_type='PUTT' only from the green, so fringe putts read as chips.
+    nxt = dict(ingested_db.execute(
+        "SELECT shot_id, next_club_type_id FROM derived.shot_play").fetchall())
+    putter = ingested_db.execute(
+        "SELECT club_type_id FROM canon.shot WHERE shot_id = 90000000003").fetchone()[0]
+    assert nxt[90000000002] == putter                 # the approach was putted next
+    assert nxt[90000000001] is not None               # followed by the approach
+
+
+def test_hole_pin_coverage_counts_every_hole(ingested_db):
+    rows = ingested_db.execute(
+        "SELECT hole_number, has_pin FROM derived.hole_pin_coverage "
+        "ORDER BY hole_number").fetchall()
+    assert rows == [(1, True), (2, True)]

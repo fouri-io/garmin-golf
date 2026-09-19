@@ -86,3 +86,21 @@ Short ADR-style log of choices that aren't obvious from the code.
     (authoritative/inferred/approximate/anomalous), per-shot `annotation`, and a
     round-level `annotations` block. Re-exported (byte-idempotently) on every update
     run.
+
+19. **Green Zone replaces GIR as the approach-quality measure; GIR is left untouched.**
+    Garmin's on-green flag undersells approach quality by ~9 points because fringe/apron
+    leaves score as misses. The Green Zone is geometric and deterministic — the approach
+    finished on the green, inside 15 yards of the pin, or in the hole — with the 15-yard
+    radius BEHAVIOURALLY VALIDATED, not chosen: the player's own putter-next rate matches
+    the 15-yard circle and his median fringe putt is ~14 yards, so his putter draws the
+    circle. Putter-next stays a diagnostic column, never the definition, because club
+    choice drifts with confidence. Payoff anchors (strokes to finish by leave class) are
+    COMPUTED from the window, never hardcoded, and strokes-to-finish is authoritative hole
+    strokes minus the shot's ordinal — extending #3, since the shot layer under-records
+    tap-ins and penalties by design. Approaches recorded as finishing on a tee box are
+    next-tee GPS artifacts that `derived.shot_flags` does not catch; they are excluded from
+    the ladder and the excluded count is published in the coverage badge. Garmin's GIR stat
+    is unchanged everywhere it already appears and the new metric is never called GIR.
+    Ladder tunables (window, bin edges, radii, coverage floors) live in
+    `config/analysis.json` as SHARED analytics definition — per vNext2, tenant config
+    selects targets, not math, so this block must not fork per user.

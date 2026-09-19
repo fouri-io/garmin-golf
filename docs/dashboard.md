@@ -19,6 +19,21 @@ responsive. Leaflet is loaded from CDN for the maps (the only online-only part).
   colored by per-shot SG with always-visible club labels (Dr/7i/54°) and tap popups.
 - **Coach** — the AI round report + (optionally) trend, see coach.md.
 
+## Approach Ladder card (Insights tab)
+- One card between the performance cone and "What changed": a horizontal heat strip of
+  Green Zone % by yardage bin (60→170), cell width proportional to the bin's yardage
+  span, an n= badge on every cell, and the payoff legend on one line under the strip.
+  Tap a bin → anatomy: the 10-yard detail sub-strip, median leave, miss pattern, from-lie
+  mix and per-club rows (n≥5), plus the "too few swings to rate" line for the rest.
+- Deliberately DOM/flex, never SVG: the cone scales off `svg.parentNode.clientWidth`,
+  which collapses below ~500px in headless Chrome. A flex strip measures nothing, so it
+  renders identically at any width (narrow viewports scroll horizontally).
+- Bins under the coverage floor render grey and say "too few to rate" — never a colour.
+- **Green Zone % band** on the Overview tab, at the top of the Priority metrics card:
+  label · scope · value · n · trend vs the previous window. It sits outside the
+  five-column priority-metrics grid on purpose — that grid is ROUND windows, while every
+  ladder stat is scoped to one DAYS window (see ADR #19).
+
 ## Controls
 - **Window:** thisRound / last5 / allTime — authoritative metrics use all rounds in the
   window; SG uses only clean (non-over-recorded) rounds within it.

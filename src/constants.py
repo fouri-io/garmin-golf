@@ -23,3 +23,16 @@ MAX_PLAUSIBLE_HOLE_YDS = 700   # a start point further than this from the pin is
 RECENT_N = 5                   # "current form" window (rounds)
 GREENSIDE_YDS = 50.0           # within this of the pin counts as a greenside up-and-down chance
 METERS_TO_YARDS = 1.09361
+
+# --- Approach Ladder / Green Zone (cuts live in config/analysis.json -> approachLadder) ---
+PUTTER_CLUB_TYPE_ID = 23       # Garmin clubTypeId for the putter; catches the fringe putts
+                               # shot_type='PUTT' misses (Garmin only marks green putts)
+GREEN_ZONE_LABEL = "Green Zone %"
+LEAVE_CLASSES = ["greenPutted", "fringePutted", "chipped", "pitch", "long"]
+LEAVE_CLASS_LABELS = {
+    "greenPutted":  "On the green, putting",
+    "fringePutted": "Fringe or apron, putting",
+    "chipped":      "Inside 15 yards, chipping",
+    "pitch":        "15-25 yards out",
+    "long":         "25+ yards out",
+}

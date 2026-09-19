@@ -28,6 +28,7 @@ OUT_JSON = Path("data/processed/insights.json")
 OUT_MD = Path("data/processed/insights.md")
 PROGRESS = Path("data/processed/progress.json")
 CLUB_STATS = Path("data/processed/club_stats.json")
+LADDER = Path("data/processed/approach_ladder.json")
 
 CONE_WINDOW = 16          # rolling rounds per cone point
 CONE_PROVISIONAL = 8      # dashed 'forming' cone from here; tails are biased narrow
@@ -158,12 +159,21 @@ def _mid_iron_miss(clubs: list[dict]) -> dict | None:
             "shortPct": round(100 * tot["short"] / tot["n"])}
 
 
+def _ladder_candidates(ladder: dict | None) -> list[dict]:
+    """Approach-ladder findings enter the same ranking as everything else — bin-level
+    evidence surfaces only when it out-ranks, so there is no standing ladder section.
+    The arithmetic lives in ladder.candidate_findings; this just scores them."""
+    return [_cand(f["cat"], f["text"], f["magnitude"], f["n"], f.get("weight", 1.0))
+            for f in (ladder or {}).get("findings", [])]
+
+
 def build(write: bool = True) -> dict:
     from .db import connect
     con = connect()
     rounds = _load_rounds(con)
     progress = json.loads(PROGRESS.read_text()) if PROGRESS.exists() else {}
     club_doc = json.loads(CLUB_STATS.read_text()) if CLUB_STATS.exists() else {"clubs": []}
+    ladder = json.loads(LADDER.read_text()) if LADDER.exists() else None
 
     # The cone measures SCORING LEVEL, so it uses 18-hole regulation rounds only —
     # matching the Outcome layer's headline scope. Doubled 9-hole scores carry ~1.4x
@@ -312,6 +322,7 @@ def build(write: bool = True) -> dict:
                 f"inside the window; detrended, your consistency gap is ~{adj_g:.0f} "
                 f"strokes — {verdict} for your scoring level (population: "
                 f"~{pop_gap:.0f}).", (raw_g - adj_g) / 5, CONE_WINDOW, 1.1))
+    cands += _ladder_candidates(ladder)
     cands.sort(key=lambda x: -x["score"])
     insights = cands[:6]
 

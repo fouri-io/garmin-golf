@@ -96,6 +96,12 @@ SYSTEM = (
     "this round's actual shots in each bucket: anchor the read to those, and when a "
     "bucket went untested this round, say so instead of implying the season figure "
     "showed up today.\n"
+    "- APPROACH LADDER: the ladder block is deterministic. A bin is a yardage bucket; "
+    "'Green Zone' means the approach finished on the green, inside 15 yards of the pin, "
+    "or in the hole. NEVER call this GIR — Garmin's green-in-regulation stat is separate "
+    "and unchanged. The strip is his SEASON profile; the per-bin shots underneath are "
+    "this round. When a Next-round focus bullet concerns approach play, cite the bin, "
+    "its Green Zone % and its n, so the next report can grade it.\n"
     "- PLAIN WORDS ONLY: never let dataset shorthand reach the player. No 'Am1'/'Am2'/"
     "'Am3' (say 'players who shoot 84-97' / 'your bracket' / 'the next level'), no "
     "'pens' (say 'penalties'), no 'FRL', no internal metric keys. If a term needs a "
@@ -153,7 +159,7 @@ data provided must appear — trim sentences, never sections.
 
 === PUTTING BY FIRST-PUTT DISTANCE (authoritative counts) ===
 {putting}
-{insights}{course}{tier}{benchmark}{anatomy}{escalation}{prev_report}{prev_focus}
+{insights}{course}{tier}{benchmark}{ladder}{anatomy}{escalation}{prev_report}{prev_focus}
 === THE ROUND JUST PLAYED ===
 {round_md}
 {annotations}"""
@@ -292,6 +298,28 @@ def _benchmark_block(stem: str) -> str:
             round_samples(connect(), _rid_from_stem(stem))) + "\n"
     except Exception as e:  # noqa: BLE001 — samples are an enrichment, never a blocker
         print(f"  benchmark round samples skipped — {type(e).__name__}: {str(e)[:80]}")
+    return block
+
+
+LADDER_MD = Path("data/processed/approach_ladder.md")
+
+
+def _ladder_block(stem: str) -> str:
+    """The deterministic approach read: his season Green Zone strip (src/ladder.py) plus
+    THIS round's approaches in each bin. Same shape as the benchmark block — season
+    profile first, then the shots that actually happened, so a prescription cites a bin
+    instead of a mood."""
+    if not LADDER_MD.exists():
+        return ""
+    block = ("\n=== APPROACH LADDER (deterministic — Green Zone %, by yardage bin) ===\n"
+             + LADDER_MD.read_text()[:2200])
+    try:
+        from .db import connect
+        from .ladder import render_round_samples, round_samples
+        block += "\n" + render_round_samples(
+            round_samples(connect(), _rid_from_stem(stem))) + "\n"
+    except Exception as e:  # noqa: BLE001 — samples are an enrichment, never a blocker
+        print(f"  ladder round samples skipped — {type(e).__name__}: {str(e)[:80]}")
     return block
 
 
@@ -564,7 +592,11 @@ def build_context(stem: str, progress: dict | None = None) -> dict:
                       + ". Toward 0 = better. A big beat here is exactly the progress he's "
                       "chasing — lead with it.")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    (OUT_DIR / "context.md").write_text(state + "\n\n=== PUTTING BY DISTANCE ===\n" + putting)
+    # The ladder block lands in context.md too: it is deterministic, so it must be
+    # readable (and checkable) without spending an LLM call to see it.
+    ctx_ladder = _ladder_block(stem)
+    (OUT_DIR / "context.md").write_text(
+        state + "\n\n=== PUTTING BY DISTANCE ===\n" + putting + ctx_ladder)
     return {"profile": profile, "state": state, "putting": putting,
             "stem": stem, "round_md": _round_md(stem) or "",
             "annotations": _annotations_block(stem),
@@ -572,6 +604,7 @@ def build_context(stem: str, progress: dict | None = None) -> dict:
             "course": _course_block(stem),
             "tier": _tier_block(progress),
             "benchmark": _benchmark_block(stem),
+            "ladder": ctx_ladder,
             "anatomy": _double_anatomy(stem),
             "escalation": _escalation_block(stem),
             "prev_report": _prev_report_block(stem),
